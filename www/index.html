@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Protter - interactive protein feature visualization</title>
+		<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAAMFBMVEXdagThbwjfbgjfbAbdbgTgbgjdbgDgbwjdbgTaawjgbAjdbgjgbgjdZgAAAADhcAkgJX4NAAAAD3RSTlMml1hNOGUWgy+3Qh5zDwAqOFXAAAABRklEQVR42u3aOY4FIQwE0N8bmzG+/21/6MQtTYJrRlOVNhJPBNgy/VngEEAAAQQQQAABBPwJgP0gdc5nDFEUwDNHAQE8R0MBnPABATwPGmBHAQOsFzDAuoIBVtEAG2iAKRpwbgP4xyLtqq8C3Qrw6GVx7t0AJ8SnULcDPGcoSASs8Aw+iQDt0VWQCFgjqoqZAI0apEzAeoKKlAq4g5WpAEEDFgG/ENBTAYq+BwQKiO/iKxVQg44EXQskE3BFC8H9wMwEPJCm1NMgbbmnxFOCNEDpEUDSALdFmSsJINPCSA6gzdc50W6AShvT3tLRIxoBA9rCAtrCAtqCAjp4VFvLQgL6wI7rT10YgG+PA1TvP/IBx9kU82h1zHkNyX41gz/bEUAAAQQQQAABBBBAAAEEEEAAAQQQ8M9+7SaAAAIIIIAAAgggYGu+/4uJWVd9ixQAAAAASUVORK5CYII=" />
+		<!-- DEVELOPMENT
+		<link rel="stylesheet" media="screen" type="text/css" href="lib/jquery.svg/jquery.svg.css" />
+		<link rel="stylesheet" media="screen" type="text/css" href="lib/jquery.ui/jquery-ui-1.10.3.custom.css" />
+		<link rel="stylesheet" media="screen" type="text/css" href="lib/fg.menu/fg.menu.css" />
+		<link rel="stylesheet" media="screen" type="text/css" href="lib/jquery.treetable/jquery.treetable.css" />
+		<link rel="stylesheet" media="screen" type="text/css" href="styles.screen.css" />
+		<script type="text/javascript" src="lib/jquery/jquery-1.9.1.min.js"></script>
+		<script type="text/javascript" src="lib/jquery.ui/jquery-ui-1.10.3.custom.min.js"></script>
+		<script type="text/javascript" src="lib/jquery.splitter.js"></script>
+		<script type="text/javascript" src="lib/jquery.svg/jquery.svg.js"></script>
+		<script type="text/javascript" src="lib/jquery.svg/jquery.svgfilter.js"></script>
+		<script type="text/javascript" src="lib/jquery.colorpicker/jquery.colorPicker.js"></script>
+		<script type="text/javascript" src="lib/jquery.tablednd.js"></script>
+		<script type="text/javascript" src="lib/jquery.treetable/jquery.treetable.js"></script>
+		<script type="text/javascript" src="lib/fg.menu/fg.menu.js"></script>
+		<script type="text/javascript" src="protter.js"></script>
+		<script type="text/javascript" src="protterParser.js"></script>
+		-->
+		<link rel="stylesheet" media="screen" type="text/css" href="merged_embedded.css" />
+		<script type="text/javascript" src="merged.js"></script>
+	</head>
+	<body id="body" class="loading">
+		<div id="divContainer" class="ui-state-default">
+			<a href="start/" id="logo" title="home - reset all settings and return to start page"><h1>Protter</h1></a>
+			<a href="http://www.imsb.ethz.ch/researchgroup/wbernd/" title="Wollscheid Group - Institute of Molecular Systems Biology - ETH Zurich" target="_blank"><img style="width:110px; margin-top:19px; margin-right:13px; float:right" src="data:image/png;base64,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" /></a>
+			<div id="info">
+				<div>imsb.biol.ethz.ch</div>
+				<div>@</div>
+				<div>protter</div>
+				<div>feedback to&nbsp;</div>
+			</div>
+			
+			<ul id="tabMain">
+				<li><a href="#tabSequence" title="specify the protein sequence or load sequence using a protein accession"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAbCAMAAABVyG9ZAAAC0FBMVEUqTZxSUlIsTps3U5NZWVkqTJwsTptYWFhKVnE4U5JVVVVZWVlMV3JRUVFXV1cyUJZYWFhbW1tHVnlXV1cyUJVZWVlNTU1VVVVYWFhHVnhaWlpXV1cxVKJVVVVYWFgyVKFWVlYtVKwtVKxVVVVaWlo6dsM7eMc9fM09fM09e8w9e8w5csU3bsI4cMQ0aLoxY7M5dMdVVVUvXrIuXK4wX7cvXbUuW7Q8essuWbI6dchmZmY7ecptbW1JSUk7d8k7ecotWLEsVrBAQEBVVVVYWFhVVVVXV1ddXV1VVVVVVVWAgIAAAAAAAACG2PSF1/SJ2fSH2PRSjtCC1PKA0vJsp75ei59wsMlurMZvr8WB0/BLXmZsp71gjaBeip9trMZ+0O01YrdTjtBfjJ9sqsV8zO9diJ59ze5rqcZqpsV5ye57y+5ch540YbeAzvBopcRVf5pfmr93xexUfZhdlr1pteVblL1Se5hYkLtnsOJQeZd+z/BZn9xhquBptOR2xOt7zO5hqN5OdZZPd5cpTqN0tuVpp9xVmdpZnNtinddJfMVqruIxXLJxteU8e8vF7fp3rOCr1/Kb4Pegzu6Q3faK3PZLh9Gr5fm66flYkNCPwOiM2vZXmNaIzu8yZblCfMqFzu+By+9jq+BsteV9ye4xY7hvuuie4fhJhtBtruCG0vFmquEwWrKI2fRor+Fdn9pNh81qteVuuOdps+Vrt+Z4xe1Df8yQ1vM1ZrpvseNWm9qw4/djrOKB0vCA0fGU1PJAcL+R3PVhm9iA0vF8zO5pr+NaldaN2PSm4vdsseOg3vaM2PVtpt1oreFdpN5epd5He8VrseNjqeE/cr91xOxZoNxZntt9ze96ye5gpN5qsuR7zO+E1/SC1fN/0fFTmNmF2PV+z/F8ze9co96A0/NVmtpep+BZoN16yu9Wndt4x+52xe1qtuZhquFnsuRkruM+QUMGX/+/AAAATXRSTlPrHNSQFOvWGlKSFTxTEzjFPQ52L8Y5Cg9LeTM1nQxRoD6XmAYR170bbJwzoHghxfQ2IcH0eBuWii2KBZYHB5YGh5MEHh0YJgsDEgIBAE2gFKkAAAIlSURBVHjaVdF1cxQxHAbg4E5xlwJ1p14KFe4q11vc3d3dte7u7u7u7l56tnfoYdej5CuQsJsOPPtH3l/eyWRmAyiWppaGur+/uoaWJtlhKx3t8MCQoICAoJDAcG2dfyuLzOjIiODQsLDQ4IjI6EyLicrWurkmI+YjKyajptnalq1sejubpFLpzt15u/J2oNDU2WvDVFbt3T0y5MjeY/Bw3ak6maynu90KV0blDR1yZJ98/1F4sEXegnJHQ7kRqnSzKurfI8chcqj1YivK9RVZuhTQT4jL/oSdxdXJ88IbT9GQHZegD/RiE4WfMZqmD8Bz9FX6FRqEibF6wCA56QdxAl66IhKJcExKNgCGKakK4gK8rLijeIljaoohiE8vGyOuwZtj79CHlKXHg7TiUiVxC95W3le+wLG0OA2Y5BeNE3fhvfHHTCzKNwHGBSW/iYfwAYklBcbAtFDyi3gCHz1/zURJoSkwq5TUfsPeQsbfoVZSaQYo8zNt/V+QN2yFc3/bHnP0Dy2v9w1/Z40+GxXgdbjvtCV+FLuRoYGf/xkYGrFjntJ+sEtc/XVCtbhr0J7CFd9ly4bGqhzBB5Ygp6px4zZnPqpctvI2r8mN8vMRe3p4eIp9/KJy1zs6OG3nA8rZibt6xSIVX28vdzc3dy9v3yUr16k68jbxmVOL58+ZOWUycHWdNn3W3AVLVzGn8F3LFqrxpjpM4nI4HO6M2fPUlq/Fd/0Bcw6poIdZpAUAAAAASUVORK5CYII=" />
+					protein</a></li>
+				<li><a href="#tabTopology" title="customize the protein's transmembrane topology"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAbCAMAAABVyG9ZAAAC7lBMVEVZWVkqTZxSUlIsTps3U5MsTptYWFgqTJxKVnE4U5JVVVVZWVlMV3JRUVEyUJZXV1dYWFhbW1tXV1dHVnkyUJVZWVlNTU1VVVVYWFhHVnhaWloxVKJXV1dVVVVYWFgyVKFWVlYtVKwtVKxVVVVaWlo6dsM9fM07eMc9fM09e8w9e8wxY7M0aLo5csU3bsI4cMQ5dMdVVVUuXK4vXrIwX7cvXbU8essuW7QuWbI6dchmZmY7ecptbW07ecpJSUk7d8ktWLEsVrBAQEBVVVVYWFhVVVVXV1ddXV1VVVVVVVWAgIAAAAAAAACF1/SG2PSH2PSJ2fRYjrRcmcVjqdhYi6xGWGNDT1halsNCT1hQcYZqobZCSk5Ucn5hqeBnseNSjtBWi7NVd4lVf5p4xu1Pd5dpn7R+0O2B0vBnsOJLXmU1YrdTjtBwsMlOdZZ0u9hch55Rbn1pteVhqN5nnrRdhpd4wuKA0vFchJV8zO97y+9PaHN9zvBvr8h1v+I0Ybd7zO5mnrpvss9OZ3JGU1pwrMd7y+5KXWZZn9x3weF2xOtGXW5ptORGXG4pTqN0tuVpp9xVmdpZnNtinddJfMUxXLJqruJxteU8e8t3rOCr1/LF7fqb4Pegzu6Q3fZLh9Gr5fmK3Pa66flYkNCPwOiM2vaFzu+Izu9jq+BXmNYyZblCfMqBy+9steV9ze99ye5vuugxY7hJhtCe4fiI2fRtruCG0vEwWrJmquFASE1qteVdn9pNh81rt+Zps+VuuOdor+F4xe1Df8yQ1vM1Zrqw4/dhquBvseNWm9phm9iR3PVjrOKU1PKA0fFAcL9pr+Om4vdaldaN2PR+z/BsseOM2PVtpt1ZoNyg3vZ6ye5oreFdpN5epd5He8V1xOxrseM/cr9jqeFZnttgpN5qsuR7zO+C1fOE1/SA0/N/0fFco95TmNmF2PV+z/Fep+BVmtphquFZoN18ze9nsuRWndtqtuZ2xe16yu94x+5kruM+QUMpf2EEAAAATXRSTlMU6xzUkNYa61KSFTxTE8U4PQ4vdsY5Cg9LeTOdNQxRoD6XmAYR1xu9bJwz9MWgeCE2IfTBeBuKli2KBZYHBgeWh5MEHh0YJgsDEgIBAACpfFUAAAIzSURBVHjaVdFTdFxBAAbgqW1bsRunaZqku8Fmb23btm3Etm3bts31brW96aabeeud3Jtt+73M/5//zJmHARhFQUlR3t1dXlFJAaNQk4qyn4ePp5eXp4+Hn7LKv5N+YnCgv7dvQICvt39gcKK+bDIxrihJCvlKCUkqqTA2oSbT1vpKPp+/ZVvy9uStRKisbzUlJ6OG9hYej3fw8CEIL5w5e47Ha2lvMEKTVmF1o0AguAxJt+8SpbG6UIuY1FOKaoRC4eOHt6423bkH4Xui1BSlqGNAMyos9RuCP8Lx+/hb+LqJKKlhUZpAIyI0Fke4XO4D7puX8MUzosSGRmgAtfDo3389ga86OlCIDlcDqjFx0lGnpNfhc+kHFONiVEFkfMGQzAl4rXeoF6WC+EiQkJcjGXUAnpTckHxCMScvAWjnZw6Sdu2Bu48OnidLZr420MnKHR6xc2/GjmGZ3CwdoJvNESPHM/bvE5ceKb0pHsHJ1gV6xZyq74TTkPIRtSpOsR7ADC7VdYlEoiuQ8pkoXXXHDDCAGT7tHPhJaXvXxkLnQOdFQ/QpZv193b/+093Xb0Z+pXlPM7v8h0w5u7nHHEMT02bDmtqydNYXCiu9rHbtJmsmMdlsZKxflhbk5sp2dHBwZLu6BaWtsrSw2swEmLUVffnieTNdnJ3s7ezsnZxd5i9ZudqSsY5J3po7a9rk8ePG2NpOmjBl+uwFS8lb6K2Fc+QYwGIsnUaj0SdOnSG3aAV66w9+WLcGaxZbIgAAAABJRU5ErkJggg==" />
+					topology</a></li>
+				<li><a href="#tabStyles" title="create styles to highlight various annotated features or add your own annotations"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAbCAMAAABVyG9ZAAAC+lBMVEUqTZxZWVlSUlIsTps3U5MsTptYWFgqTJxKVnE4U5JVVVVZWVlRUVFMV3JXV1cyUJZYWFhbW1tHVnlXV1cyUJVZWVlNTU1VVVVYWFhHVnhaWlpXV1cxVKJVVVVYWFhWVlYyVKEtVKwtVKxVVVVaWlo6dsM7eMc9fM09fM09e8w9e8w0aLo3bsI5csUxY7M4cMQ5dMdVVVUwX7cuXK4vXrIvXbUuW7Q8essuWbI6dchmZmY7ecptbW1JSUk7d8k7ecotWLEsVrBAQEBVVVVYWFhVVVVXV1ddXV1VVVVVVVWAgIAAAAAAAACG2PSF1/RwtddEUVlKXGVBSU5ck7Vfj6hVd4hdiJ5ur854xu12xOtDUFlOZ3J7y+6J2fRbkLRmnLNopcVOc45hquBnseNdl75hqeBAR02H2PRfmr9ptORsq8Z8zO96ye57y+9SjtBLXmZQeZdhjqBztNB7zO5bndJept9KaIJzuth/0e5+0O1+z/B8zO41YrdTjtCC0/FnnbRHVFqA0vGA0u+B0/CC1PJZfYtbntNPf6dUibI0Ybc/R01sp79WmNFLa4NOeZ5OdZZPd5cpTqNpp9x0tuVVmdpinddZnNtJfMUxXLJqruJxteU8e8vF7fqr1/J3rOCb4Pegzu6Q3faK3PZLh9Gr5fm66flYkNCPwOiM2vZjq+CFzu+Izu8yZbmBy+9CfMpXmNZsteV9ze9vuuh9ye4xY7ie4fhJhtCG0vFtruAwWrJmquGI2fR1xOxSe5hdn9pNh81or+FqteVuuOdps+Vrt+Z4xe1Df8yQ1vM1ZrpSg6lvseNWm9qw4/djrOKA0fGU1PKB0vBAcL+R3PVhm9hPZ3Jpr+NaldaN2PSm4vdsseNFW22g3vaM2PVtpt1oreFdpN5epd5He8VrseM/cr9jqeFZnttgpN5qsuR7zO+E1/SC1fN/0fFZoN1co95TmNmF2PWA0/N+z/Fep+B8ze9VmtpqtuZ2xe14x+5WndtnsuRhquF6yu9kruM+QUOFDWQKAAAATXRSTlPrFBzUkNYa61KSFTwTUzjFPQ52L8Y5Cg9LeTM1nQxRPqCXmAYR170bbJwzxXig9CE2IXj0wRuWii2KBZYHB5YGh5MEHh0YJgsDEgIBALJFfH8AAAI2SURBVHjaVdFlcFNBFAXgxd3dre7US6FCUknzcHd3d3d36u7u7u7u7holgUJpS4GdYTfvNRO+P3vunNnZmb2AoMjKyUg7O0vLyMkSFKpSkPd283B1cXH1cPOWV5CsdOL8fX3cPb28PN19fP3jdMSVoX51SWzAN0pAbEm1viFVGbQ2VPF4vI2nkg8kb0ChqqHVgKz06ppb+Miz508f3q64U8HntzTX6eFKLa+8vhd59+IxhJeu9D5Bub48Tw1Vygn5ZV8QSKq5h3JZfoIyAVTDguO/YzWPbvWdOwTh1btoiA8OUwVK4UGRfRiXy73A3b8Pnr2GhsigcCWgGBj6R8IWuOs8PkMDFYFKRPTgsN2bdsIdg3twjI5QASFRuQOUwxBu3Z4ykIJzblQIiMnK6aechhBu3tZ/BuecrBigkZE5NOzY0MG98LgoZmZoAM207L8SUmGq6MxO0wTq6ZzfYkdPHIGXRYmTrg60CjilP5DPH16/vHG98CQsxFMpp0ALENoPatuFQuEnSLopRNprL2qjP9R909YjEAjef2x6C2HTK5YA6Wm7r4uXYtTd1fHrPx1d3UbkKo07G9nFP8WK2Y2dxgSumBZrVlQWJbG+UlhJRZUr15kzUWWxlrF6caKfkyPbzsbGju3o5Je43NTEbD0TEOZm9EXzZ05zsLe1sra2srV3mL1g6TJTxiomeWvW1EnjR48ClpbjxkyYMn3OQvIWfmvuDCnGCJORdBqNRh87cbLUvCX4rX872Lv80Up3TgAAAABJRU5ErkJggg==" />
+					styles</a></li>
+				<li><a href="#tabMisc" title="further visualization settings"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAbCAMAAABVyG9ZAAAC+lBMVEUqTZxSUlIsTps3U5NZWVlYWFgsTpsqTJxKVnE4U5JVVVVZWVlMV3JRUVEyUJZXV1dYWFhbW1tHVnlXV1cyUJVZWVlNTU1VVVVYWFhHVnhaWlpXV1cxVKJVVVVYWFgyVKFWVlYtVKwtVKxVVVVaWlo6dsM7eMc9fM09fM09e8w9e8w4cMQ5csU0aLoxY7M3bsI5dMdVVVUvXbUwX7cuXK4vXrIuW7Q8essuWbI6dchmZmY7ecptbW1JSUk7d8k7ecotWLEsVrBAQEBVVVVYWFhVVVVXV1ddXV1VVVVVVVWAgIAAAAAAAABXeolOZnJvsc93v9t4w+NLXWZTcH14xu19zvBGVFpsq8ZZgZRtq8ZrqcV7y+5NZXJ+0PGA0u9tq8WC0/FKYXBBSU5Vd4mG2PSC1PJ9ze5wr8h/0e6J2fSF1/SAzvBGWGRrrM2H2PSA0vKB0/BSjtBEUVlopcV3xex8zO5+0O1TjtA1Yrdfmr9+z/B7zO40YbdpteV2xOtSibhHXm5codxGXG5Ui7hFW21epN1ptORYkbtWjblGXG1hqN4pTqN0tuVpp9xVmdpinddZnNtJfMVqruIxXLJxteU8e8vF7fqgzu6r1/Kb4Pd3rOCQ3faK3PZLh9Gr5flOZ3JlmrO66flYkNBCSk6PwOiM2vZ7zO9steVCfMqBy++Izu9jq+AyZbmFzu9XmNYxY7hvuuh9ye5qp8We4fhJhtCG0vFtruBmquEwWrKI2fSA0vFrt+ZNh81or+FqteVuuOdps+Vdn9p4xe1Df8yQ1vNmrdk1ZrpvseNWm9qw4/djrOKB0vCU1PKA0fFAcL9hm9iR3PVpr+NaldaN2PSm4vdsseN1xOyg3vZtpt2M2PVoreFdpN5He8Vepd5dl75rseNblL0/cr9jqeFept99ze9Zntt6ye5gpN5qsuSE1/SC1fN/0fFTmNmF2PVnsuRkruN8ze9+z/GA0/NVmtp6yu94x+5qtuZ2xe1ep+BZoN1co95WndthquE+QUOJJf8sAAAATXRSTlPrHNSQFBrW61KSFTxTE8U4PQ52L8Y5Cg9LeTM1nQxRoD6XmAYR171sG5wzIaDF9Hg2IRt49MGWii2KBZYHB5YGh5MEHh0YJgsDEgIBAMZ6B4MAAAJBSURBVHjaVdFlbJsxEAZgj5mZqcwrd90KawppMmZmZmbmlZmZmZmZmZnC25I2a9KRpdnJp2h7fvju9Mqy5ANUgpysjLSLi7SMrByVQEQK8j6ebu6uru5unj7yCv9GOsnBAb4eXt7eXh6+AcHJOpLIUL+uIinkGyEkqaJO35CIDNqb69ls9uXrGZcyzqKmvrndQBzpNbZ1cJCb546fvFh1v4rD6Whr1MORWlF1Ex+5wc/cGQQv8DNR31RdpIYipdTimi/IyLFduyE8cf4e6muKU5WoQDE8MmUEG963J2g/PES78hgNKZHhikA1NoY2jIVugzv84IEjoU/QQIuJVQXKURGjIv7Qf9QPHmYwGHiKiFIGKmEJAiwRHhTs3Q4T7wqe4zEhTAVExxeOIddOn0HnUXindawVz4Xx0SAuL0soFJbcvlqCyin46JnwvRDJyosDmjm5XC63F0r0crHcHE2gVZDP4/H6oUQ/D8sv0AIa2aw/Ei/hh8/ijpWtAdRLWZU/xIaGXsOP70RtJatUHVC1HzR0/SJ8gm9e4drVcEsb/aHu087Bn4S38AUd18HOh7p4KUYDfT2//9PTN2AkXqVxdwuz/LtEObOl21i0SorlpnW1ZWn0rwR6Wlnt+i0WFBRZbiZvXJke6OzItLe1tWc6OgemrzEzNd9KAVQLc9KKpfNnOznY2Vhb29g5OC1ctnqtGXkDRXxrwZwZUyeMB1ZWUyZPmzl30XLiFnpr8Twp8kTTcSQTExPSpOmzpJaswm/9BeSVuVMhb3XkAAAAAElFTkSuQmCC" />
+					misc.</a></li>
+				<div class="ui-tabs" style="float:left; padding-left: 1em;"><a href="help" target="_blank" title="open help pages in a new window"><img id="imgHelp" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAbCAMAAABVyG9ZAAAC9FBMVEUqTZxSUlIsTps3U5NZWVksTptYWFgqTJxKVnFVVVU4U5JZWVlMV3JRUVFXV1cyUJZYWFhbW1tXV1dHVnkyUJVZWVlNTU1VVVVYWFhHVnhaWlpXV1cxVKJVVVVYWFgyVKFWVlYtVKwtVKxVVVVaWlo6dsM9fM07eMc9fM09e8w9e8w3bsI5csU4cMQxY7M0aLo5dMdVVVUuXK4vXrIwX7cvXbUuW7Q8essuWbI6dchmZmY7ecptbW1JSUk7d8k7ecotWLEsVrBAQEBVVVVYWFhVVVVXV1ddXV1VVVVVVVWAgIAAAAAAAACG2PSF1/SJ2fSH2PRSjtB4xu1trc1fj6hFU1pBSU58zO9JW2V7y+9rqcVNaHpOZ3J7y+5OZnJHVVtsq8Z+0O1hjqBPZ3JztNB7zO56ye5mrdlnseNqq8w1YrdTjtBws8+C0/FfjJ9/0e5kptBSe5hRd5BEUVl8zO5+z/BpteVLXmZZfYuC1PKA0u92xOuB0/CA0vFhqeBnsOJdl751xOw0YbdblL1zt9FgjaBptORZoNxGXG1Ui7lhqN5Zn9xSibhFW21codxcot1epN0pTqN0tuVpp9xVmdpZnNtinddJfMVqruIxXLJxteXF7fo8e8ur1/Kb4Pd3rOCQ3fagzu6K3PZLh9Gr5fm66flYkNCPwOiM2vaFzu9CfMqIzu9jq+AyZbmBy+9steV9ze9XmNZ9ye4xY7hvuuie4fhJhtBtruCG0vFmquEwWrKI2fRdn9pNh81qteVor+FuuOdps+Vrt+Z4xe2Q1vNDf8w1ZrpvseNWm9qw4/djrOKU1PKA0fGB0vBAcL+R3PVhm9hpr+NilKlaldaN2PSm4vdsseOg3vZtpt2M2PVhquBoreFdpN5He8VrseNjqeE/cr9Znttept9gpN5qsuR7zO9epd6E1/SC1fN/0fFTmNmF2PWA0/N+z/F8ze9VmtpZoN1co95ep+BqtuZWndt4x+52xe1nsuR6yu9hquFkruM+QUOwZ1AaAAAATXRSTlPrHNSQFNYa61IVkjxTEzjFPQ4vdsY5Cg9LeTM1nQxRoD6XmAYR1xu9bJwzeKAh9MU2IfTBeBuWii2KBZYHB5YGh5MEHh0YJgsDEgIBAFjFXd0AAAIwSURBVHjaVdFVcFQxFAbg4O7uVnfqpVBht7Ldi7u7u7u7U3d3d3d3d+/6AqVQyrbQvJDce7tTvpf8Z/7JZCYHEDQ5BXlZNzdZeQU5gkZXSoq+nt7urq7u3p6+ikrDK72EQH8/Dy8fHy8PP//ABD1pZWxYVRwf9I0WFF9cZWhMV0ZN9ZUikWjj5tRNqRtQqKxvMqIqg9rGZjFy/87dC5fKj5SLxc2NtQa40sgvretGnt++BeGho90PUK4rzddAlUpiXtkX5AUkHbuOclleogoBVENCk75jNRfP9+yqgfD4DTQkhYaoAuXo4KgeTCAQ7BEc2A8Pn0BDVHC0MlAPi/gzzEG49yQ+I8LUgVpkjGTIVsk2uFtyD8eYSDUQHpfbL7V9544z/U9wyo0LB7FZOX20y9fgvlM3+17inJMVCzQzMwZoj+HV0wOPqJyRqQm00rIHac/glcEh2WlaQDud/1eq5WHLWyrx07WBTgG/5BeFyxVyhZ/JWMIv0AGE7rnqtl7SG/i699NHnNqqt+iiP9R/2tr5k/Qefnj3ioNTZ+tZfbwUk64O4e//CDu6TKhVmrY38Ip+SBXxGtpNyVWyrdasqChM5nylcZILK1aus2Sjymota/XilAAXJ569nZ09z8klIGWZuZnFejYgLC2Yi+bPmubs6GBrY2Pr4Og8e8HS5easVWzq1sypk8aPGgmsrceNmTh5+pyF1C381twZMqzRZiOYDAaDOXbCFJl5S/Bb/wCOGbl4Oo/dpwAAAABJRU5ErkJggg==" />
+					<span style="padding-top:0.5em; float:right">help</span></a></div>
+			</ul>
+			
+			<div id="divMain">
+				<div id="divSequenceSelection" class="ui-widget ui-widget-content ui-corner-bottom" style="display:none;">
+					<div style="position:absolute; top:0.5em; left:0.5em; right:0.5em; bottom:0.5em">
+						<label for="lstProteins"><span id="lblCountProteins">xxx</span> proteins:</label>
+						<input id="proteinFilter" placeholder="type to filter" style="width:7em;" title="filter the loaded list of proteins by name (you can also use regular expression patterns)" />
+						<div id="divProteinTableWrapper" class="ui-widget-content ui-corner-all">
+							<table id="tblProteins"></table>
+						</div>
+						<div style="position:absolute; bottom: 0.2em;">
+							<button id="btnReset" title="reset all settings to default">reset</button>
+							<button id="btnExportAll" title="export visualizations for all proteins loaded">export all...</button>
+						</div>
+					</div>
+				</div>
+				
+				<div id="divContent">
+					<div id="divSettings" class="ui-widget ui-widget-content ui-corner-bottom">
+						<div id="tabSequence" class="tab">
+							
+							<div id="divSequenceInput">
+								<ul id="tabSequenceInput">
+									<li><a href="#tabSequenceID" title="specify the protein via UniProt accession or gene name">by accession</a></li>
+									<li><a href="#tabSequenceFasta" title="specify the protein via amino acid sequence">by sequence</a></li>
+								</ul>
+								<div id="tabSequenceID">
+									<form id="frmID">
+										<label for="txtID">please enter a UniProt protein accession:</label>
+										<br />
+										<input id="txtID" placeholder="e.g: BST2_HUMAN" autofocus required>
+										<button id="btnSubmitID" title="create Protter visualization" type="submit">submit</button>
+										<button id="btnExampleID" title="load an example Protter plot">load example</button>
+									</form>
+									<br />
+									or, alternatively you can:
+									<br />
+									<button id="btnProteinIDs">enter a list of proteins</button>
+									<br />
+									<button id="btnProteomics">load a proteomics result file</button>
+								</div>
+								<div id="tabSequenceFasta">
+									<form id="frmSequence">
+										<label for="txtSequence">enter a custom protein sequence or multiple sequences in FASTA format:</label>
+										<textarea id="txtSequence" name="txtSequence" required spellcheck="false" wrap="off" cols="100" rows="10" class="ui-widget-content ui-corner-all" style="left:0; right:0; top:1.5em; bottom:2.25em; position:absolute;"></textarea>
+										<div style="position:absolute; bottom:0;">
+											<button id="btnSubmitSequence" title="create Protter visualization" type="submit">submit</button>
+											<button id="btnExampleSequence" title="load an example protein sequence">load example</button>
+											<button id="btnLoadFasta">load FASTA file</button>
+											<input type="file" id="inpFasta" />
+										</div>
+									</form>
+								</div>
+							</div>
+							
+						</div>
+						<div id="tabTopology" class="tab">
+							<div class="divVerticalSet">
+								<label for="divTopoWrapper">transmembrane topology:</label>
+								<div id="divTopoWrapper" class="verticalbuttonset">
+									<input type="radio" id="selTopoNone" name="selTopo" value="none" /><label for="selTopoNone" title="visualize protein sequence without membrane">no membrane</label>
+									<input type="radio" id="selTopoAuto" name="selTopo" value="auto" /><label for="selTopoAuto" title="automatically determine transmembrane topology: UniProt -> annotation, sequence -> Phobius prediction">automatic</label>
+									<input type="radio" id="selTopoCustom" name="selTopo" value="custom" /><label for="selTopoCustom" title="cutomize transmembrane topology">custom</label>
+								</div>
+							</div>
+							<div class="divVerticalSet">
+								<label for="divNtermWrapper">N-terminus location:</label>
+								<div id="divNtermWrapper" class="verticalbuttonset">
+									<!--<input type="radio" id="selNtermNone" name="selNterm" value="" /><label for="selNtermNone">no membrane</label>-->
+									<input type="radio" id="selNtermExtra" name="selNterm" value="extra" /><label for="selNtermExtra" title="set the N-terminus to be extracellular">extracellular</label>
+									<input type="radio" id="selNtermIntra" name="selNterm" value="intra" /><label for="selNtermIntra" title="set the N-terminus to be intracellular">intracellular</label>
+									<input type="radio" id="selNtermUniprot" name="selNterm" value="up.nterm" /><label for="selNtermUniprot" title="use UniProt annotation to determine N-terminus location">use UniProt</label>
+									<input type="radio" id="selNtermPhobius" name="selNterm" value="phobius.nterm" /><label for="selNtermPhobius" title="use Phobius topology prediction to determine N-terminus location">use Phobius</label>
+								</div>
+							</div>
+							<div class="divVerticalSet">
+								<label for="txtTransmembrane">transmembrane regions:</label>
+								<div id="divTransmembraneWrapper">
+									<textarea id="txtTransmembrane" cols=15 rows=5 class="ui-widget-content ui-corner-all" title="define the TM regions using ranges (e.g. 25-45,76-93) or select one of the annotations (click +)"></textarea>
+								</div>
+							</div>
+							<div class="divVerticalSet">
+								<label for="txtAnchors">membrane anchors:</label>
+								<div id="divAnchorsWrapper">
+									<textarea id="txtAnchors" cols=15 rows=5 class="ui-widget-content ui-corner-all" title="define the lipid anchors using numbers (e.g. 23,117) or select one of the annotations (click +)"></textarea>
+								</div>
+							</div>
+						</div>
+						<div id="tabStyles" class="tab">
+							<div id="divStyleTableWrapper" class="ui-widget-content ui-corner-all">
+								<table id="tblStyles">
+									<thead id="tblStylesHead" class="ui-widget-header">
+										<tr>
+											<th style='width:100%; display:inline-block; padding:0'>
+												<table style='width:100%'>
+													<tr>
+														<th class='columnDrag'></th>
+														<th class='columnName'>name</th>
+														<th class='columnShape'>shape</th>
+														<th class='columnCC'>char color</th>
+														<th class='columnFC'>frame color</th>
+														<th class='columnBC'>back color</th>
+														<th class='columnRange'>region<div class='divStyleRangeWrapper'></div></th>
+														<th class='columnActive'>active</th>
+														<th class='columnDelete'>delete</th>
+													</tr>
+												</table>
+											</th>
+										</tr>
+									</thead>
+									<tfoot id="tblStylesFoot" class="ui-widget-header">
+										<tr>
+											<td style='width:100%; display:inline-block; padding:0'>
+												<button id="btnNewStyle" title="add a new style">add a new style</button>
+												<button id="btnClearStyles" title="remove all style definitions">remove all style definitions</button>
+											</td>
+										</tr>
+									</tfoot>
+									<tbody id="tblStylesBody"></tbody>
+								</table>
+							</div>
+						</div>
+						<div id="tabMisc" class="tab">
+							<table>
+								<tr>
+									<td style="text-align:right;"><label for="colMembrane">membrane color:</label></td>
+									<td><input id="colMembrane" class="colorPicker" type="text" /></td>
+								</tr>
+								<tr>
+									<td style="text-align:right;"><label for="colTMlabel">TM label color:</label></td>
+									<td><input id="colTMlabel" class="colorPicker" type="text" /></td>
+								</tr>
+								<tr>
+									<td style="text-align:right;"><label for="divTMlabelWrapper">TM label style:</label></td>
+									<td>
+										<div id="divTMlabelWrapper">
+											<input type="radio" id="selTMlabelNone" value="none" name="selTMlabel" /><label for="selTMlabelNone" title="do not label transmembrane regions">none</label>
+											<input type="radio" id="selTMlabelNumeric" value="numcount" name="selTMlabel" /><label for="selTMlabelNumeric" title="numeric transmembrane region labels">1,2,3,...</label>
+											<input type="radio" id="selTMlabelAlphaLower" value="alphacount" name="selTMlabel" /><label for="selTMlabelAlphaLower" title="alphabetical transmembrane region labels (lower case)">a,b,c,...</label>
+											<input type="radio" id="selTMlabelAlphaUpper" value="Alphacount" name="selTMlabel" /><label for="selTMlabelAlphaUpper" title="alphabetical transmembrane region labels (upper case)">A,B,C,...</label>
+											<input type="radio" id="selTMlabelRomanLower" value="romancount" name="selTMlabel" /><label for="selTMlabelRomanLower" title="roman transmembrane region labels (lower case)">i,ii,iii,...</label>
+											<input type="radio" id="selTMlabelRomanUpper" value="Romancount" name="selTMlabel" /><label for="selTMlabelRomanUpper" title="roman transmembrane region labels (upper case)">I,II,III,...</label>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td style="text-align:right;"><label for="lstProtease">protease:</label></td>
+									<td>
+										<select id="lstProtease" size="1" title="selecting a protease will indicate potential cleavage sites in the plot">
+											<option value="">(no protease)</option>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<td style="text-align:right;">additional options:</td>
+									<td id="miscOthers">
+										<input type="checkbox" id="bolNumbers" /><label for="bolNumbers" title="enable to add position labels at every 10th residue">label every 10<sup>th</sup> residue</label>
+										<input type="checkbox" id="bolLegend" /><label for="bolLegend" title="show a legend for the displayed styles next to the plot">show legend</label>
+									</td>
+								</tr>
+							</table>
+							
+						</div>
+					</div>
+					<div id="divImage" class="ui-widget ui-widget-content ui-corner-all">
+						<!-- add a divSvgScrollpane -->
+						<div id="divSvgContainer"></div>
+						<span id="status"></span>
+						<span id="svgControls">
+							<button id="btnReload" title="reload the image">refresh</button>
+							<button id="btnSave" title="export image">export</button>
+							<button id="btnMail" title="mail a permanent link to this Protter plot">email</button>
+							<!--<button id="btnBatch" title="generate Protter plots similar to this one for multiple proteins">batch</button>-->
+							
+							<button id="btnUniprot" title="open the UniProt page for this protein">open in UniProt</button>
+							<br />
+							<button id="btnZoomIn" title="zoom in">zoom in</button>
+							<button id="btnZoomOut" title="zoom out">zoom out</button>
+							<button id="btnFitToScreen" title="reset zoom (fit screen)">reset zoom (fit screen)</button>
+						</span>
+					</div>
+				</div> <!-- end #divContent -->
+			</div> <!-- end #divMain -->
+			
+			
+		</div> <!-- end #divContainer -->
+		
+		<div id="divUniprotDialog" title="Select a protein" style="display: none;">
+			<p>The search for <em id="lblSearched"></em> resulted in multiple hits.
+				<br />
+				Please select one of the following UniProt entries:
+				<br /><select id="lstResults"></select>
+			</p>
+		</div>
+		
+		<form id="dlgProteinIDs" title="sequence input" style="position:relative; display: none;">
+			<label for="txtProteinIDs">Please enter a list of UniProt accessions or UniProt names, one per line.
+			<br/><em>Optional: add a comma-separated list of peptides to each protein.</em></label>
+			<br/>
+			<div style="position:absolute; left:1em; top:3em; right:1.5em; bottom:1em;">
+				<textarea id="txtProteinIDs" required spellcheck="false" class="ui-widget-content ui-corner-all tabEnabled" cols="40" rows="15" style="position:absolute; width:100%; height:100%; line-height: 1.5em;" wrap="off"></textarea>
+			</div>
+		</form>
+		
+		<form id="dlgProteomics" title="sequence input" style="position:relative; display: none;">
+			<label for="inpProteomics">Please select one or more proteomics result files:</label>
+			<input id="inpProteomics" type="file" multiple required />
+			<p>
+			Supported proteomics files are:
+			<dl style="font-size: 0.8em;">
+				<dt>TPP ProtXLS (.prot.xls)</dt>
+					<dd>An exported and optionally filtered ProteinProphet file</dd>
+				<dt>TPP PepXLS (.pep.xls)</dt>
+					<dd>exported and optionally filtered PeptideProphet file</dd></dd>
+				<dt>Mascot (.csv)</dt>
+					<dd>exported and optionally filtered Mascot file</dd>
+				<dt>MaxQuant (evidence.txt)</dt>
+					<dd>Andromeda search result file</dd>
+				<dt>Skyline (.csv)</dt>
+					<dd>exported Skyline file using the "Protter" report</dd>
+			</dl>
+			Example files can be downloaded on the <a href="help" target="_target">help page</a>.
+			</p>
+		</form>
+		
+		<form id="dlgExportAll" title="export all proteins" style="position:relative; display: none;">
+			<p>
+				<label for="batchFormat">Select the format you want to generate the visualizations:</label>
+				<br/>
+				<select id="batchFormat">
+					<option value="batchPdf">one multi-page PDF</option>
+					<option value="batchZippdf">ZIP archive with individual PDFs</option>
+					<option value="batchZipsvg">ZIP archive with individual SVGs</option>
+					<option value="batchZippng">ZIP archive with individual PNGs</option>
+				</select>
+			</p>
+			<p>
+				<label for="email">Enter your email address:</label>
+				<br/>
+				<input type="email" name="email" id="email" spellcheck="false" size=35 required autocomplete="on" placeholder="name@example.com"  />
+				<br/>
+				<em style="font-size: 0.8em;">Batch processing can take several minutes and therefore results will be sent to you via email.</em>
+			</p>
+		</form>
+		
+		<div id="message" class="ui-widget ui-front" style="display: none; top: 1em; left: 25%; right: 25%; position: absolute;">
+			<div class="ui-state-highlight ui-corner-all" style="margin-top: 20px; padding: 0 .7em;">
+				<p>
+					<span id="messageIcon" class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+					<strong id="messageTitle">Hey!</strong>
+					<span id="messageBody">Sample message.</span>
+				</p>
+			</div>
+		</div>
+		
+		<div id="rangeMenu" style="display:none;">
+			<li><a href='#' class='rangeMenuItemSelectedRange' title='' style='display:none'>selected range</a></li>
+			<li><a href='#' class='rangeMenuItemProteomics' style='display:none'>Proteomics</a>
+				<ul>
+					<li><a href='#' title='EX.PEPTIDES'>peptides</a></li>
+					<li><a href='#' class='rangeMenuItemModifications'>modifications</a>
+						<ul>
+							<li><a href='#' title='EX.MODALL'>all modifications</a></li>
+							<li><a href='#' title='EX.MODMOX'>methionine oxidation</a></li>
+						</ul>
+					</li>
+				</ul>
+			</li>
+			<li><a href='#'>UniProt</a>
+				<ul>
+					<li><a href='#'>Molecule processing</a>
+						<ul>
+							<li><a href='#' title='UP.INIT_MET'>Initiator methionine</a></li>
+							<li><a href='#' title='UP.SIGNAL'>Signal</a></li>
+							<li><a href='#' title='UP.TRANSIT'>Transit peptide</a></li>
+							<li><a href='#' title='UP.PROPEP'>Propeptide</a></li>
+							<li><a href='#' title='UP.CHAIN'>Chain</a></li>
+							<li><a href='#' title='UP.PEPTIDE'>Peptide</a></li>
+						</ul>
+					</li>
+					<li><a href='#'>Regions</a>
+						<ul>
+							<li><a href='#' title='UP.TOPO_DOM'>Topological domain</a></li>
+							<li><a href='#' title='UP.TRANSMEM'>Transmembrane</a></li>
+							<li><a href='#' title='UP.INTRAMEM'>Intramembrane</a></li>
+							<li><a href='#' title='UP.DOMAIN'>Domain</a></li>
+							<li><a href='#' title='UP.REPEAT'>Repeat</a></li>
+							<li><a href='#' title='UP.CA_BIND'>Calcium binding</a></li>
+							<li><a href='#' title='UP.ZN_FING'>Zinc finger</a></li>
+							<li><a href='#' title='UP.DNA_BIND'>DNA binding</a></li>
+							<li><a href='#' title='UP.NP_BIND'>Nucleotide binding</a></li>
+							<li><a href='#' title='UP.REGION'>Region</a></li>
+							<li><a href='#' title='UP.COILED'>Coiled coil</a></li>
+							<li><a href='#' title='UP.MOTIF'>Motif</a></li>
+							<li><a href='#' title='UP.COMPBIAS'>Compositional bias</a></li>
+						</ul>
+					</li>
+					<li><a href='#'>Sites</a>
+						<ul>
+							<li><a href='#' title='UP.ACT_SITE'>Active site</a></li>
+							<li><a href='#' title='UP.METAL'>Metal binding</a></li>
+							<li><a href='#' title='UP.BINDING'>Binding site</a></li>
+							<li><a href='#' title='UP.SITE'>Site</a></li>
+						</ul>
+					</li>
+					<li><a href='#'>Amino acid mod.</a>
+						<ul>
+							<li><a href='#' title='UP.NON_STD'>Non-standard residue</a></li>
+							<li><a href='#' title='UP.MOD_RES'>Modified residue</a></li>
+							<li><a href='#' title='UP.LIPID'>Lipidation</a></li>
+							<li><a href='#' title='UP.DISULFID'>Disulfide bond</a></li>
+							<li><a href='#' title='UP.CROSSLNK'>Cross-link</a></li>
+							<li><a href='#' title='UP.CARBOHYD'>Glycosylation</a>
+								<ul>
+									<li><a href='#' title='UP.CARBOHYD'>all</a></li>
+									<li><a href='#' title='UP.CARBOHYD.NITROGEN'>N-linked</a></li>
+									<li><a href='#' title='UP.CARBOHYD.OXYGEN'>O-linked</a></li>
+									<li><a href='#' title='UP.CARBOHYD.SULFUR'>S-linked</a></li>
+									<li><a href='#' title='UP.CARBOHYD.CARBON'>C-linked</a></li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+					<li><a href='#'>Natural variations</a>
+						<ul>
+							<li><a href='#' title='UP.VAR_SEQ'>Alternative sequence</a></li>
+							<li><a href='#' title='UP.VARIANT'>Natural variant</a></li>
+						</ul>
+					</li>
+					<li><a href='#'>Experimental info</a>
+						<ul>
+							<li><a href='#' title='UP.MUTAGEN'>Mutagenesis</a></li>
+							<li><a href='#' title='UP.UNSURE'>Sequence uncertainty</a></li>
+							<li><a href='#' title='UP.CONFLICT'>Sequence conflict</a></li>
+							<li><a href='#' title='UP.NON_CONS'>Non-adjacent residues</a></li>
+							<li><a href='#' title='UP.NON_TER'>Non-terminal residue</a></li>
+						</ul>
+					</li>
+					<li><a href='#'>Secondary structure</a>
+						<ul>
+							<li><a href='#' title='UP.HELIX'>Helix</a></li>
+							<li><a href='#' title='UP.TURN'>Turn</a></li>
+							<li><a href='#' title='UP.STRAND'>Beta strand</a></li>
+						</ul>
+					</li>
+				</ul>
+			</li>
+			<li><a href='#'>Phobius</a>
+				<ul>
+					<li><a href='#' title='Phobius.TM'>transmembrane</a></li>
+					<li><a href='#' title='Phobius.NC'>non cytoplasmic loop</a></li>
+					<li><a href='#' title='Phobius.C'>cytoplasmic loop</a></li>
+					<li><a href='#' title='Phobius.SP'>signal peptide</a></li>
+				</ul>
+			</li>
+			<li><a href='#'>PeptideAtlas</a>
+				<ul>
+					<li><a href='#' title='pa.human'>Human</a></li>
+					<li><a href='#' title='pa.human.brain'>Human brain</a></li>
+					<li><a href='#' title='pa.human.plasma'>Human plasma</a></li>
+					<li><a href='#' title='pa.human.urine'>Human urine</a></li>
+					<li><a href='#' title='pa.human.glyco.synth'>Human Glyco Synthetic Peptides</a></li>
+					<li><a href='#' title='pa.human.others'>Human others</a></li>
+					<li><a href='#' title='pa.mouse'>Mouse</a></li><br/>
+					<li><a href='#' title='pa.mouse.plasma'>Mouse plasma</a></li>
+					<li><a href='#' title='pa.mouse.glyco.synth'>Mouse Glyco Synthetic Peptides</a></li>
+					<li><a href='#' title='pa.drosophila'>Drosophila</a></li>
+					<li><a href='#' title='pa.yeast'>Yeast</a></li>
+					<li><a href='#' title='pa.yeast.mrm'>Yeast MRM</a></li>
+					<li><a href='#' title='pa.fission.yeast'>Fission Yeast</a></li>
+					<li><a href='#' title='pa.honeybee'>Honeybee</a></li>
+					<li><a href='#' title='pa.cow'>Cow</a></li>
+					<li><a href='#' title='pa.celegans'>C Elegans</a></li>
+					<li><a href='#' title='pa.celegans.phospho'>C Elegans phospho</a></li>
+					<li><a href='#' title='pa.halobacterium'>Halobacterium</a></li>
+					<li><a href='#' title='pa.leptospira'>Leptospira interrogans</a></li>
+					<li><a href='#' title='pa.mtuberculosis'>M tuberculosis</a></li>
+					<li><a href='#' title='pa.mtuberculosis.synth'>M tuberculosis Synthetic Peptides</a></li>
+					<li><a href='#' title='pa.pig'>Pig</a></li>
+					<li><a href='#' title='pa.streptococcus'>Streptococcus</a></li>
+				</ul>
+			</li>
+			<li><a href='#'>Motifs</a>
+				<ul>
+					<li><a href='#' title='[KR]'>[KR]</a></li>
+					<li><a href='#' title='(N).[ST]'>(N).[ST]</a></li>
+				</ul>
+			</li>
+			<li><a href='#'>More</a>
+				<ul>
+					<li><a href='#' title='hpa.antigen'>Human Protein Atlas - PrEST antigens</a></li>
+				</ul>
+			</li>
+		</div>
+	</body>
+</html>

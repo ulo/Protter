@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry exported="true" kind="lib" path="lib/log4j-1.2.15.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-css.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-dom.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-gvt.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-svg-dom.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-svggen.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-transcoder.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-util.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-xml.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/xml-apis-ext.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-anim.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-awt-util.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-bridge.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-ext.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-codec.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-parser.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-script.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/aopalliance.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/commons-codec.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/commons-httpclient.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/commons-logging.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/log4j.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring.aop.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring.beans.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring.context.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring.core.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring.web.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/uniprotjapi.jar"/>
+	<classpathentry kind="lib" path="lib/batik/pdf-transcoder.jar"/>
+	<classpathentry kind="lib" path="lib/batik/pdfbox-1.8.0.jar"/>
+	<classpathentry kind="lib" path="lib/javax.mail-1.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/guava-11.0.1.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

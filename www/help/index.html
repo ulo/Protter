@@ -1,0 +1,825 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>Protter - interactive protein feature visualization: Help &amp; Documentation</title>
+		<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAAMFBMVEXdagThbwjfbgjfbAbdbgTgbgjdbgDgbwjdbgTaawjgbAjdbgjgbgjdZgAAAADhcAkgJX4NAAAAD3RSTlMml1hNOGUWgy+3Qh5zDwAqOFXAAAABRklEQVR42u3aOY4FIQwE0N8bmzG+/21/6MQtTYJrRlOVNhJPBNgy/VngEEAAAQQQQAABBPwJgP0gdc5nDFEUwDNHAQE8R0MBnPABATwPGmBHAQOsFzDAuoIBVtEAG2iAKRpwbgP4xyLtqq8C3Qrw6GVx7t0AJ8SnULcDPGcoSASs8Aw+iQDt0VWQCFgjqoqZAI0apEzAeoKKlAq4g5WpAEEDFgG/ENBTAYq+BwQKiO/iKxVQg44EXQskE3BFC8H9wMwEPJCm1NMgbbmnxFOCNEDpEUDSALdFmSsJINPCSA6gzdc50W6AShvT3tLRIxoBA9rCAtrCAtqCAjp4VFvLQgL6wI7rT10YgG+PA1TvP/IBx9kU82h1zHkNyX41gz/bEUAAAQQQQAABBBBAAAEEEEAAAQQQ8M9+7SaAAAIIIIAAAgggYGu+/4uJWVd9ixQAAAAASUVORK5CYII=" />
+		<link rel="stylesheet" media="screen" type="text/css" href="../lib/jquery.ui/jquery-ui-1.10.3.custom.css">
+		<script type="text/javascript" src="../lib/jquery/jquery-1.9.1.min.js"></script>
+		<script type="text/javascript" src="../lib/jquery.ui/jquery-ui-1.10.3.custom.min.js"></script>
+		<style>
+			body {font-family: Lucida Grande,Lucida Sans,Arial,sans-serif; font-size: 0.8em; max-width:800px; margin: 0 auto 1em auto; box-shadow:0px 0px 10px #666; padding: 0em 3em 1em 3em;}
+			p {margin: 0.5em 0;}
+			h1 {color: #E17009; font-size: 3em; font-variant: small-caps; letter-spacing: -0.1em; margin:0; padding:0.5em 0;}
+			h2 {border-bottom: 1px solid black;}
+			h4 {margin: 0.5em 0;}
+			samp, code {font-size: 1.2em; white-space:nowrap}
+		</style>
+		<script>
+			$(function() {
+				$("#accordion").accordion({ header: "h2", collapsible: true, active: false, heightStyle: "content", navigation: true });
+				$("#fourSteps").accordion({ header: "h3", collapsible: true, active: false, heightStyle: "content", navigation: true });
+				$("#proteinLists").accordion({ header: "h3", collapsible: true, active: false, heightStyle: "content", navigation: true });
+			});
+		</script>
+	</head>
+	<body>
+		<img style="float:right; margin:1em 0 0 1em" src="protter_bst2.png" />
+		<h1>Protter</h1>
+		<p>Welcome to the user manual of Protter - a webservice and webapplication to visualize the sequence, topology and annotations of individual proteins.</p>
+		<p>You can access the interactive webclient at <a href="http://wlab.ethz.ch/protter" target="_blank">http://wlab.ethz.ch/protter</a> to create protein plots.</p>
+		<p>Alternatively you can programmatically use the webservice at <a href="http://wlab.ethz.ch/protter/create" target="_blank">http://wlab.ethz.ch/protter/create</a> using a set of defined parameters.</p>
+		<p>You can also download a pdf-version of this user manual <a href="ProtterUserManual.pdf">here</a>.</p>
+		
+		<br/>
+		<p>
+			If you encounter any error or bug, or have suggestions on how to improve Protter, please do not hesitate to contact me:
+			<div style="float: right;">
+				<div style="float: right;">imsb.biol.ethz.ch</div>
+				<div style="float: right;">@</div>
+				<div style="float: right;">protter</div>
+			</div>
+		</p>
+		<br />
+		
+		<p style="clear: both">More documentation on:</p>
+		<div id="accordion">
+		
+			<h2><a href="#webapp">Web Application</a></h2>
+			<div>
+				Using the Protter web application you can easily create high-quality protein topology plots with computed, 
+				curated and custom protein features annotated in a highly interactive way.
+				<p>
+					This is how the web interface looks like:
+					<img src="webapp.png" style="margin:1em; display:block; width:60%;" />
+					In the upper region, there are four tabs to specify various settings.
+					While in the lower region, there is the actual protein visualization.
+					Whenever you change a parameter, the visualization will automatically refresh 
+					and show your changes instantaneously.
+				</p>
+				Typically, you will go through the following steps as indicated at the top of the screen:
+				<img src="webapp_tabs.png" style="margin:1em; display:block" />
+				<ol id="fourSteps">
+					<li><h3>Protein</h3>
+						<div>
+						<img src="webapp_sequence_1.png" style="margin:1em; display:block; width:100%;" />
+						<p>You start at the <em>"protein"</em> settings where you specify the protein that you want to visulaize. 
+							Just enter the UniProt protein identifier of your protein.
+							You can also provide gene names and Protter will ask you back in case that this gene name is 
+							ambiguous within UniProt. 
+						</p>
+						<ul>
+						<li>
+							Click <span class="ui-icon ui-icon-check" style="display:inline-block"></span>&nbsp;<em>submit</em> to set the identifier and create a first visualization.
+						</li>
+						<li>
+							The <span class="ui-icon ui-icon-lightbulb" style="display:inline-block"></span>&nbsp;<em>load example</em> button will enter the identifier <em>BST2_HUMAN</em> for you.
+						</li>
+						<li>
+							The <span class="ui-icon ui-icon-document" style="display:inline-block"></span>&nbsp;<em>enter a list of proteins</em> 
+							and the <span class="ui-icon ui-icon-folder-open" style="display:inline-block"></span>&nbsp;<em>load a proteomics results file</em> button allow you to specify multiple proteins for batch visualization. See the help section <em>"Web Application - Batch Processing"</em> for details.
+						</li>
+						</ul>
+						
+						<p>In case you want to visualize an arbitrary amino acid sequence, simply switch to <em>"by sequence"</em>
+							and enter your sequence in the textbox:
+						</p> 
+						<img src="webapp_sequence_2.png" style="margin:1em; display:block; width:100%;" />
+						<ul>
+						<li>
+							Click <span class="ui-icon ui-icon-check" style="display:inline-block"></span>&nbsp;<em>submit</em> to set the sequence and create a first visualization.
+						</li>
+						<li>
+							The <span class="ui-icon ui-icon-lightbulb" style="display:inline-block"></span>&nbsp;<em>load example</em> button will enter an exemplary amino acid sequence for you.
+						</li>
+						<li>
+							The <span class="ui-icon ui-icon-folder-open" style="display:inline-block"></span>&nbsp;<em>load FASTA file</em> button allows you to load a protein sequence file in FASTA format. See the help section <em>"Web Application - Batch Processing"</em> for details.
+						</li>
+						</ul>
+						</div>
+					</li>
+					<li><h3>Topology</h3>
+						<div>
+						<img src="webapp_topology.png" style="margin:1em; display:block; width:100%;" />
+						<p>
+							Specification of the protein's sequence has generated a first visualization using default parameters.
+							In the <em>"topology"</em> settings, you can fine tune the protein's topology.
+						</p>
+						<p>A protein's transmembrane topology consists of: N-terminus location, transmembrane regions and, optional, membrane anchors:
+						</p> 
+						<p>
+							In the first panel, you can switch between <em>"no membrane"</em>, <em>"automatic"</em> (default) and <em>"custom"</em>.
+							<ul>
+								<li><em>"no membrane"</em> will completely hide the membranes, which is useful for non-membrane proteins.
+								</li>
+								<li><em>"automatic"</em> will come up with a transmembrane topology depending on your input sequence:
+								for UniProt identifiers it will use the annotated topology, and for amino acid sequences it 
+								will use a transmembrane topology predicted by Phobius.
+								</li>
+								<li><em>"custom"</em> allows you to specify all the details yourself:
+									<ul>
+										<li><em>"N-terminus location"</em>
+											&mdash; sets the N-terminus be located outside, inside or as annotated by UniProt or as predicted by Phobius.
+										</li>
+										<li><em>"transmembrane regions"</em>
+											&mdash; set the transmembrane regions by adding an arbitrary number of regions, see also <a href="#regions">Definition of the regions</a>.
+											You can interactively select from a pre-selected set of annotated regions by clicking <span class="ui-icon ui-icon-plus" style="display:inline-block"></span>&nbsp;in the textfield. 
+										</li>
+										<li><em>"membrane anchors"</em>
+											&mdash; set the membrane anchor regions by adding an arbitrary number of regions, see also <a href="#regions">Definition of the regions</a>.
+											You can interactively select from a pre-selected set of annotated regions by clicking <span class="ui-icon ui-icon-plus" style="display:inline-block"></span>&nbsp;in the textfield. 
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</p>
+						</div>
+					</li>
+					<li><h3>Styles</h3>
+						<div>
+						<img src="webapp_styles.png" style="margin:1em; display:block; width:100%;" />
+						<p>
+							In Protter, Styles are used to highlight certain regions of the protein sequence by varying four parameters: 
+							<ol>
+								<li>the color of the amino acid letter</li>
+								<li>the shape of the amino acid symbol</li>
+								<li>the symbol’s frame color</li>
+								<li>the symbol’s background color</li>
+							</ol>
+						</p>
+						<p>
+							The <em>"styles"</em> settings shows a table of all currently specified styles. Each row represents a style and has 8 columns:
+							<ul>
+								<li><em>"name"</em> [optional]
+									&mdash; represents an arbitrary name for the style. This name will also be used for the legend.
+								</li>
+								<li><em>"shape"</em>
+									&mdash; set the shape of the amino acid symbol. Use the <span class="ui-icon ui-icon-cancel" style="display:inline-block"></span>&nbsp;button to not set a shape for this style. 
+								</li>
+								<li><em>"char color"</em>
+									&mdash; set the color of the amino acid letter. Click on the color-square to open up a color selection window:
+									<img src="webapp_colorpad.png" style="display:block; margin-left: auto; margin-right: auto" />
+									Click on the desired color or choose the <span class="ui-icon ui-icon-cancel" style="display:inline-block"></span>&nbsp;<em>no change</em> option to not set a char color for this style.
+								</li>
+								<li><em>"frame color"</em>
+									&mdash; set the frame color of the amino acid symbol.
+								</li>
+								<li><em>"back color"</em>
+									&mdash; set the background color of the amino acid symbol.
+								</li>
+								<li><em>"region"</em>
+									&mdash; in this textfield enter one or more <em>regions</em> of your protein that this style should be applied to. 
+									Multiple regions can be separated by new lines or by commas.
+									<br/>
+									A <em>region</em> can be: 
+									<ul>
+										<li>a single position, e.g.: <samp>5</samp></li>
+										<li>a range of positions, e.g.: <samp>123-144</samp></li>
+										<li>a plain sequence, e.g.: <samp>ELVISISALIVE</samp></li>
+										<li>a <a href="http://en.wikipedia.org/wiki/Regular_expression" target="_blank">regular expression</a> matching parts of the sequence. If there is a regexp-group specified, only the group of the match will be part of the region, e.g.: <samp>(N).[ST]</samp></li>
+										<li>an annotated region. You can interactively select from all available annotated regions by clicking <span class="ui-icon ui-icon-plus" style="display:inline-block"></span>&nbsp;in the lower-right part of the textfield:
+											<img src="webapp_features.png" style="margin:1em; display:block; width:100%;" /> 
+										</li>
+									</ul>
+								</li>
+								<li><em>"active"</em>
+									&mdash; unselect this toggle-button to exclude this style from visualization but still keep it in the style table.
+								</li>
+								<li><em>"delete"</em>
+									&mdash; click to remove this style from the visualization and the style table.
+								</li>
+							</ul>
+							<p>
+								If highlighted regions (partly) overlap, styles defined further down will override styles defined further up. 
+								You can drag-and-drop the rows in the table using the double-arrow <span class="ui-icon ui-icon-triangle-2-n-s" style="display:inline-block"></span>&nbsp;on the very beginning of each row to reorder the priority of your styles.
+							</p>
+							<p>
+								Click <span class="ui-icon ui-icon-plus" style="display:inline-block"></span>&nbsp;at the end of the style table to add a new empty style.
+							</p>
+							<p>
+								Click <span class="ui-icon ui-icon-trash" style="display:inline-block"></span>&nbsp;at the end of the style table to remove all styles at once.
+							</p>
+						</p>
+						</div>
+					</li>
+					<li><h3>Miscellaneous</h3>
+						<div>
+						<img src="webapp_misc.png" style="margin:1em; display:block; width:100%;" />
+						<p>
+							In the <em>"misc."</em> settings you can modify details of the protein visualization.
+							<ul>
+								<li><em>membrane color</em>
+									&mdash; set the fill color of the membrane.
+								</li>
+								<li><em>TM label color</em>
+									&mdash; set the color of the transmembrane-domain labels.
+								</li>
+								<li><em>TM label style</em>
+									&mdash; set the style of the transmembrane-domain labels. Select <em>none</em> to not show labels for the transmembrane-domains.
+								</li>
+								<li><em>protease</em>
+									&mdash; select a protease to display protease specific cleavage sites as dashed lines in your visualization.
+								</li>
+								<li><em>label every 10th residue</em>
+									&mdash; add small position labels to your protein sequence visualization.
+								</li>
+								<li><em>show legend</em>
+									&mdash; add a legend summarizing all the styles used.
+								</li>
+							</ul>
+						</p>
+						</div>
+					</li>
+				</ol>
+				
+				<h3>Visualization</h3>
+				Move the mouse cursor on any amino acid to show its poisition within the protein and the styles applied to this position.
+				To interactively select a range, click the amino acid at the beginning of the desired range and subsequently click the amino acid at the end of the desired selection. 
+				After selection the range will be available in the annotation dropdown menu for styling regions.
+				<img src="webapp_selection.png" style="margin:1em; display:block;" />
+				
+				<h3>Visualization settings</h3>
+				In the lower region of the web application, next to the protein visualization, there are some settings to adjust the visualization itself:
+				<img src="webapp_vis.png" style="margin:1em; display:block;" />
+				<div><span class="ui-icon ui-icon-zoomin" style="float:left"></span>&nbsp;zoom in to the protein</div>
+				<div><span class="ui-icon ui-icon-zoomout" style="float:left"></span>&nbsp;zoom out of the protein</div>
+				<div><span class="ui-icon ui-icon-arrow-4-diag" style="float:left"></span>&nbsp;set zoom to fit whole protein</div>
+				<div><span class="ui-icon ui-icon-refresh" style="float:left"></span>&nbsp;refresh the protein visualization</div>
+				<div><span class="ui-icon ui-icon-disk" style="float:left"></span>&nbsp;download protein visualization as PDF, SVG, or PNG file</div>
+				<div><span class="ui-icon ui-icon-mail-closed" style="float:left"></span>&nbsp;send a link to the current Protter visualization via email</div>
+				<div><span class="ui-icon ui-icon-newwin" style="float:left"></span>&nbsp;open currently visualized protein in UniProt (for proteins entered "by accession")
+					 or BLAST currently visualized protein in UniProt (for proteins entered "by sequence").</div>
+			</div>
+			
+			<h2><a href="#batch">Web Application - Batch Processing</a></h2>
+			<div>
+				<p>
+					On top of visualizing your protein of interest you can also load a list of proteins, browse through the visualizations, 
+					and download a combined visualization of all proteins as one PDF document or as ZIP archive of separate files. 
+					This is particularly useful to visualize results of mass-spectrometry based proteomics studies.
+				</p>
+				
+				<h3>Loading Proteins and Peptides</h3>
+				There are different ways of loading a list of proteins in Protter:
+				<ul id="proteinLists">
+					<li>
+						<h3>Specify multiple protein sequences in FASTA format</h3>
+						<div>
+							<img src="webapp_batch_fasta.png" style="margin:1em; display:block; width:100%;" />
+							You can enter multiple sequences in FASTA format directly into the textfield and click <span class="ui-icon ui-icon-check" style="display:inline-block"></span>&nbsp;<em>submit</em>, 
+							or load a FASTA file from your computer using the <span class="ui-icon ui-icon-folder-open" style="display:inline-block"></span>&nbsp;<em>load a FASTA file</em> button.
+						</div>
+					</li>
+					
+					<li>
+						<h3>Load a list of protein identifiers</h3>
+						<div>
+							<img src="webapp_batch_ids_1.png" style="margin:1em; display:block; width:100%;" />
+							A click on <span class="ui-icon ui-icon-document" style="display:inline-block"></span>&nbsp;<em>enter a list of proteins</em> will open up the following dialog:
+							<img src="webapp_batch_ids_2.png" style="margin:1em; display:block;" />
+							Here you can enter a list of protein accessions, one per line. 
+							Optionally, you can also specify a list of peptides per protein: add a space or tab after the protein accession and then a comma-separated list of peptide sequences.
+							Click <em>submit</em> when you are done to start loading the proteins.
+						</div>
+					</li>
+					
+					<li>
+						<h3>Load a proteomics result file</h3>
+						<div>
+							Protter can analyze proteomics result files and extract protein names, peptides and PTM identifications:
+							<img src="webapp_batch_proteomics_1.png" style="margin:1em; display:block; width:100%;" />
+							A click on <span class="ui-icon ui-icon-folder-open" style="display:inline-block"></span>&nbsp;<em>load a proteomics result file</em> will open up the following dialog:
+							<img src="webapp_batch_proteomics_2.png" style="margin:1em; display:block;" />
+							Here you can select one or more proteomic result files.
+							Currently supported files are:
+							<ul>
+								<li><p><em>"TPP ProtXLS"</em> &mdash; 
+									First, in the ProteinProphet web-interface, filter the list of proteins as desired (e.g. by probability).
+									Then export the results as Excel file:
+									<img src="webapp_batch_proteinprophet.png" style="margin:1em; display:block; width:100%;" />
+									Download the exported file to your disk (<a href="batch_prot.xls" target="_blank">example file</a>).
+								</p></li>
+								<li><p><em>"TPP PepXLS"</em> &mdash; 
+									First, in the PeptideProphet web-interface, filter the list of peptides as desired (e.g. by probability).
+									Then export the results as Excel file:
+									<img src="webapp_batch_peptideprophet.png" style="margin:1em; display:block; width:100%;" />
+									Download the exported file to your disk (<a href="batch_pep.xls" target="_blank">example file</a>).
+								</p></li>
+								<li><p><em>"Mascot"</em> &mdash; 
+									First, in the Mascot web-interface, select "export as CSV":
+									<img src="webapp_batch_mascot.png" style="margin:1em; display:block; width:100%;" />
+									Then you can filter the peptides and proteins (e.g. by ionscore) and export to a CSV file.
+									Download the exported file to your disk (<a href="batch_mascot.csv" target="_blank">example file</a>).
+								</p></li>
+								<li><p><em>"MaxQuant"</em> &mdash;
+									Locate the "evidence.txt" file of your MaxQuant analysis and optionally prefilter it (e.g. by PEP) using e.g. Microsoft Excel.
+									<img src="webapp_batch_maxquant.png" style="margin:1em; display:block;" />
+								</p></li>
+								<li><p><em>"Skyline"</em> &mdash;
+									After installing the Protter Skyline plug-in (<a href="http://wlab.ethz.ch/protter/ProtterSkylinePlugin.zip">download</a>), 
+									you will find a <em>Protter</em> report under <em>File &gt; Export &gt; Report...</em>:
+									<img src="webapp_batch_skyline.png" style="margin:1em; display:block;" />
+									Select <em>Protter</em> and click <em>Export</em> to generate a suitable .csv file.
+								</p></li>
+							</ul>
+							
+							<br/>
+							Click <em>submit</em> when you are done to start loading the proteins.
+						</div>
+					</li>
+					<li>
+						<h3>Protter Skyline plug-in</h3>
+						<div>
+							Make sure you installed the Protter Skyline plug-in (<a href="http://wlab.ethz.ch/protter/ProtterSkylinePlugin.zip">download</a>; <a href="ProtterSkylinePlugin_instructions.pdf">installation instructions</a>).
+							<br/>
+							From your Skyline document select <em>Tools &gt; Protter</em> to directly open up Protter with all your proteins and peptides:
+							<img src="webapp_batch_skylinePlugin.png" style="margin:1em; display:block" />
+						</div>
+					</li>
+				</ul>
+				
+				
+				<h3>Browsing Proteins and Peptides</h3>
+				After having loaded a FASTA file, a list of protein IDs or a proteomic result file, Protter will insert a protein/peptide browser panel on the 
+				left side with a tree-like view of all proteins and peptides (optional):
+				<img src="webapp_proteinList.png" style="margin:1em; display:block; width:100%;" />
+				<p>
+					By clicking a protein, Protter will immediately load the selected protein in the visualization pane.
+					Additionally, if specified, the list of peptides of this protein will be shown.
+				<!--<img src="webapp_proteinList_expand.png" style="margin:1em; display:block;" />-->
+				</p>
+				<p>
+					Clicking a peptide sequence will select (see <a href="#">Visualization</a> section) the corresponding region on the amino acid sequence in the protein visualization:
+				</p>
+				<img src="webapp_proteinList_peptide.png" style="margin:1em; display:block; width:100%;" />
+				
+				<p>
+					Click <span class="ui-icon ui-icon-close" style="display:inline-block"></span>&nbsp;<em>reset</em> to unload all proteins/peptides and reset Protter to start over again.
+				</p>
+				
+				<p>
+					Click <span class="ui-icon ui-icon-disk" style="display:inline-block"></span>&nbsp;<em>export all...</em> to open up the <em>export all proteins</em> dialog:
+				</p>
+				
+				
+				<h3>Exporting visualizations for all proteins</h3>
+				Click <span class="ui-icon ui-icon-disk" style="display:inline-block"></span>&nbsp;<em>export all...</em> at the bottom of the protein table to open up the <em>export all proteins</em> dialog:
+				<img src="webapp_proteinList_export.png" style="margin:1em; display:block; width:100%;" />
+				The protein visualizations can be exported to:
+				<ul>
+					<li>one multi-page PDF <em>(protein accession as page title)</em></li>
+					<li>ZIP archive with individual PDFs <em>(files named by accession)</em></li>
+					<li>ZIP archive with individual SVGs <em>(files named by accession)</em></li>
+					<li>ZIP archive with individual PNGs <em>(files named by accession)</em></li>
+				</ul>
+				The process of batch export can take some minutes depending on the number of proteins.
+				You will be notified by email when the results are ready for download.
+				
+				<p>
+					<em>Note:</em> the public Protter server is currently limited to 100 proteins in batch export.
+					To generate visualizations of bigger protein lists you can download and setup your own local Protter server. 
+					See <a href="#">Installation &amp; Requirements of the Server software</a> section below.
+				</p>
+			</div>
+			
+			<h2><a href="#parameters">Parameters for API access</a></h2>
+			<div>
+				<p>All parameters have to be separated by a &amp;
+				<br/>e.g.: <samp>create?param1&amp;param2&amp;param3&amp;...</samp></p>
+				
+				<dl>
+					<dt><var>seq | up</var></dt>
+					<dd>
+						<p>To specify a sequence you can either enter the sequence itself via the <var>seq</var> parameter
+						<br/>e.g.: <samp>seq=ELVISISALIVE</samp></p>
+						<p>or a Uniprot Name or Accession by the <var>up</var> parameter.
+						<br/>e.g.: <samp>up=CD44_HUMAN</samp></p>
+						<p>Note: only one of both should be set.</p>
+					</dd>
+					<dt><var>tm</var></dt>
+					<dd>
+						<p><var>tm</var> is used to set the transmembrane regions. This parameter is <em>optional</em> and will result in a visualization without a membrane if omitted.
+						<br/>e.g.: <samp>tm=phobius.tm</samp>
+						<br/>Note: if <samp>tm=auto</samp> transmembrane topology will be automatically determined, which is equivalent to <samp>nterm=UP.NTERM&amp;tm=UP.TRANSMEM&amp;anchor=UP.LIPID</samp> for a UniProt identifier 
+						and <samp>nterm=PHOBIUS.NTERM&amp;tm=PHOBIUS.TM</samp> for any other given sequence.
+						</p>
+					</dd>
+					<dt><var>nterm</var></dt>
+					<dd>
+						<p><var>nterm</var> specifies the location of the protein's N-terminus. It can be <samp>intra | extra | up.nterm | phobius.nterm</samp>. 
+						This parameter is <em>optional</em> and will result in a visualization without a membrane if omitted.
+						<br/>e.g.: <samp>nterm=intra</samp></p>
+					</dd>
+					<dt><var>anchor</var></dt>
+					<dd>
+						<p><var>anchor</var> specifies regions of membrane anchors which will be considered in the visualition of the protein's topology.
+						<br/>e.g.: <samp>anchor=UP.LIPID</samp></p>
+					</dd>
+					<dt><var>format</var></dt>
+					<dd>
+						<p>specifies the requested image format. Currently supported formats are <samp>svg | png | pdf</samp>.
+						<br/>e.g.: <samp>format=svg</samp></p>
+					</dd>
+					<dt><var>mc</var></dt>
+					<dd>
+						<p><var>mc</var> sets the membrane color.
+						<br/>e.g.: <samp>mc=lightsalmon</samp></p>
+					</dd>
+					<dt><var>lc</var></dt>
+					<dd>
+						<p><var>lc</var>sets the transmembrane label color.
+						<br/>e.g.: <samp>lc=blue</samp></p>
+					</dd>
+					<dt><var>tml</var></dt>
+					<dd>
+						<p><var>tml</var> sets the transmembrane label style and can be either <samp>none | numcount | alphacount | Alphacount | romancount | Romancount</samp>.
+						<br/>e.g.: <samp>tml=Alphacount</samp>
+						<br/>Note: the value is case sensitive!</p>
+					</dd>
+					<dt><var>cutAt</var></dt>
+					<dd>
+						<p>specifies the positions where potential enzymatic cleavage should be indicated. This parameter is usually used with a peptidecutter-region.
+						<br/>e.g.: <samp>cutAt=peptidecutter.Tryps</samp></p>
+					</dd>
+					<dt><var>lblin</var> | <var>lblout</var></dt>
+					<dd>
+						<p>override the default labels at the membrane (<var>intra</var> &amp; <var>extra</var>).
+						<br/>e.g.: <samp>lblin=Nuclear&amp;lblout=Perinuclear%20space</samp></p>
+					</dd>
+					<dt><var>numbers</var></dt>
+					<dd>
+						<p>add this parameter to get number-labels at every 10<sup>th</sup> residue.
+						<br/>e.g.: <samp>numbers</samp>
+						<br/>Note: this parameter does not need a value.</p> 
+					</dd>
+					<dt><var>title</var></dt>
+					<dd>
+						<p>adds a centered title to the top of the protein plot.
+						<br/>e.g.: <samp>title=MyProtein</samp></p> 
+					</dd>
+					<dt><var>legend</var></dt>
+					<dd>
+						<p>add this parameter to include a legend of all defined styles right next to the protein plot
+						<br/>e.g.: <samp>legend</samp>
+						<br/>Note: this parameter does not need a value.</p> 
+					</dd>
+				</dl>
+				
+				<a name="styles"><h3>Definition of the styles</h3></a>
+				<p>A <var>style</var> is defined and applied to a collection of regions as a single parameter:
+				<br/>e.g.: <samp>style=regionA[,regionB,...]</samp>
+				<br/>Numerous styles may be displayed by treating them as indiviual parameters (i.e. seperated by a &amp;).
+				</p>
+				
+				<p>A <var>style</var> is made up of one or more comma separated style-parameters: <samp>p1:v1[,p2:v2,...]</samp>
+				</br>Later style definitions will override previous ones and if a style-parameter is omitted the value of the previous style will be used.
+				<br/>Following style-parameters are available:
+				<ul>
+				<li><strong>s</strong> defines the shape. The value has to be one of <samp>circ | box | diamond</samp>.</li>
+				<li><strong>fc</strong> defines the frame color of the shape</li>
+				<li><strong>cc</strong> defines the character color</li>
+				<li><strong>bc</strong> defines the background color of the shape</li>
+				<li><strong>name</strong> defines the style's name</li>
+				<li><strong>inactive</strong> as a tag inactivates the style so it will not be plotted</li>
+				</ul>
+				e.g.: <samp>s:circle,fc:black,cc:black,bc:white</samp>
+				<br/>Note: All color names have to be standard SVG colors!
+				</p>
+				
+				<a name="regions"><h3>Definition of the regions</h3></a>
+				<p><var>Regions</var> are a collection of one or more individual regions. The individual regions are to be seperated by commas.
+				<br/>e.g.: <samp>regionA[,regionB,...]</samp></p>
+				<p>An individual <var>region</var> can be either:
+				<ul>
+				<li>a single position, e.g.: <samp>5</samp></li>
+				<li>a range of positions, e.g.: <samp>123-144</samp></li>
+				<li>a Uniprot feature, e.g.: <samp>UP.SIGNAL</samp></li>
+				<li>a Phobius feature, e.g.: <samp>PHOBIUS.TM</samp>
+				<li>a cleavage site from PeptideCutter, e.g.: <samp>PEPTIDECUTTER.Tryps</samp>
+				<li>a plain sequence, e.g.: <samp>ELVISISALIVE</samp>
+				<li>a regular expression matching parts of the sequence. If there is a regexp-group specified, only the group of the match will be part of the region, e.g.: <samp>(N).[ST]</samp>
+				</ul></p>
+				
+				<h4>Phobius predicitons</h4>
+				<p>When specifying a Phobius region, the protein sequence will be sent to a Phobius server for topology prediction. The URL of the Phobius server can be set in the configuration file.
+				Following Phobius prediction annotations are supported:
+				<ul>
+				<li><code>PHOBIUS.TM</code>: transmembrane regions</li>
+				<li><code>PHOBIUS.C</code>: cytoplasmic loop</li>
+				<li><code>PHOBIUS.NC</code>: non cytoplasmic loop</li>
+				<li><code>PHOBIUS.SP</code>: signal peptide</li>
+				</ul>
+				
+				<h4>Uniprot annotations</h4>
+				<p>Uniprot provides numerous annotations for its proteins. See <a href="http://www.uniprot.org/manual/sequence_annotation">http://www.uniprot.org/manual/sequence_annotation</a> for all available Uniprot sequence annotations including descriptions and examples.</p>
+				
+				<h4>PeptideCutter cleavage sites</h4>
+				<p><a href="http://expasy.org/tools/peptidecutter/">PeptideCutter</a> provides a webservice to <em>in-silico</em> digest protein sequences. 
+				PeptideCutter regions will refer to the amino acids immediately preceding the reported cleavage sites.</p>
+				
+				<h4>Regular Expressions</h4>
+				<p><a href="http://en.wikipedia.org/wiki/Regular_expression">Regular Expressions</a> are a mighty concept for defining protein sequence motifs.
+				To build regular expressions with live feedback <a href="http://www.gethifi.com/tools/regex">http://www.gethifi.com/tools/regex</a> provides a helpful tool.
+				</p>
+				
+				<br/>
+				<br/>
+				<p>
+					<em>Note:</em> The protter web application may be called using the same parameters as the ProtterServer:
+						<code>http://wlab.ethz.ch/protter/#param1&amp;param2&amp;param3&amp;...</code>
+						<br/>This urls allow interactive editing of the pre-coded visualization and can be readily bookmarked or send via email.
+				</p>
+			</div>
+			
+			<h2><a href="#installation">Installation &amp; Requirements of the Server software</a></h2>
+			<div>
+				To install your own local copy of Protter plesase follow these steps:
+				<p>
+					<ul>
+					<li>Get the latest Protter version from <a href="http://ulo.github.io/Protter/" target="_blank">http://ulo.github.io/Protter/</a> and unzip the package to any folder.</li>
+					<li>Install the latest version of the MiKTeX distribution. (<a href="http://miktex.org/" target="_blank">http://miktex.org</a>)</li>
+					<li>Download and unpack the latest version of DviSvgM. (<a href="http://dvisvgm.sourceforge.net/" target="_blank">http://dvisvgm.sourceforge.net</a>)</li>
+					<li>Have a look at the configuration file protter.config</li>
+					<li>Start up the ProtterServer by double clicking protterServer.jar</li>
+					<li>Direct your browser to <a href="http://localhost/protter" target="_blank">http://localhost/protter</a></li>
+					<li>Allow the automatic installation of TeXtopo package if asked.</li>
+					</ul>
+				</p>
+			</div>
+			
+			<h2><a href="#implementation">Implementation details</a></h2>
+			<div>
+				<p>
+					<img style="margin:0" src="protter_architecture.png" /> 
+				</p>
+				
+				<h3>Protter Server</h3>
+		<p>The ProtterServer is a webservice to visualize the sequence, topology and annotations of individual proteins.
+		The server is written in Java. 
+		The webserver functionality is based on NanoHTTPD (version 1.21). 
+		For visualization a request is transformed into a TeX file which is processed within a LaTeX distribution (e.g. MiKTeX) by the <a href="http://www.uni-kiel.de/pharmazie/chem/Prof_Beitz/textopo.htm">TeXtopo</a> package.
+		Textopo takes care of the layout of protein topology.
+		The resulting dvi file is converted to a svg file using dvisvgm.
+		The initial svg is further processed to include the specified styles.
+		Optionally, the resulting svg may be converted to a png or pdf image using the Apache Batik toolkit.
+		To allow for visualization of annotations ProtterServer is using several other webservices to resolve sequence specific protein annotations.
+		Currently UniProt, Phobius and PeptideCutter can provide sequences and annotations.</p>
+		
+				<h3>Protter WebApp</h3>
+				<p>The Protter web application is a browser based interactive client for the Protter server.
+				It is based on the AJAX framework jQuery (version 1.9, http://jquery.com/) extended by following plugins:
+				<ul>
+				<li>Menu plugin from the Filament Group (http://www.filamentgroup.com)</li>
+				<li>Mousewheel plugin from Brandon Aaron (http://brandonaaron.net)</li>
+				<li>Splitter plugin from Dave Methvin</li>
+				<li>TableDnD plugin from Denis Howlett</li>
+				<li>Color Picker plugin from Lakshan Perera (www.laktek.com)</li>
+				<li>SVG plugin from Keith Wood (http://keith-wood.name/svg.html)</li>
+				<li>UI plugins from http://jqueryui.com</li>
+				</ul>
+				</p>
+				
+				
+				<h3>Annotation Data Sources</h3>
+				<p>Protter not only displays your custom protein annotation but also retrieves and displays computed/curated annotations from various sources:</p>
+				<ul>
+					<li><a href="http://www.uniprot.org/" target="_blank">UniProt</a> &mdash; 
+						In Protter, the Universal Protein Resource (UniProt) can be used for fetching protein sequences, transmembrane topology, 
+						and a large number of annotated protein features, e.g. PTMs or sequence variants 
+						(for a complete list see <a target="_blank" href="http://www.uniprot.org/manual/sequence_annotation">http://www.uniprot.org/manual/sequence_annotation</a>).
+					</li>
+					<li><a href="http://phobius.sbc.su.se/" target="_blank">Phobius</a> &mdash; 
+						Protter uses Phobius for protein transmembrane topology prediction and signal peptide prediction.
+					</li>
+					<li><a href="http://web.expasy.org/peptide_cutter/" target="_blank">PeptideCutter</a> &mdash; 
+						Protter uses ExPASy PeptideCutter to predict protease cleavage sites which can be indicated on the protein visualization. 
+					</li>
+					<li><a href="http://www.peptideatlas.org/" target="_blank">PeptideAtlas</a> &mdash; 
+						Protter uses the public PeptideAtlas database to look up peptides that have been identified before. 
+						Identified peptides can be visualized in the protein plot. 
+					</li>
+				</ul>
+			</div>
+			
+			<h2><a href="#colors">Colors</a></h2>
+			<div>
+				<p>Various parameters require the specification of a color. You can choose from 140 SVG compatible colors (see below) or specify any color by a hexadecimal code (e.g. <code>FF0000</code> for red).</p>
+				<table>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#f0f8ff;"></span>&nbsp;aliceblue</td>
+					<td><span style="padding:0 0.5em; background-color:#faebd7;"></span>&nbsp;antiquewhite</td>
+					<td><span style="padding:0 0.5em; background-color:#00ffff;"></span>&nbsp;aqua</td>
+					<td><span style="padding:0 0.5em; background-color:#7fffd4;"></span>&nbsp;aquamarine</td>
+					<td><span style="padding:0 0.5em; background-color:#f0ffff;"></span>&nbsp;azure</td>
+					<td><span style="padding:0 0.5em; background-color:#f5f5dc;"></span>&nbsp;beige</td>
+					</tr>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#ffe4c4;"></span>&nbsp;bisque</td>
+					<td><span style="padding:0 0.5em; background-color:#000000;"></span>&nbsp;black</td>
+					<td><span style="padding:0 0.5em; background-color:#ffebcd;"></span>&nbsp;blanchedalmond</td>
+					<td><span style="padding:0 0.5em; background-color:#0000ff;"></span>&nbsp;blue</td>
+					<td><span style="padding:0 0.5em; background-color:#8a2be2;"></span>&nbsp;blueviolet</td>
+					<td><span style="padding:0 0.5em; background-color:#a52a2a;"></span>&nbsp;brown</td>
+					</tr>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#deb887;"></span>&nbsp;burlywood</td>
+					<td><span style="padding:0 0.5em; background-color:#5f9ea0;"></span>&nbsp;cadetblue</td>
+					<td><span style="padding:0 0.5em; background-color:#7fff00;"></span>&nbsp;chartreuse</td>
+					<td><span style="padding:0 0.5em; background-color:#d2691e;"></span>&nbsp;chocolate</td>
+					<td><span style="padding:0 0.5em; background-color:#ff7f50;"></span>&nbsp;coral</td>
+					<td><span style="padding:0 0.5em; background-color:#6495ed;"></span>&nbsp;cornflowerblue</td>
+					</tr>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#fff8dc;"></span>&nbsp;cornsilk</td>
+					<td><span style="padding:0 0.5em; background-color:#dc143c;"></span>&nbsp;crimson</td>
+					<td><span style="padding:0 0.5em; background-color:#00ffff;"></span>&nbsp;cyan</td>
+					<td><span style="padding:0 0.5em; background-color:#00008b;"></span>&nbsp;darkblue</td>
+					<td><span style="padding:0 0.5em; background-color:#008b8b;"></span>&nbsp;darkcyan</td>
+					<td><span style="padding:0 0.5em; background-color:#b8860b;"></span>&nbsp;darkgoldenrod</td>
+					</tr>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#a9a9a9;"></span>&nbsp;darkgray</td>
+					<td><span style="padding:0 0.5em; background-color:#006400;"></span>&nbsp;darkgreen</td>
+					<td><span style="padding:0 0.5em; background-color:#a9a9a9;"></span>&nbsp;darkgrey</td>
+					<td><span style="padding:0 0.5em; background-color:#bdb76b;"></span>&nbsp;darkkhaki</td>
+					<td><span style="padding:0 0.5em; background-color:#8b008b;"></span>&nbsp;darkmagenta</td>
+					<td><span style="padding:0 0.5em; background-color:#556b2f;"></span>&nbsp;darkolivegreen</td>
+					</tr>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#ff8c00;"></span>&nbsp;darkorange</td>
+					<td><span style="padding:0 0.5em; background-color:#9932cc;"></span>&nbsp;darkorchid</td>
+					<td><span style="padding:0 0.5em; background-color:#8b0000;"></span>&nbsp;darkred</td>
+					<td><span style="padding:0 0.5em; background-color:#e9967a;"></span>&nbsp;darksalmon</td>
+					<td><span style="padding:0 0.5em; background-color:#8fbc8f;"></span>&nbsp;darkseagreen</td>
+					<td><span style="padding:0 0.5em; background-color:#483d8b;"></span>&nbsp;darkslateblue</td>
+					</tr>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#2f4f4f;"></span>&nbsp;darkslategray</td>
+					<td><span style="padding:0 0.5em; background-color:#2f4f4f;"></span>&nbsp;darkslategrey</td>
+					<td><span style="padding:0 0.5em; background-color:#00ced1;"></span>&nbsp;darkturquoise</td>
+					<td><span style="padding:0 0.5em; background-color:#9400d3;"></span>&nbsp;darkviolet</td>
+					<td><span style="padding:0 0.5em; background-color:#ff1493;"></span>&nbsp;deeppink</td>
+					<td><span style="padding:0 0.5em; background-color:#00bfff;"></span>&nbsp;deepskyblue</td>
+					</tr>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#696969;"></span>&nbsp;dimgray</td>
+					<td><span style="padding:0 0.5em; background-color:#696969;"></span>&nbsp;dimgrey</td>
+					<td><span style="padding:0 0.5em; background-color:#1e90ff;"></span>&nbsp;dodgerblue</td>
+					<td><span style="padding:0 0.5em; background-color:#b22222;"></span>&nbsp;firebrick</td>
+					<td><span style="padding:0 0.5em; background-color:#fffaf0;"></span>&nbsp;floralwhite</td>
+					<td><span style="padding:0 0.5em; background-color:#228b22;"></span>&nbsp;forestgreen</td>
+					</tr>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#ff00ff;"></span>&nbsp;fuchsia</td>
+					<td><span style="padding:0 0.5em; background-color:#dcdcdc;"></span>&nbsp;gainsboro</td>
+					<td><span style="padding:0 0.5em; background-color:#f8f8ff;"></span>&nbsp;ghostwhite</td>
+					<td><span style="padding:0 0.5em; background-color:#ffd700;"></span>&nbsp;gold</td>
+					<td><span style="padding:0 0.5em; background-color:#daa520;"></span>&nbsp;goldenrod</td>
+					<td><span style="padding:0 0.5em; background-color:#808080;"></span>&nbsp;gray</td>
+					</tr>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#008000;"></span>&nbsp;green</td>
+					<td><span style="padding:0 0.5em; background-color:#adff2f;"></span>&nbsp;greenyellow</td>
+					<td><span style="padding:0 0.5em; background-color:#808080;"></span>&nbsp;grey</td>
+					<td><span style="padding:0 0.5em; background-color:#f0fff0;"></span>&nbsp;honeydew</td>
+					<td><span style="padding:0 0.5em; background-color:#ff69b4;"></span>&nbsp;hotpink</td>
+					<td><span style="padding:0 0.5em; background-color:#cd5c5c;"></span>&nbsp;indianred</td>
+					</tr>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#4b0082;"></span>&nbsp;indigo</td>
+					<td><span style="padding:0 0.5em; background-color:#fffff0;"></span>&nbsp;ivory</td>
+					<td><span style="padding:0 0.5em; background-color:#f0e68c;"></span>&nbsp;khaki</td>
+					<td><span style="padding:0 0.5em; background-color:#e6e6fa;"></span>&nbsp;lavender</td>
+					<td><span style="padding:0 0.5em; background-color:#fff0f5;"></span>&nbsp;lavenderblush</td>
+					<td><span style="padding:0 0.5em; background-color:#7cfc00;"></span>&nbsp;lawngreen</td>
+					</tr>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#fffacd;"></span>&nbsp;lemonchiffon</td>
+					<td><span style="padding:0 0.5em; background-color:#add8e6;"></span>&nbsp;lightblue</td>
+					<td><span style="padding:0 0.5em; background-color:#f08080;"></span>&nbsp;lightcoral</td>
+					<td><span style="padding:0 0.5em; background-color:#e0ffff;"></span>&nbsp;lightcyan</td>
+					<td><span style="padding:0 0.5em; background-color:#fafad2;"></span>&nbsp;lightgoldenrodyellow</td>
+					<td><span style="padding:0 0.5em; background-color:#d3d3d3;"></span>&nbsp;lightgray</td>
+					</tr>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#90ee90;"></span>&nbsp;lightgreen</td>
+					<td><span style="padding:0 0.5em; background-color:#d3d3d3;"></span>&nbsp;lightgrey</td>
+					<td><span style="padding:0 0.5em; background-color:#ffb6c1;"></span>&nbsp;lightpink</td>
+					<td><span style="padding:0 0.5em; background-color:#ffa07a;"></span>&nbsp;lightsalmon</td>
+					<td><span style="padding:0 0.5em; background-color:#20b2aa;"></span>&nbsp;lightseagreen</td>
+					<td><span style="padding:0 0.5em; background-color:#87cefa;"></span>&nbsp;lightskyblue</td>
+					</tr>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#778899;"></span>&nbsp;lightslategray</td>
+					<td><span style="padding:0 0.5em; background-color:#778899;"></span>&nbsp;lightslategrey</td>
+					<td><span style="padding:0 0.5em; background-color:#b0c4de;"></span>&nbsp;lightsteelblue</td>
+					<td><span style="padding:0 0.5em; background-color:#ffffe0;"></span>&nbsp;lightyellow</td>
+					<td><span style="padding:0 0.5em; background-color:#00ff00;"></span>&nbsp;lime</td>
+					<td><span style="padding:0 0.5em; background-color:#32cd32;"></span>&nbsp;limegreen</td>
+					</tr>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#faf0e6;"></span>&nbsp;linen</td>
+					<td><span style="padding:0 0.5em; background-color:#ff00ff;"></span>&nbsp;magenta</td>
+					<td><span style="padding:0 0.5em; background-color:#800000;"></span>&nbsp;maroon</td>
+					<td><span style="padding:0 0.5em; background-color:#66cdaa;"></span>&nbsp;mediumaquamarine</td>
+					<td><span style="padding:0 0.5em; background-color:#0000cd;"></span>&nbsp;mediumblue</td>
+					<td><span style="padding:0 0.5em; background-color:#ba55d3;"></span>&nbsp;mediumorchid</td>
+					</tr>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#9370db;"></span>&nbsp;mediumpurple</td>
+					<td><span style="padding:0 0.5em; background-color:#3cb371;"></span>&nbsp;mediumseagreen</td>
+					<td><span style="padding:0 0.5em; background-color:#7b68ee;"></span>&nbsp;mediumslateblue</td>
+					<td><span style="padding:0 0.5em; background-color:#00fa9a;"></span>&nbsp;mediumspringgreen</td>
+					<td><span style="padding:0 0.5em; background-color:#48d1cc;"></span>&nbsp;mediumturquoise</td>
+					<td><span style="padding:0 0.5em; background-color:#c71585;"></span>&nbsp;mediumvioletred</td>
+					</tr>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#191970;"></span>&nbsp;midnightblue</td>
+					<td><span style="padding:0 0.5em; background-color:#f5fffa;"></span>&nbsp;mintcream</td>
+					<td><span style="padding:0 0.5em; background-color:#ffe4e1;"></span>&nbsp;mistyrose</td>
+					<td><span style="padding:0 0.5em; background-color:#ffe4b5;"></span>&nbsp;moccasin</td>
+					<td><span style="padding:0 0.5em; background-color:#ffdead;"></span>&nbsp;navajowhite</td>
+					<td><span style="padding:0 0.5em; background-color:#000080;"></span>&nbsp;navy</td>
+					</tr>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#fdf5e6;"></span>&nbsp;oldlace</td>
+					<td><span style="padding:0 0.5em; background-color:#808000;"></span>&nbsp;olive</td>
+					<td><span style="padding:0 0.5em; background-color:#6b8e23;"></span>&nbsp;olivedrab</td>
+					<td><span style="padding:0 0.5em; background-color:#ffa500;"></span>&nbsp;orange</td>
+					<td><span style="padding:0 0.5em; background-color:#ff4500;"></span>&nbsp;orangered</td>
+					<td><span style="padding:0 0.5em; background-color:#da70d6;"></span>&nbsp;orchid</td>
+					</tr>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#eee8aa;"></span>&nbsp;palegoldenrod</td>
+					<td><span style="padding:0 0.5em; background-color:#98fb98;"></span>&nbsp;palegreen</td>
+					<td><span style="padding:0 0.5em; background-color:#afeeee;"></span>&nbsp;paleturquoise</td>
+					<td><span style="padding:0 0.5em; background-color:#db7093;"></span>&nbsp;palevioletred</td>
+					<td><span style="padding:0 0.5em; background-color:#ffefd5;"></span>&nbsp;papayawhip</td>
+					<td><span style="padding:0 0.5em; background-color:#ffdab9;"></span>&nbsp;peachpuff</td>
+					</tr>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#cd853f;"></span>&nbsp;peru</td>
+					<td><span style="padding:0 0.5em; background-color:#ffc0cb;"></span>&nbsp;pink</td>
+					<td><span style="padding:0 0.5em; background-color:#dda0dd;"></span>&nbsp;plum</td>
+					<td><span style="padding:0 0.5em; background-color:#b0e0e6;"></span>&nbsp;powderblue</td>
+					<td><span style="padding:0 0.5em; background-color:#800080;"></span>&nbsp;purple</td>
+					<td><span style="padding:0 0.5em; background-color:#ff0000;"></span>&nbsp;red</td>
+					</tr>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#bc8f8f;"></span>&nbsp;rosybrown</td>
+					<td><span style="padding:0 0.5em; background-color:#4169e1;"></span>&nbsp;royalblue</td>
+					<td><span style="padding:0 0.5em; background-color:#8b4513;"></span>&nbsp;saddlebrown</td>
+					<td><span style="padding:0 0.5em; background-color:#fa8072;"></span>&nbsp;salmon</td>
+					<td><span style="padding:0 0.5em; background-color:#f4a460;"></span>&nbsp;sandybrown</td>
+					<td><span style="padding:0 0.5em; background-color:#2e8b57;"></span>&nbsp;seagreen</td>
+					</tr>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#fff5ee;"></span>&nbsp;seashell</td>
+					<td><span style="padding:0 0.5em; background-color:#a0522d;"></span>&nbsp;sienna</td>
+					<td><span style="padding:0 0.5em; background-color:#c0c0c0;"></span>&nbsp;silver</td>
+					<td><span style="padding:0 0.5em; background-color:#87ceeb;"></span>&nbsp;skyblue</td>
+					<td><span style="padding:0 0.5em; background-color:#6a5acd;"></span>&nbsp;slateblue</td>
+					<td><span style="padding:0 0.5em; background-color:#708090;"></span>&nbsp;slategray</td>
+					</tr>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#708090;"></span>&nbsp;slategrey</td>
+					<td><span style="padding:0 0.5em; background-color:#fffafa;"></span>&nbsp;snow</td>
+					<td><span style="padding:0 0.5em; background-color:#00ff7f;"></span>&nbsp;springgreen</td>
+					<td><span style="padding:0 0.5em; background-color:#4682b4;"></span>&nbsp;steelblue</td>
+					<td><span style="padding:0 0.5em; background-color:#d2b48c;"></span>&nbsp;tan</td>
+					<td><span style="padding:0 0.5em; background-color:#008080;"></span>&nbsp;teal</td>
+					</tr>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#d8bfd8;"></span>&nbsp;thistle</td>
+					<td><span style="padding:0 0.5em; background-color:#ff6347;"></span>&nbsp;tomato</td>
+					<td><span style="padding:0 0.5em; background-color:#40e0d0;"></span>&nbsp;turquoise</td>
+					<td><span style="padding:0 0.5em; background-color:#ee82ee;"></span>&nbsp;violet</td>
+					<td><span style="padding:0 0.5em; background-color:#f5deb3;"></span>&nbsp;wheat</td>
+					<td><span style="padding:0 0.5em; background-color:#ffffff;"></span>&nbsp;white</td>
+					</tr>
+					<tr>
+					<td><span style="padding:0 0.5em; background-color:#f5f5f5;"></span>&nbsp;whitesmoke</td>
+					<td><span style="padding:0 0.5em; background-color:#ffff00;"></span>&nbsp;yellow</td>
+					<td><span style="padding:0 0.5em; background-color:#9acd32;"></span>&nbsp;yellowgreen</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<!-- end of accordion -->
+		<br />
+		<br />
+		<img src="protter_cd243.png" />
+		<hr/>
+		<div style="float:right">imsb.biol.ethz.ch</div>
+		<div style="text-align:right">Ulrich Omasits - protter@</div>
+		
+		<script>
+		  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+		  ga('create', 'UA-45284132-1', 'ethz.ch');
+		  ga('send', 'pageview');
+		</script>	
+    </body>
+</html>

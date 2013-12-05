@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version='1.1' width='240pt' height='120pt' viewBox='-100 -50 200 100' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>
+<title>Protter Demo</title>
+
+<text x='0' y='-10' text-anchor='middle' font-family='Verdana' font-size='14' fill='#e17009' font-style='italic'>
+Welcome to 
+<tspan font-size='16' font-variant='small-caps' font-weight='900' font-style='normal'  style='letter-spacing:-0.1em' font-family='"Lucida Grande", "Lucida Sans", "Arial", sans-serif'>
+Protter
+</tspan>
+</text>
+
+</svg>
