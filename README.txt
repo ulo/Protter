@@ -10,3 +10,5 @@ http://bioinformatics.oxfordjournals.org/content/early/2013/11/21/bioinformatics
 
 ### Contact
 For questions, comments, suggestions please contact me at protter@imsb.biol.ethz.ch
+
+This projected is licensed under the terms of the GNU General Public License v3.0.
