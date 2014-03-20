@@ -24,7 +24,7 @@ public class RangeParserPeptideCutter implements IRangeParser {
 	}
 
 	@Override
-	public List<? extends Range> parse(String rangeString, String sequence, UniProtEntry up, String tag, Map<String,String> parms) throws Exception {
+	public List<? extends Range> parse(String rangeString, String sequence, UniProtEntry up, Map<String,String> parms) throws Exception {
 		List<Range> cutPositions = new ArrayList<Range>();
 		String enzyme = rangeString.substring(14);
 		

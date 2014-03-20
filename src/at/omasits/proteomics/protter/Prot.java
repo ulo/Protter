@@ -7,10 +7,14 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.security.KeyStore.LoadStoreParameter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 
 import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
 import at.omasits.proteomics.protter.Style.Color;
@@ -62,6 +66,7 @@ public class Prot {
 	public String seq;
 	public String uniprotID;
 	public List<? extends Range> tmRegions = new ArrayList<Range>();
+	public List<? extends Range> imRegions = new ArrayList<Range>();
 	public List<? extends Range> anchorRegions = new ArrayList<Range>();
 	public List<? extends Range> cutAtRegions = new ArrayList<Range>();
 	public Nterm nterm;
@@ -83,12 +88,15 @@ public class Prot {
 	public String tmLegend = null;
 	public String ntermLegend = null;
 	
+	public List<String> arrTextopo = new ArrayList<String>();
+	
 	public Prot(Map<String,String> parms) throws Exception {
 		UniProtEntry up = null;
 		
 		// parse the parameters and validate
 		String seqValue = parms.get("seq");	
 		String tmValue = parms.get("tm");
+		String imValue = parms.get("im");
 		String ntermValue = parms.get("nterm");
 		String upValue = parms.get("up");
 		String anchorValue = parms.get("anchor");
@@ -110,7 +118,8 @@ public class Prot {
 		// check auto-topology
 		if (tmValue!=null && tmValue.equalsIgnoreCase("auto")) {
 			if (up!=null) {
-				tmValue="UP.TRANSMEM,UP.INTRAMEM";
+				tmValue="UP.TRANSMEM";
+				imValue="UP.INTRAMEM";
 				if (anchorValue==null) anchorValue="UP.LIPID";
 				if (ntermValue==null) {
 					try {
@@ -128,7 +137,7 @@ public class Prot {
 			}
 		}
 		
-		if (tmValue==null && ntermValue==null && anchorValue==null) {
+		if (tmValue==null && imValue==null && ntermValue==null && anchorValue==null) {
 			this.nonTMprotein = true;
 			this.nonMprotein = true;
 		//} else if (tmValue==null && anchorValue==null) { // && ntermValue != null
@@ -152,7 +161,9 @@ public class Prot {
 			}
 			if (tmValue!=null) {
 				this.tmRegions = Range.parseMultiRangeString(tmValue, seq, up, "tm", parms);
-				if (tmValue.equalsIgnoreCase("up.transmem") || tmValue.equalsIgnoreCase("up.transmem,up.intramem"))
+				if (imValue != null)
+					this.imRegions = Range.parseMultiRangeString(imValue, seq, up, "im", parms);
+				if (tmValue.equalsIgnoreCase("up.transmem") && imValue.equalsIgnoreCase("up.intramem"))
 					tmLegend = "UniProt";
 				else if (tmValue.equalsIgnoreCase("phobius.tm"))
 					tmLegend = "Phobius";
@@ -162,7 +173,13 @@ public class Prot {
 				this.nonTMprotein = true;
 				for (Range tmRegion : tmRegions) {
 					if (tmRegion.length() >= 14) {
-						this.nonTMprotein = false; // has to have at least one TM region >14 aa
+						this.nonTMprotein = false; // has to have at least one TM region >=14 aa
+						break;
+					}
+				}
+				for (Range imRegion : imRegions) {
+					if (imRegion.length() >= 1) {
+						this.nonTMprotein = false;
 						break;
 					}
 				}
@@ -192,13 +209,16 @@ public class Prot {
 		}
 		this.styleRanges = styles;
 		
-		// additional settigns
+		// additional settings
 		this.tmLabelColor = parms.containsKey("lc") ? Color.fromString(parms.get("lc")) : Color.fromString("blue");
 		this.membraneColor = parms.containsKey("mc") ? Color.fromString(parms.get("mc")) : Color.fromString("lightsalmon");
 		this.tmLabel = parms.containsKey("tml") ? TMlabel.fromString(parms.get("tml")) : TMlabel.numcount;
 		this.lblNumbers = parms.containsKey("numbers");
 		this.showLegend = parms.containsKey("legend");
 		this.lblTitle = parms.get("title");
+		if (parms.containsKey("tex")) {
+			this.arrTextopo = Lists.newArrayList(Splitter.on(';').split(parms.get("tex")));	
+		}
 		
 		// set membrane labels
 		if (ntermValue!=null) {
@@ -287,17 +307,23 @@ public class Prot {
 			// print the transmembrane & anchor domains
 			if (nonTMprotein)
 				tex.write("\n	\\MRs{1..15}");
-			//else {
-				for (Range tm : tmRegions) {
-					tex.write("\n	\\MRs{"+(tm.from+(nonTMprotein?20:0))+".."+(tm.to+(nonTMprotein?20:0))+"}");
-				}
-			//}
 			
+			for (Range tm : tmRegions) {
+				tex.write("\n	\\MRs{"+(tm.from+(nonTMprotein?20:0))+".."+(tm.to+(nonTMprotein?20:0))+"}");
+			}
+			for (Range im : imRegions) {
+				tex.write("\n	\\MRs{"+(im.from+(nonTMprotein?20:0))+".."+(im.to+(nonTMprotein?20:0))+"}");
+			}
 			for (Range anchor : anchorRegions) {
 				for (int i=anchor.from; i<=anchor.to; i++)
 					tex.write("\n	\\anchor{"+(i + (nonTMprotein ? 20 : 0))+"}");
 			}
 			
+			// optional additional textopo commands 
+			for (String texCmd : arrTextopo) {
+				tex.write("\n	\\"+texCmd);
+			}
+
 			// print the closure
 			tex.write("\n \\end{textopo}");
 			tex.write("\n \\end{document}");

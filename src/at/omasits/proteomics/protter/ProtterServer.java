@@ -13,6 +13,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.BindException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.UIManager;
@@ -41,6 +45,7 @@ public class ProtterServer extends FileServer {
 	public ProtterServer(int port) throws IOException {
 		super("127.0.0.1", port, wwwRoot, proxyPrefix);
 		MIME_TYPES.put("svg", "image/svg+xml");
+		MIME_TYPES.put("svgz", "image/svg+xml");
 	}
 	
 	public static void main(String[] args) {
@@ -207,6 +212,13 @@ public class ProtterServer extends FileServer {
 						Log.info(socket.getInetAddress().getHostAddress()+" "+socket.getInetAddress().getCanonicalHostName() + " downloading file: "+file);
 						res = serveFile(file, header, ProtProvider.protsDir, file);
 					}
+				} else if (uri.equals("/galleries")) {
+					//List<List<String>> ll = new ArrayList<List<String>>();
+					//ll.add(Arrays.asList("Gecko","Firefox 2.0","Win 98+ / OSX.2+","1.8","A"));
+					//ll.add(Arrays.asList("Webkit","Safari 1.3","OSX.3","312.8","A"));
+					//ll.add(Arrays.asList("Presto","Opera 9.5","Win 88+ / OSX.3+","-","A"));
+					// Util.toDataTableJSON(ll)
+					res = new Response(Status.OK, MIME_PLAINTEXT, "");
 				} else {
 					if (wwwRoot != null)
 						res = serveFile(uri, header, wwwRoot); // serve file from www root directory

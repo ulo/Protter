@@ -16,7 +16,7 @@ public class RangeParserExperiment implements IRangeParser {
 	}
 
 	@Override
-	public List<? extends Range> parse(String rangeString, String sequence, UniProtEntry up, String tag, Map<String,String> parms) throws Exception {
+	public List<? extends Range> parse(String rangeString, String sequence, UniProtEntry up, Map<String,String> parms) throws Exception {
 		String target = rangeString.substring(3);
 		Map<String,String> parmsLC = new HashMap<String, String>();
 		for(Entry<String,String> e : parms.entrySet())
@@ -27,12 +27,12 @@ public class RangeParserExperiment implements IRangeParser {
 			List<Range> allMods = new ArrayList<Range>();
 			for(Entry<String,String> e : parmsLC.entrySet()) {
 				if (e.getKey().startsWith("mod"))
-					allMods.addAll(Range.parseMultiRangeString(e.getValue(), sequence, up, tag, parms));
+					allMods.addAll(Range.parseMultiRangeString(e.getValue(), sequence, up, "", parms));
 			}
 			return allMods;
 		} else {
 			if (parmsLC.containsKey(target.toLowerCase()))
-				return Range.parseMultiRangeString(parmsLC.get(target.toLowerCase()), sequence, up, tag, parms);
+				return Range.parseMultiRangeString(parmsLC.get(target.toLowerCase()), sequence, up, "", parms);
 		}
 		return new ArrayList<Range>();
 	}

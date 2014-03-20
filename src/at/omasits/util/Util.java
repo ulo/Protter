@@ -16,8 +16,11 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -40,11 +43,14 @@ import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.fop.svg.PDFTranscoder;
+import org.apache.pdfbox.io.IOUtils;
 
 import com.google.common.base.CharMatcher;
+import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class Util {
@@ -97,6 +103,7 @@ public class Util {
 	public static void transcode2png(File svg, File png) throws IOException, TranscoderException {
         PNGTranscoder t = new PNGTranscoder();
         //t.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, 2000.0f);
+        //t.addTranscodingHint(PNGTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER, 0.5f);
         t.addTranscodingHint(PNGTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER, 0.05f);
         //t.addTranscodingHint(PNGTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER, 0.02f);
         TranscoderInput input = new TranscoderInput(svg.toURI().toString());
@@ -114,6 +121,15 @@ public class Util {
 		t.transcode(input, output);
 		output.getOutputStream().flush();
         output.getOutputStream().close();
+	}
+	
+	public static void zip(File in, File out) throws FileNotFoundException, IOException {
+		byte[] byteArr =  IOUtils.toByteArray(new FileInputStream(in));
+    	FileOutputStream os = new FileOutputStream(out);
+        GZIPOutputStream gzip = new GZIPOutputStream(os);
+        gzip.write(byteArr);
+        gzip.close();
+        os.close();
 	}
 	
 	public static <E> String join(Iterable<E> iterable, String separator) {
@@ -195,5 +211,15 @@ public class Util {
 		out.write(content);
 		out.close();
 		return f;
+	}
+	
+	public static String toDataTableJSON(List<List<? extends Object>> tbl) {
+		return "{ \"aaData\": [" +
+			Joiner.on(',').join( Lists.transform(tbl, new Function<List<? extends Object>, String> () {
+				@Override
+				public String apply(List<? extends Object> arg) {
+					return "[\"" + Joiner.on("\",\"").join(arg) + "\"]";
+				}
+		}) ) + "] }";
 	}
 }

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import at.omasits.util.Log;
+import at.omasits.util.PowerpointExporter;
 import at.omasits.util.Util;
 
 
@@ -22,7 +23,12 @@ public class ProtProvider {
 	
 	public static ProtFile getFile(Map<String,String> parms) throws Exception {
 		Prot prot = new Prot(parms);
-		String fileName = (prot.uniprotID != null) ? ("protter_"+prot.uniprotID) : ("protter");
+		String title = "custom sequence";
+		if (prot.lblTitle != null)
+			title = prot.lblTitle;
+		else if (prot.uniprotID != null)
+			title = prot.uniprotID;
+		String fileName = "protter "+title;
 		
 		String key = generateKey(prot).toString();
 		boolean isCached = entries.containsKey(key) && new File(protsDir, entries.get(key)+".svg").exists();
@@ -47,6 +53,13 @@ public class ProtProvider {
 			File png = new File(svg.getParentFile(),svg.getName()+".png");
 			Util.transcode2png(svg, png);
 			return new ProtFile(png, fileName+".png");
+		} else if (format.toLowerCase().equals("pptx")) {
+			Log.info("transcoding '"+svg.getName()+".pptx'");
+			File png = new File(svg.getParentFile(),svg.getName()+".png");
+			Util.transcode2png(svg, png);
+			File pptx = new File(svg.getParentFile(),svg.getName()+".pptx");
+			PowerpointExporter.createPPTX(pptx, title, png);
+			return new ProtFile(pptx, fileName+".pptx");
 		} else if (format.toLowerCase().equals("pdf")) {
 			Log.info("transcoding and returning '"+svg.getName()+".pdf'");
 			File pdf = new File(svg.getParentFile(),svg.getName()+".pdf");
@@ -55,6 +68,11 @@ public class ProtProvider {
 		} else if (format.toLowerCase().equals("svg")) {
 			Log.info("returning '"+svg.getName()+"'");
 			return new ProtFile(svg, fileName+".svg");
+		} else if (format.toLowerCase().equals("svgz")) {
+			File svgz = new File(svg.getParentFile(),svg.getName()+".svgz");
+			Log.info("compressing '"+svg.getName()+"' and returning '"+svgz.getName()+"'");
+			Util.zip(svg, svgz);
+			return new ProtFile(svgz, fileName+".svgz");
 		} else
 			Log.errorThrow("unkown format: "+format);
 		return null;
@@ -67,7 +85,9 @@ public class ProtProvider {
 				prot.nonTMprotein,
 				prot.nterm,
 				prot.tmRegions,
-				prot.anchorRegions
+				prot.imRegions,
+				prot.anchorRegions,
+				prot.arrTextopo
 		);
 	}
 	

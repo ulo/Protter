@@ -17,7 +17,7 @@ public class RangeParserUniProt implements IRangeParser {
 	}
 
 	@Override
-	public List<? extends Range> parse(String rangeString, String sequence, UniProtEntry up, String tag, Map<String,String> parms) throws Exception {
+	public List<? extends Range> parse(String rangeString, String sequence, UniProtEntry up, Map<String,String> parms) throws Exception {
 		List<Range> ranges = new ArrayList<Range>();
 		if (up == null)
 			return ranges; // no error, just ignore UP styles
@@ -39,21 +39,6 @@ public class RangeParserUniProt implements IRangeParser {
 				ranges.add(new Range(f.getFeatureLocation().getStart(), f.getFeatureLocation().getEnd()));
 			}
 		}
-		if (upFeature.equals("INTRAMEM") && tag.equalsIgnoreCase("tm")) {
-			// condense intramem ranges -- multiple of them can appear in a row (e.g. AQP1_MOUSE)
-			List<Range> intramems = new ArrayList<Range>();
-			for (Range range : Range.validateAndCondense(ranges, sequence)) {
-				if (range.length()>=14) {
-					for (int i=range.from; i<=range.to; i+=4) {
-						intramems.add(new Range(i, Math.min(i+2, range.to)));
-					}
-				} else {
-					intramems.add(range);
-				}
-			}
-			return intramems;
-		} else {
-			return ranges;
-		}
+		return ranges;
 	}
 }

@@ -287,7 +287,8 @@ public class FileServer extends NanoHTTPD {
                     else {
                     	InputStream dataStream;
                     	boolean gzipped = false;
-                    	if (fileLen < 2000000) { // gzip compress files up to 2 MB in-memory
+                    	// gzip compress files up to 2 MB in-memory
+                    	if (fileLen < 2000000 && header.containsKey("accept-encoding") && header.get("accept-encoding").contains("gzip") && !f.getName().toLowerCase().endsWith(".svgz")) {
                         	byte[] byteArr =  IOUtils.toByteArray(new FileInputStream(f));
                         	ByteArrayOutputStream os = new ByteArrayOutputStream();
                             GZIPOutputStream gzip = new GZIPOutputStream(os);
@@ -299,6 +300,8 @@ public class FileServer extends NanoHTTPD {
                             fileLen = byteArrZipped.length;
                             gzipped = true;
                     	} else {
+                    		if (f.getName().toLowerCase().endsWith(".svgz"))
+                    			gzipped = true;
                     		dataStream = new FileInputStream(f);
                     	}
                         res = new Response(Response.Status.OK, mime, dataStream);

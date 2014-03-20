@@ -25,7 +25,7 @@ public class RangeParserPeptideAtlas implements IRangeParser {
 	}
 
 	@Override
-	public List<? extends Range> parse(String rangeString, String sequence, UniProtEntry up, String tag, Map<String,String> parms) throws Exception {
+	public List<? extends Range> parse(String rangeString, String sequence, UniProtEntry up, Map<String,String> parms) throws Exception {
 		String build = rangeString.substring(3);
 		if (! build.equals(currentBuild)) {
 			paHex = new HashMap<String,Set<String>>();

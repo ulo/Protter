@@ -47,11 +47,28 @@ public class Range implements Comparable<Range> {
 			if (rangeString.length()==0)
 				continue;
 			IRangeParser rp = RangeParserProvider.getMatchingRangeProvider(rangeString);
-			List<? extends Range> newParsedRanges = rp.parse(rangeString, sequence, up, tag, parms);
+			List<? extends Range> newParsedRanges = rp.parse(rangeString, sequence, up, parms);
 			if (newParsedRanges != null && newParsedRanges.size()>0)
 				ranges.addAll(newParsedRanges);
 		}
-		return validateAndCondense(ranges, sequence);
+		List<? extends Range> condensedRanges = validateAndCondense(ranges, sequence);
+		
+		if (tag.equalsIgnoreCase("im")) {
+			// condense intramem ranges -- multiple of them can appear in a row (e.g. AQP1_MOUSE)
+			List<Range> intramems = new ArrayList<Range>();
+			for (Range range : condensedRanges) {
+				if (range.length()>=14) {
+					for (int i=range.from; i<=range.to; i+=4) {
+						intramems.add(new Range(i, Math.min(i+2, range.to)));
+					}
+				} else {
+					intramems.add(range);
+				}
+			}
+			return intramems;
+		} else {		
+			return condensedRanges;
+		}
 	}
 	
 	public static List<? extends Range> validateAndCondense(List<? extends Range> rangeList, String sequence) throws Exception {

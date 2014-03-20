@@ -14,7 +14,7 @@ public class RangeParserPosition implements IRangeParser {
 	}
 
 	@Override
-	public List<Range> parse(String rangeString, String sequence, UniProtEntry up, String tag, Map<String,String> parms) {
+	public List<Range> parse(String rangeString, String sequence, UniProtEntry up, Map<String,String> parms) {
 		int pos = Integer.valueOf(rangeString);
 		return Arrays.asList(new Range(pos, pos));
 	}

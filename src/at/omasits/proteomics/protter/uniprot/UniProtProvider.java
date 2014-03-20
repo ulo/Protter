@@ -5,6 +5,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.remoting.RemoteAccessException;
+
 import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
 import uk.ac.ebi.kraken.interfaces.uniprot.features.Feature;
 import uk.ac.ebi.kraken.interfaces.uniprot.features.FeatureType;
@@ -15,6 +17,7 @@ import uk.ac.ebi.kraken.uuw.services.remoting.UniProtJAPI;
 import uk.ac.ebi.kraken.uuw.services.remoting.UniProtQueryBuilder;
 import uk.ac.ebi.kraken.uuw.services.remoting.UniProtQueryService;
 import at.omasits.proteomics.protter.Prot.Nterm;
+import at.omasits.util.Config;
 import at.omasits.util.Log;
 import at.omasits.util.Util;
 
@@ -42,6 +45,10 @@ public class UniProtProvider {
 		try {
 			return entries.get(identifier);
 		} catch (Exception e) {
+			if (e.getCause() instanceof RemoteAccessException) {
+				e = new Exception("Could not access UniProt as it looks like its API was updated. Please report to protter@imsb.biol.ethz.ch!");
+				Util.sendMail(Config.get("mail_from"), "UniProt RemoteAccessException on "+identifier, "");
+			}
 			unknowns.put(identifier, e.getMessage());
 			throw e;
 		}

@@ -15,7 +15,7 @@ public class RangeParserPhobius implements IRangeParser {
 	}
 
 	@Override
-	public List<Range> parse(String rangeString, String sequence, UniProtEntry up, String tag, Map<String,String> parms) throws Exception {
+	public List<Range> parse(String rangeString, String sequence, UniProtEntry up, Map<String,String> parms) throws Exception {
 		String feature = rangeString.toUpperCase().substring(8);
 		
 		Map<String, List<Range>> features = PhobiusProvider.getPhobius(sequence);

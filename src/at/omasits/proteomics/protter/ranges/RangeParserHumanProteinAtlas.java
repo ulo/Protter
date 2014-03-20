@@ -25,7 +25,7 @@ public class RangeParserHumanProteinAtlas implements IRangeParser {
 	}
 
 	@Override
-	public List<? extends Range> parse(String rangeString, String sequence, UniProtEntry up, String tag, Map<String,String> parms) throws Exception {
+	public List<? extends Range> parse(String rangeString, String sequence, UniProtEntry up, Map<String,String> parms) throws Exception {
 		if (up == null)
 			return new ArrayList<Range>(); // no error, just ignore
 		

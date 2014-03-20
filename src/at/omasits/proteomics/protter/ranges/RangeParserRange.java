@@ -15,7 +15,7 @@ public class RangeParserRange implements IRangeParser {
 	}
 
 	@Override
-	public List<Range> parse(String rangeString, String sequence, UniProtEntry up, String tag, Map<String,String> parms) {
+	public List<Range> parse(String rangeString, String sequence, UniProtEntry up, Map<String,String> parms) {
 		int begin = Integer.valueOf(rangeString.substring(0, rangeString.indexOf('-')));
 		int end = Integer.valueOf(rangeString.substring(rangeString.indexOf('-')+1, rangeString.length()));
 		return Arrays.asList(new Range(begin, end));
