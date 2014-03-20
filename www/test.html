@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script type="text/javascript" src="lib/jquery/jquery-1.9.1.min.js"></script>
+		<script type="text/javascript">
+			$(document).ready(function(){
+				$("embed").each(function(index, element){
+					element.onload = function(){
+						var svg = (this.contentDocument) ? this.contentDocument : this.getSVGDocument();
+						//svg.getElementById("svgbar").setAttribute("fill", "lime");
+						// find 'desc' element and add link to protter page
+					}
+				});
+			});
+			
+			
+		</script>
+	</head>
+	<body>
+		<embed id="e1" src="upload/a8db2fa0-394e-48dd-b767-7bc382f73bac.processed.svg.svgz" type="image/svg+xml" />
+	</body>
+</html>

@@ -22,8 +22,10 @@
 		<script type="text/javascript" src="protter.js"></script>
 		<script type="text/javascript" src="protterParser.js"></script>
 		-->
+		<!-- PRODUCTION --> 
 		<link rel="stylesheet" media="screen" type="text/css" href="merged_embedded.css" />
 		<script type="text/javascript" src="merged.js"></script>
+		<!-- -->
 	</head>
 	<body id="body" class="loading">
 		<div id="divContainer" class="ui-state-default">
@@ -129,6 +131,12 @@
 								</div>
 							</div>
 							<div class="divVerticalSet">
+								<label for="txtIntramembrane">intramembrane regions:</label>
+								<div id="divIntramembraneWrapper">
+									<textarea id="txtIntramembrane" cols=15 rows=5 class="ui-widget-content ui-corner-all" title="define the intra-membrane regions using ranges (e.g. 25-45,76-93) or select one of the annotations (click +)"></textarea>
+								</div>
+							</div>
+							<div class="divVerticalSet">
 								<label for="txtAnchors">membrane anchors:</label>
 								<div id="divAnchorsWrapper">
 									<textarea id="txtAnchors" cols=15 rows=5 class="ui-widget-content ui-corner-all" title="define the lipid anchors using numbers (e.g. 23,117) or select one of the annotations (click +)"></textarea>
@@ -205,6 +213,12 @@
 									<td id="miscOthers">
 										<input type="checkbox" id="bolNumbers" /><label for="bolNumbers" title="enable to add position labels at every 10th residue">label every 10<sup>th</sup> residue</label>
 										<input type="checkbox" id="bolLegend" /><label for="bolLegend" title="show a legend for the displayed styles next to the plot">show legend</label>
+									</td>
+								</tr>
+								<tr>
+									<td style="text-align:right; vertical-align: top;"><label for="txtTextopo">TeXtopo options:</label></td>
+									<td>
+										<textarea id="txtTextopo" name="txtTextopo" title="here you can specify additional TeXtopo commands (one per line) for fine tuning of your visualization (e.g. flipNterm)" spellcheck="false" wrap="off" cols="20" rows="3" class="ui-widget-content ui-corner-all"></textarea>
 									</td>
 								</tr>
 							</table>
@@ -432,7 +446,8 @@
 			<li><a href='#'>Motifs</a>
 				<ul>
 					<li><a href='#' title='[KR]'>[KR]</a></li>
-					<li><a href='#' title='(N).[ST]'>(N).[ST]</a></li>
+					<li><a href='#' title='(N)[^P][ST]'>N-Glyco site</a></li>
+					<li><a href='#' title='[^K^R]*N[^P][ST].*?[KR]'>N-Glyco peptide</a></li>
 				</ul>
 			</li>
 			<li><a href='#'>More</a>
@@ -441,5 +456,16 @@
 				</ul>
 			</li>
 		</div>
+		
+		
+		
+		<script>
+		  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+		  ga('create', 'UA-45284132-1', 'ethz.ch');
+		  ga('send', 'pageview');
+		</script>
 	</body>
 </html>

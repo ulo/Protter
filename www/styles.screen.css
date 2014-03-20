@@ -1,0 +1,753 @@
+/* main styles */
+html {
+	height: 100%;
+	width: 100%;
+}
+#body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	width: 100%;
+	border: none;
+	font-weight: normal;
+}
+
+a img {
+	border: 0;
+}
+
+/* main page */
+
+#divContainer {
+	position:absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	margin: 0.2em;
+	font-weight: normal;
+	visibility: hidden;
+}
+
+textarea[disabled] {
+	background: none repeat scroll 0 0 Menu;
+	color: GrayText;
+}
+
+textarea {
+	padding: 0.2em;
+	line-height: 0.9em;
+}
+
+/* header */
+
+h1 {
+	display: inline-block;
+	float:left;
+	margin: 0 1.0em 0 0.2em;
+	padding: 0;
+	font-variant: small-caps;
+	font-family: Lucida Grande, Lucida Sans, Arial, sans-serif;
+	font-size: 2.0em;
+	color: #e17009;
+	letter-spacing:-0.1em;
+}
+
+#info {
+	float: right;
+	font-size: 0.75em;
+	color: white;
+	margin-right:1em;
+	margin-top:2em;
+}
+#info div {
+	float: right;
+}
+
+#divMain {
+	position:absolute;
+	top:2.9em;
+	left:0.4em;
+	right:0.6em;
+	bottom:0.6em;
+}
+
+#divMain .vsplitbar {
+	width: 0.5em;
+	background: none;
+	text-align: center;
+	vertical-align: middle;
+}
+
+/* sequence selection pane */
+#divSequenceSelection {
+	display:none;
+	position:absolute;
+	top:0; left:0; bottom:0;
+	border-top: none;
+	
+	overflow: auto;
+	min-width: 100px;
+	width: 300px;
+}
+
+#tblProteins tr td:nth-child(2) {
+	color: #aaa;
+	font-style: italic;
+}
+#tblProteins tr.selected td:nth-child(2) {
+	color: #ccc;
+}
+
+table.treetable span.mod {
+	font-size: 0.5em;
+	padding: 0;
+}
+
+/* splitpanes */
+
+#divContent {
+	position:absolute;
+	top: 0; left:0; right:0; bottom:0;
+}
+
+#divContent .hsplitbar {
+	height: 0.5em;
+	background: none;
+	text-align: center;
+	vertical-align: middle;
+}
+
+/* top splitpane */
+
+#divSettings {
+	overflow: auto;
+	min-height: 10px;
+	max-height: 600px;
+	height: 200px;
+	border-top: none;
+}
+
+/* bottom splitpane */
+
+#divSvgContainer {
+	overflow: auto;
+	position:absolute;
+	left:0;
+	right:0;
+	top:0;
+	bottom:0;
+	padding-top: 20px;
+	padding-left: 20px;
+	padding-bottom: 5px;
+	padding-right: 5px;
+}
+.loading {
+	background: url(load.gif) center center no-repeat;
+}
+
+#tabMain a {
+	padding-left: 0.5em;
+}
+#tabMain img {
+	float:left; 
+	width:20px;
+	margin: -0.2em 0.4em 0 -0.2em;
+}
+#imgHelp {
+	margin: 0 !important;
+	padding-left:0.5em;
+	padding-top:0.2em;
+}
+
+/* buttons */
+
+button {
+	margin-top: 0.2em;
+	margin-bottom: 0.2em;
+}
+
+.ui-button span.ui-button-text {
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+	font-weight: normal !important;
+}
+
+#btnZoomIn, #btnZoomOut, #btnFitToScreen {
+	clear:both;
+	float:left;
+}
+
+div.button {
+	padding: 2px 0;
+	cursor: pointer;
+	display: inline-block;
+}
+div.button span.button {
+	margin: 0 2px;
+}
+
+/*
+div.button {
+	margin: 2px; 
+	position: relative; 
+	padding: 4px 0; 
+	cursor: pointer;
+	display: inline-block;
+	height: 16px;
+	font-weight: normal !important;
+}
+#tabSequence div.button {
+	float:left;
+	padding-right: 6px;
+}
+#svgControls div.button {
+	float:left;
+}
+#btnReload, #btnSave, #btnMail, #btnBatch {
+	padding-right: 6px;
+}
+
+span.button {
+	float: left;
+	margin: 0 4px;
+}
+div.button.ui-state-active span.button {
+	float: left; 
+	margin: 1px 3px -1px 5px;
+}
+
+.ui-button-text-only .ui-button-text {
+    padding: 0 0.4em;
+}
+#tblStyles div.button {
+	padding: 2px 0;
+}
+#tblStyles span.button {
+	margin: 0 2px;
+}
+#tblStyles div.button.ui-state-active span.button {
+	margin: 1px 1px -1px 3px;
+}
+*/
+
+#formBatch em {
+	font-size: 0.7em;
+}
+
+/* SVG */
+
+svg {
+	margin: 0 auto;
+	display:block;
+}
+
+#status {
+	/*float: left;*/
+	margin: 5px 0 0 5px;
+	position: absolute;
+	left: 5px;
+	bottom: 5px;
+}
+#svgControls {
+	float: left;
+	margin: 3px;
+	/*margin-right: 20px;*/
+}
+#svgControls .ui-button span.ui-button-text {
+	padding-top:0.1em;
+	padding-bottom:0.1em;
+}
+#svgControls .ui-button.ui-button-icon-only span.ui-button-text {
+	padding-top:0.4em;
+	padding-bottom:0.4em;
+}
+
+/* Tabs */
+
+div.tab {
+	/*overflow: hidden;*/
+	position:absolute;
+	left:0;
+	right:0;
+	top:0;
+	bottom:0;
+	margin-bottom:0;
+}
+
+/* Tab: Sequence */
+
+#divSequenceInput {
+	position: absolute; 
+	top: 0; bottom: 0.5em; left: 0; right: 0; 
+	background: transparent; 
+	border: none;
+}
+#divSequenceInput > div { 
+	position: absolute; 
+	top: 0;
+	bottom: 0;
+	left: 8.5em;
+	right: 0;
+	margin: 0 0 0 1em;
+	overflow: auto;
+}
+#divSequenceInput .ui-tabs-nav { 
+	position: absolute; 
+	left: 0; top: 0; bottom: 0; 
+	width: 7.5em;
+	margin: 0; 
+	padding: 0; 
+} 
+#divSequenceInput .ui-tabs-nav li { 
+	right: -1px; 
+	width: 100%; 
+	border-right: none; 
+	border-bottom-width: 1px !important; 
+	overflow: hidden; 
+} 
+#divSequenceInput .ui-tabs-nav li.ui-tabs-selected, 
+#divSequenceInput .ui-tabs-nav li.ui-state-active { 
+    border-right: 1px solid transparent; 
+} 
+#divSequenceInput .ui-tabs-nav li a { 
+	float: right; 
+	width: 100%; 
+	text-align: right; 
+} 
+#divSequenceInput .ui-widget-header { 
+	background: transparent; 
+	border: none; 
+	border-right: 1px solid #c0c0c0; 
+	border-radius: 0px; 
+} 
+#divSequenceInput .ui-tabs-nav .ui-state-default { 
+	background: transparent; 
+	border: none; 
+} 
+#divSequenceInput .ui-tabs-nav .ui-state-active { 
+	background: transparent url(uiTabsArrowVertical.png) no-repeat center right; 
+	border: none !important; 
+} 
+#divSequenceInput .ui-tabs-nav .ui-state-default a { 
+	color: #c0c0c0; 
+} 
+#divSequenceInput .ui-tabs-nav .ui-state-active a { 
+	color: #E17009; 
+}
+
+#inpFasta {
+	position:absolute;
+	left:0;
+	top:0;
+}
+
+/*#divSequenceSelection {
+	display: none;
+}
+
+#txtSequence {
+	height: 100px;
+	width: 100%;
+}
+*/
+
+/*
+#tblProteins {
+	margin: 0;
+	text-align: left;
+	position: relative;
+	width: 100%;
+	table-layout: fixed;
+	border-collapse: collapse;
+	border-spacing: 0px;
+	white-space: nowrap;
+}
+#tblProteins td, #tblProteins th {
+	overflow: hidden; 
+	text-overflow: ellipsis;
+	display: inline-block;
+	position: relative;
+	margin-right: -5px;
+}
+#tblProteins td:nth-child(1), #tblProteins th:nth-child(1) {
+	width: 30%;
+}
+#tblProteins td:nth-child(2), #tblProteins th:nth-child(2) {
+	width: 70%;
+}
+#tblProteins tr {
+	display: block;
+	position: relative;
+}
+#tblProteinsBody {
+	display: block;
+	overflow: auto;
+	width: 100%;
+}
+*/
+
+#divProteinTableWrapper {
+	bottom: 2.5em;
+	top: 2em;
+	display: block;
+	overflow: auto;
+	position: absolute;
+	padding-right: 1.1em;
+	left: 0em;
+	right: 0em;
+}
+
+table.treetable {
+  border-collapse: collapse;
+  /*font-size: .8em;*/
+  line-height: 1;
+  white-space: nowrap;
+  /*margin: .6em 0 1.8em 0;*/
+  /*width: 100%;*/
+}
+table.treetable tbody tr td {
+  cursor: default;
+  padding: .3em 1em;
+}
+table.treetable span {
+  background-position: center left;
+  background-repeat: no-repeat;
+  padding: .2em 0 .2em 1.5em;
+}
+table.treetable tr.collapsed span.indenter a {
+  background-image: url("lib/jquery.treetable/expand.png");
+}
+table.treetable tr.expanded span.indenter a {
+  background-image: url("lib/jquery.treetable/collapse.png");
+}
+/*table.treetable tr.branch {
+    background-color: #f9f9f9;
+}*/
+table.treetable tr.selected {
+  background-color: #4297D7;
+  color: #fff;
+}
+table.treetable tr.collapsed.selected span.indenter a {
+  background-image: url("lib/jquery.treetable/expand-light.png");
+}
+table.treetable tr.expanded.selected span.indenter a {
+  background-image: url("lib/jquery.treetable/collapse-light.png");
+}
+
+/* Tab: Topology */
+
+.divVerticalSet {
+	display: inline-block;
+	vertical-align: top;
+	margin-right: 2em;
+	height: 100%;
+}
+
+#divTransmembraneWrapper, #divIntramembraneWrapper, #divAnchorsWrapper, #divNtermWrapper, #divTopoWrapper {
+	position: absolute;
+	bottom: 0.8em;
+	top: 1.4em;
+	margin-left: 0.4em;
+}
+
+#txtTransmembrane, #txtIntramembrane, #txtAnchors {
+	position:relative;
+	height:100%;
+}
+
+div.verticalbuttonset label {
+	float: left;
+	clear: both;
+	width: 9em;
+}
+
+
+/* Tab: Styles */
+
+#tabStyles {
+	padding-bottom: 1em;
+}
+
+#divStyleTableWrapper {
+	height: 100%;
+	display: inline-block;
+	overflow: hidden;
+	position: relative;
+	width:100%;
+}
+
+#tblStyles {
+	border-collapse: collapse;
+	margin: 0;
+	text-align: center;
+	position: relative;
+	width:100%;
+}
+#tblStyles tr {
+	border: 1px hidden;
+	display: inline-block;
+	width:100%;
+}
+#tblStyles tr.tDnD_whileDrag {
+	opacity: 0.5;
+}
+#tblStyles .dragHandle {
+	cursor: n-resize;
+}
+
+#tblStyles {
+	position: relative;
+}
+#tblStylesHead {
+	position: relative;
+	top: 0;
+	width: 100%;
+}
+
+#tblStylesFoot {
+	position: relative;
+	bottom: 0;
+	width: 100%;
+}
+
+#tblStylesBody {
+	display:block;
+	position: relative;
+	width:100%;
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+#tblStyles .columnDrag {min-width: 16px;}
+#tblStyles .columnName {min-width: 120px;}
+#tblStyles .columnShape {min-width: 100px;}
+#tblStyles .columnCC {min-width: 110px;}
+#tblStyles .columnFC {min-width: 110px;}
+#tblStyles .columnBC {min-width: 110px;}
+#tblStyles .columnRange {height:100%; width:100%; position:relative;}
+#tblStyles .columnActive {min-width: 50px;}
+#tblStyles .columnDelete {min-width: 50px;}
+
+#tblStyles th, #tblStyles td {
+	padding: 0 10px;
+}
+
+#tblStyles textarea {
+	min-height: 3em;
+	width:100%;
+	height:100%;
+}
+
+#tblStyles .columnName input {width: 100%;}
+
+#tblStyles .divStyleRangeWrapper {position:relative; width:100%; height:100%;}
+#tblStyles .buttonAddRange {position:absolute; right:10px; bottom:2px;}
+.divVerticalSet .buttonAddRange {position:absolute; right:10px; bottom:2px;}
+
+.lblShapeNone, .lblShapeCircle, .lblShapeBox, .lblShapeDiamond {
+	margin: 0 !important;
+}
+.lblShapeNone {
+	margin-right: 3px !important;
+}
+.lblShapeNone span, .lblShapeCircle span, .lblShapeBox span, .lblShapeDiamond span {
+	height: 16px;
+	width: 16px;
+	padding: 0 !important;
+}
+.lblShapeCircle span {
+	background: url("circle_default.png") no-repeat scroll 50% 50% !important;
+}
+.lblShapeCircle.ui-state-hover span {
+	background-image: url("circle_hover.png") !important;
+}
+.lblShapeCircle.ui-state-active span {
+	background-image: url("circle_active.png") !important;
+}
+.lblShapeBox span {
+	background: url("box_default.png") no-repeat scroll 50% 50% !important;
+}
+.lblShapeBox.ui-state-hover span {
+	background-image: url("box_hover.png") !important;
+}
+.lblShapeBox.ui-state-active span {
+	background-image: url("box_active.png") !important;
+}
+.lblShapeDiamond span {
+	background: url("diamond_default.png") no-repeat scroll 50% 50% !important;
+}
+.lblShapeDiamond.ui-state-hover span {
+	background-image: url("diamond_hover.png") !important;
+}
+.lblShapeDiamond.ui-state-active span {
+	background-image: url("diamond_active.png") !important;
+}
+
+/*
+ * Color Picker
+ */
+div.color_picker {
+	height: 16px;
+	width: 16px;
+	padding: 0 !important;
+	cursor: pointer;
+	line-height: 16px;
+	background-image: none !important;
+	display: inline-block;  
+}
+
+div#color_selector {
+	width: 168px; /* 14*12px */
+	position: absolute;
+	padding: 5px;
+	z-index: 101;
+}
+
+div.color_swatch {
+	height: 10px;
+	width: 10px;
+	margin: 0;
+	float: left;
+	cursor: pointer;
+	line-height: 10px;
+	padding: 1px;
+}
+div.color_swatch:hover {
+	border: 1px outset #888888;
+	padding: 0px;
+}
+div.color_swatch_noChange {
+	height: 10px;
+	width: 166px;
+	font-size: 0.7em;
+	text-align: center;
+}
+div.color_swatch_noChange span.ui-icon {
+	height: 13px;
+	margin-left: -4px;
+	margin-top: -3px;
+	width: 14px;
+}
+
+/* Tab: Misc */
+
+#divTMlabelWrapper {
+	display: inline-block;
+}
+
+#tabMisc table {
+	border-spacing: 0.2em 0.4em;
+}
+
+/*#miscOthers span {
+	line-height: 1.5em;
+}*/
+
+/* Batch Process Dialog */
+#formBatch {
+	height: 100%;
+}
+
+#divBatchSettingsBottom {
+	position: absolute;
+	bottom: 0.25em;
+}
+#divBatchSettings { 
+    position: absolute; 
+    padding-left: 8.5em; 
+    top: 2em;
+    bottom: 7em;
+    left: 1em;
+    right: 1em;
+    
+    background: transparent; 
+    border: none; 
+} 
+#divBatchSettings > div { 
+    position: absolute; 
+    top: 0;
+    bottom: 0;
+    left: 8.5em;
+    right: 0;
+    margin: 0.5em 0.5em 0.5em 1.5em;
+    overflow: auto;
+}
+#divBatchSettings .ui-tabs-nav { 
+    position: absolute; 
+    left: 0.25em; 
+    top: 0.25em; 
+    bottom: 0.25em; 
+    width: 8em; 
+    padding: 0.2em 0 0.2em 0.2em; 
+} 
+#divBatchSettings .ui-tabs-nav li { 
+    right: -1px; 
+    width: 100%; 
+    border-right: none; 
+    border-bottom-width: 1px !important; 
+    overflow: hidden; 
+} 
+#divBatchSettings .ui-tabs-nav li.ui-tabs-selected, 
+#divBatchSettings .ui-tabs-nav li.ui-state-active { 
+    border-right: 1px solid transparent; 
+} 
+#divBatchSettings .ui-tabs-nav li a { 
+    float: right; 
+    width: 100%; 
+    text-align: right; 
+} 
+
+
+#divBatchSettings .ui-widget-header { 
+    background: transparent; 
+    border: none; 
+    border-right: 1px solid #c0c0c0; 
+    border-radius: 0px; 
+} 
+#divBatchSettings .ui-tabs-nav .ui-state-default { 
+    background: transparent; 
+    border: none; 
+} 
+#divBatchSettings .ui-tabs-nav .ui-state-active { 
+    background: transparent url(uiTabsArrowVertical.png) no-repeat center right; 
+    border: none; 
+} 
+#divBatchSettings .ui-tabs-nav .ui-state-default a { 
+    color: #c0c0c0; 
+} 
+#divBatchSettings .ui-tabs-nav .ui-state-active a { 
+    color: #E17009; 
+}
+
+
+#formBatch div.divBatchStyleWrapper {
+	position:absolute;
+}
+#formBatch .divVerticalSet {
+	width: 150px;
+	height: 120px;
+}
+
+
+/* override some jquery.ui defaults */
+.ui-widget {
+	font-size: 1.0em;
+}
+
+.ui-tabs .ui-tabs-panel {
+	padding: 0;
+	margin: 1em 1.4em 0 1.4em;
+}
+
+.ui-icon {
+	display: inline-block;
+}
+
+.ui-widget-header a {
+	color: inherit;
+}
+
+.fg-menu-container {
+	font-size: 0.75em;
+}

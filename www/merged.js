@@ -2950,7 +2950,18 @@ function Parser (files, onDone) {
 				var modName = elems[1].replace(/\"/g, "");
 				modsByID[modID] = modName;
 			} else if (section == "proteins") {
-				var elems = line.split(/,/g);
+				// parse csv encoded line
+				var elems = [];
+				for (var startPos=0, endPos=0; endPos<line.length; startPos=endPos+1) {
+					if (line.charAt(startPos)=='"') { 
+						endPos = line.indexOf(',', line.indexOf('"', startPos+1)); 
+					} else {
+						endPos = line.indexOf(',', startPos);
+					}
+					if (endPos==-1) { endPos = line.length; }
+					elems.push(line.substring(startPos, endPos));
+				}
+				
 				if (elems[i_protFamilyMember].length==0)
 					continue; // subsumable protein entry; otherwise 1,2,3...
 				var strProtein = elems[i_protein].replace(/\"/g, "");
@@ -3429,6 +3440,7 @@ $(document).ready(function(){
 			"<li><a href='#' title='png' target='_blank'>Raster Graphic (png)</a></li>" +
 			"<li><a href='#' title='svg' target='_blank'>Vector Graphic (svg)</a></li>" +
 			"<li><a href='#' title='pdf' target='_blank'>Vector Graphic (pdf)</a></li>" +
+			"<li><a href='#' title='pptx' target='_blank'>PowerPoint (pptx)</a></li>" +
 		"</ul>"
 		, flyOut: true });
 		
@@ -3463,7 +3475,8 @@ $(document).ready(function(){
 		onDrop: refresh
 	});
 	
-	$("#txtTransmembrane").uoRangeInput("<li><a href='#' class='rangeMenuItemSelectedRange' title='' style='display:none'>selected range</a></li><li><a href='#' title='UP.TRANSMEM,UP.INTRAMEM'>UniProt tm-regions</a></li><li><a href='#' title='Phobius.TM'>Phobius tm-regions</a></li>");
+	$("#txtTransmembrane").uoRangeInput("<li><a href='#' class='rangeMenuItemSelectedRange' title='' style='display:none'>selected range</a></li><li><a href='#' title='UP.TRANSMEM'>UniProt trans-membrane regions</a></li><li><a href='#' title='Phobius.TM'>Phobius trans-membrane regions</a></li>");
+	$("#txtIntramembrane").uoRangeInput("<li><a href='#' class='rangeMenuItemSelectedRange' title='' style='display:none'>selected range</a></li><li><a href='#' title='UP.INTRAMEM'>UniProt intra-membrane regions</a></li>");
 	$("#txtAnchors").uoRangeInput("<li><a href='#' class='rangeMenuItemSelectedRange' title='' style='display:none'>selected range</a></li><li><a href='#' title='UP.LIPID'>UniProt Lipidation</a></li>");
 	
 	// making textboxes tab aware
@@ -3520,10 +3533,12 @@ $(document).ready(function(){
 	});
 	$("#divNtermWrapper label[for='selNtermPhobius']").click(function() {
 		$("#txtTransmembrane").val("PHOBIUS.TM");
+		$("#txtIntramembrane").val("");
 		$("#txtAnchors").val("");
 	});
 	$("#divNtermWrapper label[for='selNtermUniprot']").click(function() {
-		$("#txtTransmembrane").val("UP.TRANSMEM,UP.INTRAMEM");
+		$("#txtTransmembrane").val("UP.TRANSMEM");
+		$("#txtIntramembrane").val("UP.INTRAMEM");
 		$("#txtAnchors").val("UP.LIPID");
 	});
 	$("#divNtermWrapper").buttonset().change();
@@ -3533,10 +3548,12 @@ $(document).ready(function(){
 		if ($("#divTopoWrapper input:checked").val() == "none" || $("#divTopoWrapper input:checked").val() == "auto") {
 			$("#divNtermWrapper").buttonset("disable");
 			$("#txtTransmembrane").attr("disabled", "disabled");
+			$("#txtIntramembrane").attr("disabled", "disabled");
 			$("#txtAnchors").attr("disabled", "disabled");
 		} else {
 			$("#divNtermWrapper").buttonset("enable");
 			$("#txtTransmembrane").removeAttr("disabled");
+			$("#txtIntramembrane").removeAttr("disabled");
 			$("#txtAnchors").removeAttr("disabled");
 		}
 		$("#divTopoWrapper label").removeClass("ui-corner-left ui-corner-right");
@@ -3560,6 +3577,7 @@ $(document).ready(function(){
 	$("#divTopoWrapper input").change(refresh);
 	$("#divNtermWrapper input").change(refresh);
 	$("#txtTransmembrane").change(refresh);
+	$("#txtIntramembrane").change(refresh);
 	$("#txtAnchors").change(refresh);
 	
 	$("#colMembrane").change(refresh);
@@ -3568,6 +3586,7 @@ $(document).ready(function(){
 	$("#lstProtease").change(refresh);
 	$("#bolNumbers").change(refresh);
 	$("#bolLegend").change(refresh);
+	$("#txtTextopo").change(refresh);	
 	
 	$("#divUniprotDialog").dialog({
 		resizable: true,
@@ -3679,6 +3698,11 @@ function updateQueryString(format){
 				query.tm = tmRegions;
 				queryElements.push("tm=" + tmRegions);
 			}
+			var imRegions = $("#txtIntramembrane").val().replace(/\s+/g,",")
+			if (imRegions.length>0) {
+				query.im = imRegions;
+				queryElements.push("im=" + imRegions);
+			}
 			var anchors = $("#txtAnchors").val().replace(/\s+/g,",");
 			if (anchors.length>0) {
 				query.anchor = anchors;
@@ -3709,6 +3733,11 @@ function updateQueryString(format){
 	if (protease.length>0) {
 		query.protease = protease;
 		queryElements.push("cutAt=" + protease);
+	}
+	
+	var textopo = $("#txtTextopo").val().replace(/\s+/g,";");
+	if (textopo.length > 0) {
+		queryElements.push("tex="+textopo);
 	}
 	
 	//if (defaultStyles==true && getStyles().length==0) {
@@ -3807,11 +3836,13 @@ function loadFromQueryString(){
 	
 	var nterm = queryElements["nterm"] ? queryElements["nterm"] : "";
 	var tmRegions = queryElements["tm"] ? queryElements["tm"] : "";
+	var imRegions = queryElements["im"] ? queryElements["im"] : "";
 	if (tmRegions.toLowerCase()=="auto") {
 		$("#divTopoWrapper input[value='auto']").prop('checked',true).button("refresh");
 		$("#divTopoWrapper").buttonset().change();
 	} else {
 		$("#txtTransmembrane").val(tmRegions.replace(/,/g,"\n"));
+		$("#txtIntramembrane").val(imRegions.replace(/,/g,"\n"));
 		if (nterm=="") { // NONE
 			$("#divTopoWrapper input[value='none']").prop('checked',true).button("refresh");
 			$("#divTopoWrapper").buttonset().change();
@@ -3843,6 +3874,9 @@ function loadFromQueryString(){
 	$("#bolNumbers").prop('checked', ("numbers" in queryElements)).button("refresh");
 	
 	$("#bolLegend").prop('checked', ("legend" in queryElements)).button("refresh");
+	
+	var textopo = queryElements["tex"] ? queryElements["tex"] : "";
+	$("#txtTextopo").val(textopo.replace(/;/g,"\n"));
 	
 	clearStyles();
 	for (var key in queryElements) {
