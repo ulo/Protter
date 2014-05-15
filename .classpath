@@ -20,20 +20,20 @@
 	<classpathentry exported="true" kind="lib" path="lib/batik/batik-codec.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/batik/batik-parser.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/batik/batik-script.jar"/>
-	<classpathentry kind="lib" path="lib/uniprotjapi/aopalliance.jar"/>
-	<classpathentry kind="lib" path="lib/uniprotjapi/commons-codec.jar"/>
-	<classpathentry kind="lib" path="lib/uniprotjapi/commons-httpclient.jar"/>
-	<classpathentry kind="lib" path="lib/uniprotjapi/commons-logging.jar"/>
-	<classpathentry kind="lib" path="lib/uniprotjapi/log4j.jar"/>
-	<classpathentry kind="lib" path="lib/uniprotjapi/spring.aop.jar"/>
-	<classpathentry kind="lib" path="lib/uniprotjapi/spring.beans.jar"/>
-	<classpathentry kind="lib" path="lib/uniprotjapi/spring.context.jar"/>
-	<classpathentry kind="lib" path="lib/uniprotjapi/spring.core.jar"/>
-	<classpathentry kind="lib" path="lib/uniprotjapi/spring.web.jar"/>
-	<classpathentry kind="lib" path="lib/uniprotjapi/uniprotjapi.jar"/>
 	<classpathentry kind="lib" path="lib/batik/pdf-transcoder.jar"/>
 	<classpathentry kind="lib" path="lib/batik/pdfbox-1.8.0.jar"/>
 	<classpathentry kind="lib" path="lib/javax.mail-1.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/guava-11.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/aopalliance-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/commons-codec-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/commons-httpclient-3.1.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/commons-logging-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/log4j-1.2.9.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring-aop-3.2.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring-beans-3.2.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring-context-3.2.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring-core-3.2.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring-web-3.2.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/uniprotjapi.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
