@@ -5,7 +5,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import at.omasits.proteomics.protter.ProtterServer;
 import at.omasits.util.Log;
+import at.omasits.util.Util;
+import at.omasits.util.httpServer.NanoHTTPD;
 
 
 import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
@@ -46,6 +49,7 @@ public class Range implements Comparable<Range> {
 		for(String rangeString : arr) {
 			if (rangeString.length()==0)
 				continue;
+			rangeString = Util.decodePercent(rangeString);
 			IRangeParser rp = RangeParserProvider.getMatchingRangeProvider(rangeString);
 			List<? extends Range> newParsedRanges = rp.parse(rangeString, sequence, up, parms);
 			if (newParsedRanges != null && newParsedRanges.size()>0)

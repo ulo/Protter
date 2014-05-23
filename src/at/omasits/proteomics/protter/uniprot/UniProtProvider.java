@@ -47,7 +47,9 @@ public class UniProtProvider {
 		} catch (Exception e) {
 			if (e.getCause() instanceof RemoteAccessException) {
 				e = new Exception("Could not access UniProt as it looks like its API was updated. Please report to protter@imsb.biol.ethz.ch!");
-				Util.sendMail(Config.get("mail_from"), "UniProt RemoteAccessException on "+identifier, "");
+				if (Boolean.parseBoolean(Config.get("mail_report_errors", "false"))) {
+					Util.sendMail(Config.get("mail_from"), "UniProt RemoteAccessException on "+identifier, "");
+				}
 			}
 			unknowns.put(identifier, e.getMessage());
 			throw e;
