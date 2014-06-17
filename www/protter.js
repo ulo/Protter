@@ -520,6 +520,9 @@ $(document).ready(function(){
 	$("#divContainer").css("visibility", "visible");
 	$("#body").removeClass("loading");
 	$("#body").addClass("ui-widget-header");
+	
+	$("#message").click( function() { $("#message").hide(); } );
+	//showMessageAlert("Problems with UniProt", "The current version of UniProt comes with a broken interface and therefore Protter currently cannot query UniProt resources. The UniProtJAPI team is working on a solution.");
 });
 
 /*
