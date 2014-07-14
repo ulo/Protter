@@ -45,11 +45,12 @@ public class Range implements Comparable<Range> {
 	
 	public static List<? extends Range> parseMultiRangeString(String multiRangeString, String sequence, UniProtEntry up, String tag, Map<String,String> parms) throws Exception {
 		List<Range> ranges = new ArrayList<Range>();
+		multiRangeString = multiRangeString.replaceAll("(\\{\\d+),", "$1;"); // replace {N,} {N,M} with {N;} {N;M} 
 		String[] arr = multiRangeString.split(",");
 		for(String rangeString : arr) {
 			if (rangeString.length()==0)
 				continue;
-			rangeString = Util.decodePercent(rangeString);
+			rangeString = rangeString.replaceAll("(\\{\\d+);", "$1,"); // replace back to comma
 			IRangeParser rp = RangeParserProvider.getMatchingRangeProvider(rangeString);
 			List<? extends Range> newParsedRanges = rp.parse(rangeString, sequence, up, parms);
 			if (newParsedRanges != null && newParsedRanges.size()>0)

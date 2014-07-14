@@ -872,9 +872,7 @@ public abstract class NanoHTTPD {
                         //p.put(decodePercent(e.substring(0, sep)).trim(), decodePercent(e.substring(sep + 1)));
                     	// UO: if param already exists -> merge them comma separated
                     	String key = decodePercent( e.substring( 0, sep )).trim();
-                    	// UO: will manually decode values later in rangeparser
-    					//String value = decodePercent( e.substring( sep+1 ));
-                    	String value = e.substring( sep+1 );
+    					String value = decodePercent( e.substring( sep+1 ));
     					if (p.containsKey(key))
     						p.put(key, p.get(key)+","+value);
     					else
