@@ -17,7 +17,7 @@ A manuscript on Protter has been published in Bioinformatics, 2013:
 http://bioinformatics.oxfordjournals.org/content/early/2013/11/21/bioinformatics.btt607.long
 
 ### Contact
-For questions, comments, suggestions please contact me at protter@imsb.biol.ethz.ch
+If you have questions, encounter any error or bug, or have suggestions on how to improve Protter, please contribute to the Protter discussion group: https://groups.google.com/d/forum/protter
 
 ### License
 This projected is licensed under the terms of the GNU General Public License v3.0.
