@@ -537,7 +537,7 @@ function refresh() {
 		$("#divSequenceInput").tabs("option", "active", 1);
 	}
 	svgAAunselect();
-	reloadRangeMenues();
+	resetRangeMenues();
 	
 	if (updateQueryString("svg")) {
 		//location.hash = basePath + "?" + queryString;
@@ -706,8 +706,6 @@ function loadFromQueryString(){
 	var params = decodeURIComponent(location.hash.substring(1));
 	var queryElements = string2associativeArray(params, "&", "=");
 	
-	query = {peps:[], mods:{}};
-	
 	isMulti = false;
 	$("#divSequenceSelection").hide();
 	$("div.vsplitbar").hide();
@@ -779,13 +777,26 @@ function loadFromQueryString(){
 	var textopo = queryElements["tex"] ? queryElements["tex"] : "";
 	$("#txtTextopo").val(textopo.replace(/;/g,"\n"));
 	
+	query = {peps:[], mods:{}};
 	clearStyles();
 	for (var key in queryElements) {
 		if (key.indexOf(":") != -1) { // is a style (styleDefinitions:ranges)
 			defaultStyles = false;
 			addStyle(key, queryElements[key]);
 			//TODO: handle empty styles properly!!!
+		} else if (key.indexOf("mod") === 0) {
+			query.mods[key.substring(3)] = {};
+			queryElements[key].split(",").forEach( function(modSeq) {
+				query.mods[key.substring(3)][modSeq] = true;
+			});
 		}
+	}
+	
+	if (queryElements["peptides"]) {
+		query.peps = queryElements["peptides"].split(",");
+		$(".rangeMenuItemProteomics").show();
+		$(".rangeMenuItemProteomics", rangeMenu).show();
+		updateRangeMenuMods(Object.keys(query.mods));
 	}
 }
 
@@ -865,7 +876,7 @@ $.fn.uoRangeInput = function(rangeList){
 	});
 }
 
-function reloadRangeMenues() {
+function resetRangeMenues() {
 	$("#tblStyles .buttonAddRange").remove();
 	$("#tblStyles .txtStyleRange").uoRangeInput(rangeMenu.html());
 }
@@ -1457,6 +1468,7 @@ function addProtein(name, seq, peps, mods, displayPeptideCount) {
 	});
 }
 
+
 function loadProteinsFromSequences(e) {
 	e.preventDefault();
 	isUniprot = false;
@@ -1522,13 +1534,7 @@ function loadProteinsFromProteomics(e) {
 			addProtein(protein, null, this.proteins[protein].modPeptides, this.proteins[protein].mods, true);
 		}
 		
-		$(".rangeMenuItemModifications", rangeMenu).show();
-		$(".rangeMenuItemModifications + ul", rangeMenu).empty();
-		$(".rangeMenuItemModifications + ul", rangeMenu).append("<li><a href='#' title='EX.MODALL'>all modifications</a></li>");
-		for(var i = 0, mod; mod = Object.keys(this.modsGlobal)[i]; i++) {
-			key = "EX." + generateModString(mod);
-			$(".rangeMenuItemModifications + ul", rangeMenu).append("<li><a href='#' title='"+key+"'>"+mod+"</a></li>");
-		}
+		updateRangeMenuMods(Object.keys(this.modsGlobal));
 		
 		svgContainer.removeClass("loading");
 		showProteins();
@@ -1542,6 +1548,16 @@ function loadProteinsFromProteomics(e) {
 
 function generateModString(mod) {
 	return "mod" + mod.replace(/\W/g, "_");
+}
+
+function updateRangeMenuMods(mods) {
+	$(".rangeMenuItemModifications", rangeMenu).show();
+	$(".rangeMenuItemModifications + ul", rangeMenu).empty();
+	$(".rangeMenuItemModifications + ul", rangeMenu).append("<li><a href='#' title='EX.MODALL'>all modifications</a></li>");
+	for(var i = 0, mod; mod = mods[i]; i++) {
+		key = "EX." + generateModString(mod);
+		$(".rangeMenuItemModifications + ul", rangeMenu).append("<li><a href='#' title='"+key+"'>"+mod+"</a></li>");
+	}
 }
 
 function reset() {

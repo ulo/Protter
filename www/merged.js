@@ -3002,17 +3002,18 @@ function Parser (files, onDone) {
 			var elems = line.split(/\t/g);
 			var strPeptide = elems[i_peptide]; // AHVIIGNISENMTIYGFDK
 			var strPeptideMod = elems[i_peptideMod]; // e.g. _AHVIIGNISEN(de)M(ox)TIYGFDK_
+			strPeptideMod = strPeptideMod.substring(1, strPeptideMod.length-1);
 			var strProtein = elems[i_protein].split(';')[0]; // first of protein groups
-			parser.addPeptide(strProtein, strPeptide, strPeptideMod.substring(1, strPeptideMod.length-1).replace(/\(/g, "<span class='mod'>").replace(/\)/g, "</span>"));
+			parser.addPeptide(strProtein, strPeptide, strPeptideMod.replace(/\(/g, "<span class='mod'>").replace(/\)/g, "</span>"));
 			
 			var k = 0;			
 			// store all modified peptide sequences, per modification
 			while((k = strPeptideMod.indexOf('(', k)) >= 0) {
 				var l = strPeptideMod.indexOf(')', k);
-				var mod = strPeptideMod.substring(k-1, l+1);
-				var modPep = strPeptideMod.substring(0, k-1) + "(" + strPeptideMod.substring(k-1, k) + ")" + strPeptideMod.substring(l+1);
+				var mod = strPeptideMod.substring(k-1, k) + strPeptideMod.substring(k+1, l); // e.g. Mox, Tph, Sph, ...
+				var modPep = strPeptideMod.substring(0, k-1) + "[" + strPeptideMod.substring(k-1, k) + "]" + strPeptideMod.substring(l+1);
 				//TODO: support terminal mods
-				modPep = modPep.replace(/\(.+?\)/g, ""); // remove all other mods
+				modPep = modPep.replace(/\(.+?\)/g, "").replace(/\[/, "(").replace(/\]/, ")"); // remove all other mods
 				parser.addMod(strProtein, mod, modPep);
 				k++;
 			}
@@ -3639,7 +3640,7 @@ function refresh() {
 		$("#divSequenceInput").tabs("option", "active", 1);
 	}
 	svgAAunselect();
-	reloadRangeMenues();
+	resetRangeMenues();
 	
 	if (updateQueryString("svg")) {
 		//location.hash = basePath + "?" + queryString;
@@ -3808,8 +3809,6 @@ function loadFromQueryString(){
 	var params = decodeURIComponent(location.hash.substring(1));
 	var queryElements = string2associativeArray(params, "&", "=");
 	
-	query = {peps:[], mods:{}};
-	
 	isMulti = false;
 	$("#divSequenceSelection").hide();
 	$("div.vsplitbar").hide();
@@ -3881,13 +3880,26 @@ function loadFromQueryString(){
 	var textopo = queryElements["tex"] ? queryElements["tex"] : "";
 	$("#txtTextopo").val(textopo.replace(/;/g,"\n"));
 	
+	query = {peps:[], mods:{}};
 	clearStyles();
 	for (var key in queryElements) {
 		if (key.indexOf(":") != -1) { // is a style (styleDefinitions:ranges)
 			defaultStyles = false;
 			addStyle(key, queryElements[key]);
 			//TODO: handle empty styles properly!!!
+		} else if (key.indexOf("mod") === 0) {
+			query.mods[key.substring(3)] = {};
+			queryElements[key].split(",").forEach( function(modSeq) {
+				query.mods[key.substring(3)][modSeq] = true;
+			});
 		}
+	}
+	
+	if (queryElements["peptides"]) {
+		query.peps = queryElements["peptides"].split(",");
+		$(".rangeMenuItemProteomics").show();
+		$(".rangeMenuItemProteomics", rangeMenu).show();
+		updateRangeMenuMods(Object.keys(query.mods));
 	}
 }
 
@@ -3967,7 +3979,7 @@ $.fn.uoRangeInput = function(rangeList){
 	});
 }
 
-function reloadRangeMenues() {
+function resetRangeMenues() {
 	$("#tblStyles .buttonAddRange").remove();
 	$("#tblStyles .txtStyleRange").uoRangeInput(rangeMenu.html());
 }
@@ -4559,6 +4571,7 @@ function addProtein(name, seq, peps, mods, displayPeptideCount) {
 	});
 }
 
+
 function loadProteinsFromSequences(e) {
 	e.preventDefault();
 	isUniprot = false;
@@ -4624,13 +4637,7 @@ function loadProteinsFromProteomics(e) {
 			addProtein(protein, null, this.proteins[protein].modPeptides, this.proteins[protein].mods, true);
 		}
 		
-		$(".rangeMenuItemModifications", rangeMenu).show();
-		$(".rangeMenuItemModifications + ul", rangeMenu).empty();
-		$(".rangeMenuItemModifications + ul", rangeMenu).append("<li><a href='#' title='EX.MODALL'>all modifications</a></li>");
-		for(var i = 0, mod; mod = Object.keys(this.modsGlobal)[i]; i++) {
-			key = "EX." + generateModString(mod);
-			$(".rangeMenuItemModifications + ul", rangeMenu).append("<li><a href='#' title='"+key+"'>"+mod+"</a></li>");
-		}
+		updateRangeMenuMods(Object.keys(this.modsGlobal));
 		
 		svgContainer.removeClass("loading");
 		showProteins();
@@ -4644,6 +4651,16 @@ function loadProteinsFromProteomics(e) {
 
 function generateModString(mod) {
 	return "mod" + mod.replace(/\W/g, "_");
+}
+
+function updateRangeMenuMods(mods) {
+	$(".rangeMenuItemModifications", rangeMenu).show();
+	$(".rangeMenuItemModifications + ul", rangeMenu).empty();
+	$(".rangeMenuItemModifications + ul", rangeMenu).append("<li><a href='#' title='EX.MODALL'>all modifications</a></li>");
+	for(var i = 0, mod; mod = mods[i]; i++) {
+		key = "EX." + generateModString(mod);
+		$(".rangeMenuItemModifications + ul", rangeMenu).append("<li><a href='#' title='"+key+"'>"+mod+"</a></li>");
+	}
 }
 
 function reset() {

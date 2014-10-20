@@ -251,17 +251,18 @@ function Parser (files, onDone) {
 			var elems = line.split(/\t/g);
 			var strPeptide = elems[i_peptide]; // AHVIIGNISENMTIYGFDK
 			var strPeptideMod = elems[i_peptideMod]; // e.g. _AHVIIGNISEN(de)M(ox)TIYGFDK_
+			strPeptideMod = strPeptideMod.substring(1, strPeptideMod.length-1);
 			var strProtein = elems[i_protein].split(';')[0]; // first of protein groups
-			parser.addPeptide(strProtein, strPeptide, strPeptideMod.substring(1, strPeptideMod.length-1).replace(/\(/g, "<span class='mod'>").replace(/\)/g, "</span>"));
+			parser.addPeptide(strProtein, strPeptide, strPeptideMod.replace(/\(/g, "<span class='mod'>").replace(/\)/g, "</span>"));
 			
 			var k = 0;			
 			// store all modified peptide sequences, per modification
 			while((k = strPeptideMod.indexOf('(', k)) >= 0) {
 				var l = strPeptideMod.indexOf(')', k);
-				var mod = strPeptideMod.substring(k-1, l+1);
-				var modPep = strPeptideMod.substring(0, k-1) + "(" + strPeptideMod.substring(k-1, k) + ")" + strPeptideMod.substring(l+1);
+				var mod = strPeptideMod.substring(k-1, k) + strPeptideMod.substring(k+1, l); // e.g. Mox, Tph, Sph, ...
+				var modPep = strPeptideMod.substring(0, k-1) + "[" + strPeptideMod.substring(k-1, k) + "]" + strPeptideMod.substring(l+1);
 				//TODO: support terminal mods
-				modPep = modPep.replace(/\(.+?\)/g, ""); // remove all other mods
+				modPep = modPep.replace(/\(.+?\)/g, "").replace(/\[/, "(").replace(/\]/, ")"); // remove all other mods
 				parser.addMod(strProtein, mod, modPep);
 				k++;
 			}

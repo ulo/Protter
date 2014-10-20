@@ -161,10 +161,11 @@ public class Prot {
 			}
 			if (tmValue!=null) {
 				this.tmRegions = Range.parseMultiRangeString(tmValue, seq, up, "tm", parms);
-				if (imValue != null)
+				if (imValue != null) {
 					this.imRegions = Range.parseMultiRangeString(imValue, seq, up, "im", parms);
-				if (tmValue.equalsIgnoreCase("up.transmem") && imValue.equalsIgnoreCase("up.intramem"))
-					tmLegend = "UniProt";
+					if (tmValue.equalsIgnoreCase("up.transmem") && imValue.equalsIgnoreCase("up.intramem"))
+						tmLegend = "UniProt";
+				}
 				else if (tmValue.equalsIgnoreCase("phobius.tm"))
 					tmLegend = "Phobius";
 				else
