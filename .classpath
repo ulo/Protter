@@ -35,5 +35,11 @@
 	<classpathentry kind="lib" path="lib/uniprotjapi/spring-core-3.2.4.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/uniprotjapi/spring-web-3.2.4.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/uniprotjapi/uniprotjapi.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring-expression-3.2.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring-jdbc-3.2.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring-orm-3.2.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring-test-3.2.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring-tx-3.2.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring-webmvc-3.2.4.RELEASE.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

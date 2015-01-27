@@ -3442,6 +3442,7 @@ $(document).ready(function(){
 			"<li><a href='#' title='svg' target='_blank'>Vector Graphic (svg)</a></li>" +
 			"<li><a href='#' title='pdf' target='_blank'>Vector Graphic (pdf)</a></li>" +
 			"<li><a href='#' title='pptx' target='_blank'>PowerPoint (pptx)</a></li>" +
+			"<li><a href='#' title='tex' target='_blank'>LaTeX (tex) <small style='color:#aaa; font-style:italic'>beta</small></a></li>" +
 		"</ul>"
 		, flyOut: true });
 		
@@ -3606,6 +3607,32 @@ $(document).ready(function(){
 			}
 		}
 	});
+	$("#divUniprotDialogConformation").dialog({
+		resizable: true,
+		autoOpen:false,
+		modal: true,
+		width:600,
+		height:230,
+		buttons: {
+			'Submit': function() {
+				$("#divTopoWrapper input[value='custom']").prop('checked',true).button("refresh");
+				$("#divTopoWrapper").buttonset().change();
+				$("#selNtermUniprot").val("up.nterm."+$('#lstResultsConformation').val()).prop('checked',true).button("refresh");
+				$("#divNtermWrapper").buttonset().change();
+				$("#txtTransmembrane").val("UP.TRANSMEM."+$('#lstResultsConformation').val());
+				$("#txtIntramembrane").val("UP.INTRAMEM."+$('#lstResultsConformation').val());
+				$("#txtAnchors").val("UP.LIPID");
+				$("#divUniprotDialogConformation").dialog('close');
+				refresh();
+			},
+			'Cancel': function() {
+				$("#divUniprotDialogConformation").dialog('close');
+			}
+		}
+	});
+	$("#divNtermWrapper input").click(function(){
+		$("#selNtermUniprot").val("up.nterm");
+	});
 	
 	// load settings or apply defaults
 	loadFromQueryString();
@@ -3697,12 +3724,12 @@ function updateQueryString(format){
 		} else if (nterm.length > 0) {
 			query.nterm = nterm;
 			queryElements.push("nterm=" + nterm);
-			var tmRegions = $("#txtTransmembrane").val().replace(/\s+/g,",")
+			var tmRegions = $("#txtTransmembrane").val().replace(/\s-\s/g,"-").replace(/\s\u2013\s/g,"-").replace(/\s+/g,",");
 			if (tmRegions.length>0) {
 				query.tm = tmRegions;
 				queryElements.push("tm=" + tmRegions);
 			}
-			var imRegions = $("#txtIntramembrane").val().replace(/\s+/g,",")
+			var imRegions = $("#txtIntramembrane").val().replace(/\s-\s/g,"-").replace(/\s\u2013\s/g,"-").replace(/\s+/g,",");
 			if (imRegions.length>0) {
 				query.im = imRegions;
 				queryElements.push("im=" + imRegions);
@@ -4193,6 +4220,17 @@ function svgLoaded(svg, error) { // Callback after loading external svg
 					$('#lstResults').append('<option value="' + arrItems[0] + '">' + item + '</option>');
 				});
 				$('#divUniprotDialog').dialog('open');
+			} else if (e.responseText.indexOf("Error: UniProt provides multiple topological conformations")==0) {
+				var searched = e.responseText.substring(e.responseText.indexOf("'")+1, e.responseText.indexOf("'", e.responseText.indexOf("'")+1));
+				$('#lblSearchedConformation').text("'"+searched+"'");
+				$('#lstResultsConformation').children().remove();
+				var arrLines = e.responseText.split("\n");
+				arrLines.shift();
+				arrLines.map( function(item) {
+					var arrItems = item.split(" ");
+					$('#lstResultsConformation').append('<option value="' + arrItems[0] + '">' + item + '</option>');
+				});
+				$('#divUniprotDialogConformation').dialog('open');
 			} else {
 				alert(e.responseText);
 			}

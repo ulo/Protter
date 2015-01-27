@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.remoting.RemoteAccessException;
 
@@ -90,10 +94,12 @@ public class UniProtProvider {
 			"Forespore intermembrane space"
 	);
 
-	public static Nterm inferNterm(UniProtEntry up) throws Exception {
-		List<String> topoStrings = getTopoStrings(up);
-		if (topoStrings==null)
-			Log.errorThrow("UniProt has no info on N-terminus location.");
+	public static Nterm inferNterm(UniProtEntry up, String conformation) throws Exception {
+		List<String> topoStrings = getTopoStrings(up, conformation);
+		if (topoStrings==null) {
+			Log.error("UniProt has no info on N-terminus location.");
+			throw new UniprotException("UniProt has no info on N-terminus location.");
+		}
 		
 		String firstTopo = topoStrings.get(0);
 		String secondTopo = topoStrings.get(1);
@@ -115,16 +121,43 @@ public class UniProtProvider {
 				return Nterm.extra;
 			}
 		}
-		Log.errorThrow("unkown UniProt topology: "+firstTopo+" "+secondTopo);
-		
-		return null;
+		Log.error("unkown UniProt topology: "+firstTopo+" "+secondTopo);
+		throw new UniprotException("unkown UniProt topology: "+firstTopo+" "+secondTopo);
+	}
+	public static Nterm inferNterm(UniProtEntry up) throws Exception {
+		return inferNterm(up, null);
+	}
+	public static class UniprotException extends Exception {
+		private static final long serialVersionUID = 1773334022458932724L;
+		public UniprotException(String message) {
+			super(message);
+		}
 	}
 	
 	public static List<String> getTopoStrings(UniProtEntry up) throws Exception {
+		return getTopoStrings(up, null);
+	}
+	public static List<String> getTopoStrings(UniProtEntry up, String conformation) throws Exception {
 		LinkedHashSet<String> res = new LinkedHashSet<String>();
+		SortedSet<String> conformations = new TreeSet<String>();
 		for (Feature ft : up.getFeatures(FeatureType.TOPO_DOM)) {
-			res.add(((TopoDomFeature) ft).getFeatureDescription().getValue());
+			String fDesc = ((TopoDomFeature) ft).getFeatureDescription().getValue();
+			if (fDesc.indexOf(';') >= 0) {
+				Matcher m = Pattern.compile("\\s+IN\\s(.+)\\sCONFORMATION").matcher(fDesc.substring(fDesc.indexOf(';')+1).toUpperCase().replace("NOTE=", ""));
+				if (m.matches()) {
+					String fConf = m.group(1);
+					conformations.add(fConf);
+					if (conformation != null && ! fConf.equalsIgnoreCase(conformation))
+						continue; // if there is a conformation which does NOT match, then skip this domain 
+				}
+			}
+			res.add(fDesc.split(";")[0]);
 		}
+		if (conformation==null && conformations.size()>0) {
+			Log.warn("UniProt provides multiple topological conformations for '"+up.getUniProtId().getValue()+"'.");
+			throw new Exception("UniProt provides multiple topological conformations for '"+up.getUniProtId().getValue()+"':\n"+Util.join(conformations, "\n"));
+		}
+		
 		List<String> lst = Lists.newArrayList(res);
 		if (lst.size()==0)
 			return null;

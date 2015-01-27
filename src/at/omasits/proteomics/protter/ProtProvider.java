@@ -73,6 +73,10 @@ public class ProtProvider {
 			Log.info("compressing '"+svg.getName()+"' and returning '"+svgz.getName()+"'");
 			Util.zip(svg, svgz);
 			return new ProtFile(svgz, fileName+".svgz");
+		} else if (format.toLowerCase().equals("tex")) {
+			File tex = new File(protsDir, uuid+".tex");
+			Log.info("returning '"+tex.getName()+"'");
+			return new ProtFile(tex, fileName+".tex");
 		} else
 			Log.errorThrow("unkown format: "+format);
 		return null;

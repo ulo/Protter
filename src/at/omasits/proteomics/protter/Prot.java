@@ -7,14 +7,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.security.KeyStore.LoadStoreParameter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 
 import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
 import at.omasits.proteomics.protter.Style.Color;
@@ -22,10 +18,14 @@ import at.omasits.proteomics.protter.Style.Shape;
 import at.omasits.proteomics.protter.phobius.PhobiusProvider;
 import at.omasits.proteomics.protter.ranges.Range;
 import at.omasits.proteomics.protter.uniprot.UniProtProvider;
+import at.omasits.proteomics.protter.uniprot.UniProtProvider.UniprotException;
 import at.omasits.util.Config;
 import at.omasits.util.Log;
 import at.omasits.util.Util;
 import at.omasits.util.Vec;
+
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 
 public class Prot {
 	public static enum Nterm {
@@ -125,7 +125,7 @@ public class Prot {
 					try {
 						UniProtProvider.inferNterm(up);
 						ntermValue="UP.NTERM";
-					} catch (Exception e) {
+					} catch (UniprotException e) {
 						ntermValue="PHOBIUS.NTERM";
 					}
 				}
@@ -152,6 +152,14 @@ public class Prot {
 				} else {
 					Log.errorThrow("Cannot load nterm information from UniProt as no UniProt accession was specified! Use the up parameter for specifying a UniProt accession or name.");
 				}
+			} else if (ntermValue.toLowerCase().startsWith("up.nterm.")) {
+				if (up != null) {
+					String conformation = ntermValue.toLowerCase().substring("up.nterm.".length()); // e.g: UP.NTERM.EXTERNAL					
+					this.nterm = UniProtProvider.inferNterm(up, conformation);
+					ntermLegend = "UniProt ("+conformation+")";
+				} else {
+					Log.errorThrow("Cannot load nterm information from UniProt as no UniProt accession was specified! Use the up parameter for specifying a UniProt accession or name.");
+				}
 			} else if (ntermValue.equalsIgnoreCase("phobius.nterm")) {
 				this.nterm = PhobiusProvider.inferNterm(this.seq);
 				ntermLegend = "Phobius";
@@ -163,8 +171,12 @@ public class Prot {
 				this.tmRegions = Range.parseMultiRangeString(tmValue, seq, up, "tm", parms);
 				if (imValue != null) {
 					this.imRegions = Range.parseMultiRangeString(imValue, seq, up, "im", parms);
-					if (tmValue.equalsIgnoreCase("up.transmem") && imValue.equalsIgnoreCase("up.intramem"))
+					if (tmValue.equalsIgnoreCase("up.transmem") && imValue.equalsIgnoreCase("up.intramem")) {
 						tmLegend = "UniProt";
+					} else if (tmValue.toLowerCase().startsWith("up.transmem.") && imValue.toLowerCase().startsWith("up.intramem.")) {
+						String conformation = tmValue.toLowerCase().substring("up.transmem.".length()); // e.g: UP.TRANSMEM.EXTERNAL
+						tmLegend = "UniProt ("+conformation+")";
+					}
 				}
 				else if (tmValue.equalsIgnoreCase("phobius.tm"))
 					tmLegend = "Phobius";
@@ -232,8 +244,18 @@ public class Prot {
 						this.lblIntra = UniProtProvider.getTopoStrings(up).get(0);
 					else
 						this.lblIntra = UniProtProvider.getTopoStrings(up).get(1);
+				} else if (up!=null && ntermValue.toLowerCase().startsWith("up.nterm.")) {
+					String conformation = ntermValue.toLowerCase().substring("up.nterm.".length()); // e.g: UP.NTERM.EXTERNAL
+					List<String> topos = UniProtProvider.getTopoStrings(up, conformation);
+					if (topos != null) {
+						if (this.nterm==Nterm.intra)
+							this.lblIntra = topos.get(0);
+						else
+							this.lblIntra = topos.get(1);
+					}
 				}
 			}
+			
 			this.lblExtra = "extra";
 			if (parms.containsKey("lblout")) {
 				this.lblExtra = parms.get("lblout");
@@ -243,6 +265,15 @@ public class Prot {
 						this.lblExtra = UniProtProvider.getTopoStrings(up).get(0);
 					else
 						this.lblExtra = UniProtProvider.getTopoStrings(up).get(1);
+				} else if (up!=null && ntermValue.toLowerCase().startsWith("up.nterm.")) {
+					String conformation = ntermValue.toLowerCase().substring("up.nterm.".length()); // e.g: UP.NTERM.EXTERNAL
+					List<String> topos = UniProtProvider.getTopoStrings(up, conformation);
+					if (topos != null) {
+						if (this.nterm==Nterm.extra)
+							this.lblExtra = topos.get(0);
+						else
+							this.lblExtra = topos.get(1);
+					}
 				}
 			}
 		}

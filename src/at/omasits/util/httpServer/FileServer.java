@@ -308,7 +308,7 @@ public class FileServer extends NanoHTTPD {
                         res.addHeader("Content-Length", "" + fileLen);
                         res.addHeader("ETag", etag);
                         if (downloadName!=null)
-                        	res.addHeader("Content-Disposition", "filename="+downloadName);
+                        	res.addHeader("Content-Disposition", "filename=\""+ downloadName + "\"");
                         if (gzipped)
                         	res.addHeader("Content-Encoding", "gzip");
                     }
