@@ -54,8 +54,9 @@ public class UniProtProvider {
 				if (Boolean.parseBoolean(Config.get("mail_report_errors", "false"))) {
 					Util.sendMail(Config.get("mail_from"), "UniProt RemoteAccessException on "+identifier, "");
 				}
+			} else {
+				unknowns.put(identifier, e.getMessage()); // do not cache remoteaccess exceptions
 			}
-			unknowns.put(identifier, e.getMessage());
 			throw e;
 		}
 	}
