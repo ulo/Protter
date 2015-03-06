@@ -1042,6 +1042,7 @@ textarea[disabled] {
 textarea {
 	padding: 0.2em;
 	line-height: 0.9em;
+	resize: none;
 }
 
 /* header */
@@ -1059,11 +1060,11 @@ h1 {
 }
 
 #info {
-	float: right;
+	position: absolute;
 	font-size: 0.75em;
 	color: white;
-	margin-right:1em;
-	margin-top:2em;
+	right: 130px;
+	top: 1.8em;
 }
 #info div {
 	float: right;
@@ -1273,6 +1274,7 @@ div.tab {
 	top:0;
 	bottom:0;
 	margin-bottom:0;
+	white-space: nowrap;
 }
 
 /* Tab: Sequence */
@@ -1467,6 +1469,7 @@ div.verticalbuttonset label {
 
 #tabStyles {
 	padding-bottom: 1em;
+	white-space: normal;
 }
 
 #divStyleTableWrapper {

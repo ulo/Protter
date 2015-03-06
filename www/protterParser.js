@@ -117,12 +117,12 @@ function Parser (files, onDone) {
 			strPeptideMod = strPeptideMod.substring(2, strPeptideMod.length-2); // LLDEN[115.03]M[147.04]AR
 			var strProtein = elems[i_protein].split(',')[0]; // first of protein groups
 			var strPeptide = strPeptideMod.replace(/\[.+?\]/g,""); // remove all mods
-			if (strPeptideMod.indexOf("n[")==0)
+			if (strPeptideMod.indexOf("n[")==0 || strPeptideMod.indexOf("_[")==0)
 				strPeptide = strPeptide.substring(1);
 			parser.addPeptide(strProtein, strPeptide, strPeptideMod.replace(/\[/g, "<span class='mod'>").replace(/\]/g, "</span>"));
 			
 			var k = 0;
-			if (strPeptideMod.indexOf("n[")==0) 
+			if (strPeptideMod.indexOf("n[")==0 || strPeptideMod.indexOf("_[")==0) 
 				strPeptideMod = strPeptideMod.substring(1);
 			// store all modified peptide sequences, per modification [cannot get the positions]
 			while((k = strPeptideMod.indexOf('[', k)) >= 0) {
@@ -151,12 +151,12 @@ function Parser (files, onDone) {
 			var strPeptideMod = elems[i_peptide]; // e.g. IVES[167]AST[181]HIEDAHSNLK
 			var strProtein = elems[i_protein].split(',')[0]; // first of protein groups
 			var strPeptide = strPeptideMod.replace(/\[.+?\]/g,""); // remove all mods
-			if (strPeptideMod.indexOf("n[")==0)
+			if (strPeptideMod.indexOf("n[")==0 || strPeptideMod.indexOf("_[")==0)
 				strPeptide = strPeptide.substring(1);
 			parser.addPeptide(strProtein, strPeptide, strPeptideMod.replace(/\[/g, "<span class='mod'>").replace(/\]/g, "</span>"));
 			
 			var k = 0;
-			if (strPeptideMod.indexOf("n[")==0) 
+			if (strPeptideMod.indexOf("n[")==0 || strPeptideMod.indexOf("_[")==0) 
 				strPeptideMod = strPeptideMod.substring(1);
 			// store all modified peptide sequences, per modification [cannot get the positions]
 			while((k = strPeptideMod.indexOf('[', k)) >= 0) {
@@ -259,9 +259,11 @@ function Parser (files, onDone) {
 			// store all modified peptide sequences, per modification
 			while((k = strPeptideMod.indexOf('(', k)) >= 0) {
 				var l = strPeptideMod.indexOf(')', k);
-				var mod = strPeptideMod.substring(k-1, k) + strPeptideMod.substring(k+1, l); // e.g. Mox, Tph, Sph, ...
+				var mod = (k==0 ? "n":"") + strPeptideMod.substring(k-1, k) + strPeptideMod.substring(k+1, l); // e.g. Mox, Tph, Sph, ...
 				var modPep = strPeptideMod.substring(0, k-1) + "[" + strPeptideMod.substring(k-1, k) + "]" + strPeptideMod.substring(l+1);
-				//TODO: support terminal mods
+				if (k==0)
+					modPep = "[" + strPeptideMod.substring(l+1, l+2) + "]" + strPeptideMod.substring(l+2); // n-terminal mods will be attributed to first AA
+				//TODO: support cterminal mods
 				modPep = modPep.replace(/\(.+?\)/g, "").replace(/\[/, "(").replace(/\]/, ")"); // remove all other mods
 				parser.addMod(strProtein, mod, modPep);
 				k++;
@@ -317,13 +319,14 @@ function Parser (files, onDone) {
 					if (strPeptideMod.charAt(1)=='.') { // K.LLDEN[115.03]M[147.04]AR.I | K.n[58.03]N[115.03]GVN[115.03]GTGEN[115.03]GR.K 
 						strPeptideMod = strPeptideMod.substring(2, strPeptideMod.length-2); // LLDEN[115.03]M[147.04]AR
 					}
+					strPeptideMod = strPeptideMod.replace(/\(/g,"[").replace(/\)/g,"]"); // make round brackets to square brackets
 					var strPeptide = strPeptideMod.replace(/\[.+?\]/g,""); // remove all mods
-					if (strPeptideMod.indexOf("n[")==0)
+					if (strPeptideMod.indexOf("n[")==0 || strPeptideMod.indexOf("_[")==0)
 						strPeptide = strPeptide.substring(1);
 					parser.addPeptide(strProtein, strPeptide, strPeptideMod.replace(/\[/g, "<span class='mod'>").replace(/\]/g, "</span>"));
 					
 					var k = 0;
-					if (strPeptideMod.indexOf("n[")==0) 
+					if (strPeptideMod.indexOf("n[")==0 || strPeptideMod.indexOf("_[")==0) 
 						strPeptideMod = strPeptideMod.substring(1);
 					// store all modified peptide sequences, per modification [cannot get the positions]
 					while((k = strPeptideMod.indexOf('[', k)) >= 0) {
