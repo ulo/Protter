@@ -26,20 +26,21 @@
 	<classpathentry kind="lib" path="lib/guava-11.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/uniprotjapi/aopalliance-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/uniprotjapi/commons-codec-1.4.jar"/>
-	<classpathentry kind="lib" path="lib/uniprotjapi/commons-httpclient-3.1.jar"/>
 	<classpathentry kind="lib" path="lib/uniprotjapi/commons-logging-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/uniprotjapi/log4j-1.2.9.jar"/>
-	<classpathentry kind="lib" path="lib/uniprotjapi/spring-aop-3.2.4.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/uniprotjapi/spring-beans-3.2.4.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/uniprotjapi/spring-context-3.2.4.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/uniprotjapi/spring-core-3.2.4.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/uniprotjapi/spring-web-3.2.4.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/uniprotjapi/uniprotjapi.jar"/>
-	<classpathentry kind="lib" path="lib/uniprotjapi/spring-expression-3.2.4.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/uniprotjapi/spring-jdbc-3.2.4.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/uniprotjapi/spring-orm-3.2.4.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/uniprotjapi/spring-test-3.2.4.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/uniprotjapi/spring-tx-3.2.4.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/uniprotjapi/spring-webmvc-3.2.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/httpclient-4.3.4.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/httpcore-4.3.2.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring-aop-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring-beans-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring-context-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring-core-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring-expression-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring-jdbc-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring-orm-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring-test-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring-tx-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring-web-4.1.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/uniprotjapi/spring-webmvc-4.1.6.RELEASE.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
