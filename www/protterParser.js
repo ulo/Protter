@@ -273,10 +273,10 @@ function Parser (files, onDone) {
 	
 	this.parseSkyline = function (lines) {
 		var header = lines[0].split(/,/g);
-		var i_peptide = header.indexOf("PeptideSequence");
-		var i_peptideMod = header.indexOf("PeptideModifiedSequence");
-		var i_protein = header.indexOf("ProteinName");
-		var i_proteinSeq = header.indexOf("ProteinSequence");
+		var i_peptide = (header.indexOf("PeptideSequence")+1 | header.indexOf("Peptide Sequence")+1) - 1;
+		var i_peptideMod = (header.indexOf("PeptideModifiedSequence")+1 | header.indexOf("Peptide Modified Sequence")+1) - 1;
+		var i_protein = (header.indexOf("ProteinName")+1 | header.indexOf("Protein Name")+1) - 1;
+		var i_proteinSeq = (header.indexOf("ProteinSequence")+1 | header.indexOf("Protein Sequence")+1) - 1;
 		if (i_peptide<0 || i_peptideMod<0 || i_protein<0) {
 			throw "File does not seem to be a proper Skyline report.";
 		}
