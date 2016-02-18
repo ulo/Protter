@@ -546,6 +546,13 @@ public abstract class NanoHTTPD {
                         // Handle multipart/form-data
                         if (!st.hasMoreTokens()) {
                             Response.error(outputStream, Response.Status.BAD_REQUEST, "BAD REQUEST: Content type is multipart/form-data but boundary missing. Usage: GET /example/file.html");
+                            //UO
+                            fc.close();
+                            f.close();
+                            in.close();
+                            bin.close();
+                            inputStream.close();
+                            //UO
                             throw new InterruptedException();
                         }
 

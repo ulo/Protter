@@ -9,19 +9,16 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.springframework.remoting.RemoteAccessException;
 
 import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
 import uk.ac.ebi.kraken.interfaces.uniprot.features.Feature;
 import uk.ac.ebi.kraken.interfaces.uniprot.features.FeatureType;
 import uk.ac.ebi.kraken.interfaces.uniprot.features.TopoDomFeature;
-import uk.ac.ebi.kraken.uuw.services.remoting.EntryIterator;
-import uk.ac.ebi.kraken.uuw.services.remoting.Query;
-import uk.ac.ebi.kraken.uuw.services.remoting.UniProtJAPI;
-import uk.ac.ebi.kraken.uuw.services.remoting.UniProtQueryBuilder;
-import uk.ac.ebi.kraken.uuw.services.remoting.UniProtQueryService;
+import uk.ac.ebi.uniprot.dataservice.client.Client;
+import uk.ac.ebi.uniprot.dataservice.client.QueryResult;
+import uk.ac.ebi.uniprot.dataservice.client.uniprot.UniProtQueryBuilder;
+import uk.ac.ebi.uniprot.dataservice.client.uniprot.UniProtService;
 import at.omasits.proteomics.protter.Prot.Nterm;
-import at.omasits.util.Config;
 import at.omasits.util.Log;
 import at.omasits.util.Util;
 
@@ -34,12 +31,12 @@ import com.google.common.collect.Sets;
 
 public class UniProtProvider {
 	// init uniprot
-	public static UniProtQueryService upqs = UniProtJAPI.factory.getUniProtQueryService();
+	//public static UniProtQueryService upqs = UniProtJAPI.factory.getUniProtQueryService();
+	public static UniProtService ups = Client.getServiceFactoryInstance().getUniProtQueryService();
 
 	// a list of all loaded uniprot entries
 	protected static LoadingCache<String,UniProtEntry> entries = CacheBuilder.newBuilder().maximumSize(500).build(new UniProtCacheLoader());
 	protected static Cache<String,String> unknowns = CacheBuilder.newBuilder().maximumSize(10000).build();
-	//public static Map<String,UniProtEntry> entries = new HashMap<String,UniProtEntry>();
 	
 	public static UniProtEntry get(String identifier) throws Exception {
 		String strCachedError = unknowns.getIfPresent(identifier);
@@ -49,21 +46,17 @@ public class UniProtProvider {
 		try {
 			return entries.get(identifier);
 		} catch (Exception e) {
-			if (e.getCause() instanceof RemoteAccessException) {
-				e = new Exception("Could not access UniProt as it looks like its API was updated. Please report to protter@imsb.biol.ethz.ch!");
-				if (Boolean.parseBoolean(Config.get("mail_report_errors", "false"))) {
-					Util.sendMail(Config.get("mail_from"), "UniProt RemoteAccessException on "+identifier, "");
-				}
-			} else {
+//			if (e.getCause() instanceof RemoteAccessException) {
+//				e = new Exception("Could not access UniProt as it looks like its API was updated. Please report to protter@imsb.biol.ethz.ch!");
+//				if (Boolean.parseBoolean(Config.get("mail_report_errors", "false"))) {
+//					Util.sendMail(Config.get("mail_from"), "UniProt RemoteAccessException on "+identifier, "");
+//				}
+//			} else {
 				unknowns.put(identifier, e.getMessage()); // do not cache remoteaccess exceptions
-			}
+//			}
 			throw e;
 		}
 	}
-	
-//	public static UniProtEntry load(String identifier) throws Exception {
-//		
-//	}
 	
 	// see: http://www.uniprot.org/manual/topo_dom
 	public static Set<String> extraTopologies = Sets.newHashSet(
@@ -179,43 +172,46 @@ public class UniProtProvider {
 		public UniProtEntry load(String identifier) throws Exception {
 			if (identifier.contains("|")) // e.g: sp|P68716|VG07_VACCW
 				identifier = identifier.split("\\|")[1];
-			//if (!entries.containsKey(identifier)) {
-				List<String> foundIds = new ArrayList<String>();
-				UniProtEntry up = null;
-				
-				Query query = UniProtQueryBuilder.buildExactMatchIdentifierQuery(identifier.toUpperCase());
-				EntryIterator<UniProtEntry> results = upqs.getEntryIterator(query);
-				for (UniProtEntry e : results) {
-					foundIds.add(e.getPrimaryUniProtAccession().getValue());
-					up = e;
+			List<String> foundIds = new ArrayList<String>();
+			UniProtEntry up = null;
+			
+			ups.start();
+			//Query query = UniProtQueryBuilder.buildExactMatchIdentifierQuery(identifier.toUpperCase());
+			//EntryIterator<UniProtEntry> results = upqs.getEntryIterator(query);
+			QueryResult<UniProtEntry> results = ups.getEntries(UniProtQueryBuilder.anyAccession(identifier.toUpperCase()));
+			if (!results.hasNext())
+				results = ups.getEntries(UniProtQueryBuilder.id(identifier.toUpperCase()));
+			while (results.hasNext()) {
+				up = results.next();
+				foundIds.add(up.getPrimaryUniProtAccession().getValue());
+			}
+			
+			if (foundIds.size()==0) {
+				// no exactMatchIdentifier -> try protein name / gene name / dbase cross refs
+				results = ups.getEntries(UniProtQueryBuilder.gene(identifier.toUpperCase()));
+				if (!results.hasNext())
+					results = ups.getEntries(UniProtQueryBuilder.xref(identifier.toUpperCase()));
+				if (!results.hasNext())
+					results = ups.getEntries(UniProtQueryBuilder.proteinName(identifier.toUpperCase()));
+				while (results.hasNext()) {
+					up = results.next();
+					String acc = (up.getUniProtId()!=null) ? (up.getUniProtId().getValue()) : ("");
+					String gene = (up.getGenes().size()>0) ? (up.getGenes().get(0).getGeneName().getValue()) : ("");
+					String organism = (up.getOrganism()!=null) ? (up.getOrganism().getCommonName().getValue()) : ("");
+					foundIds.add(acc + " (" + gene + "; " + organism + ")");
+					if (foundIds.size()>=100) // stop after 100 entries
+						break;
 				}
-				if (foundIds.size()==0) {
-					// no exactMatchIdentifier -> try dbase cross refs
-					query = UniProtQueryBuilder.buildDatabaseCrossReferenceQuery(identifier);
-					results = upqs.getEntryIterator(query);
-					for (UniProtEntry e : results) {
-						//String id = e.getPrimaryUniProtAccession().getValue();
-						String acc = (e.getUniProtId()!=null) ? (e.getUniProtId().getValue()) : ("");
-						String gene = (e.getGenes().size()>0) ? (e.getGenes().get(0).getGeneName().getValue()) : ("");
-						String organism = (e.getOrganism()!=null) ? (e.getOrganism().getCommonName().getValue()) : ("");
-						foundIds.add(acc + " (" + gene + "; " + organism + ")");
-						up = e;
-						if (foundIds.size()>=100) // stop after 100 entries
-							break;
-					}
-				}
-				if (foundIds.size()==0) {
-					Log.errorThrow("No UniProt entry found for '"+identifier+"'.");
-				} else if (foundIds.size()>1) { // more than 1 hit
-					Log.warn("Found multiple UniProt entries for '"+identifier+"'.");
-					throw new Exception("Found multiple UniProt entries for '"+identifier+"':\n"+Util.join(foundIds, "\n"));
-				} else {
-					//entries.put(identifier, up);
-					//if (! identifier.equals(foundIds.get(0)) )
-					//		entries.put(foundIds.get(0), up);
-				}
-			//}
-			//return entries.get(identifier);
+			}
+						
+			ups.stop();
+			
+			if (foundIds.size()==0) {
+				Log.errorThrow("No UniProt entry found for '"+identifier+"'.");
+			} else if (foundIds.size()>1) { // more than 1 hit
+				Log.warn("Found multiple UniProt entries for '"+identifier+"'.");
+				throw new Exception("Found multiple UniProt entries for '"+identifier+"':\n"+Util.join(foundIds, "\n"));
+			}
 			return up;
 		}
 	}

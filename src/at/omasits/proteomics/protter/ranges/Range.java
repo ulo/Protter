@@ -5,10 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import at.omasits.proteomics.protter.ProtterServer;
 import at.omasits.util.Log;
-import at.omasits.util.Util;
-import at.omasits.util.httpServer.NanoHTTPD;
 
 
 import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
