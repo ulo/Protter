@@ -13,22 +13,22 @@ function Parser (files, onDone) {
 			parser.proteins[strProtein].peptides = {}; // peptide object
 			parser.proteins[strProtein].mods = {}; // mod object
 		}
-	}
-	
+	};
+
 	this.addPeptide = function (strProtein, strPeptide, strPeptideMod) {
 		parser.ensureProt(strProtein);
 		parser.proteins[strProtein].peptides[strPeptide] = true;
 		parser.proteins[strProtein].modPeptides[strPeptideMod] = strPeptide;
-	}
-	
+	};
+
 	this.addMod = function (strProtein, mod, modPep) {
 		parser.ensureProt(strProtein);
 		if (parser.proteins[strProtein].mods[mod] == undefined)
 			parser.proteins[strProtein].mods[mod] = {}; // mod object
 		parser.proteins[strProtein].mods[mod][modPep] = true;
 		parser.modsGlobal[mod] = true;
-	}
-	
+	};
+
 	this.readFile = function (fileIndex) {
 		if (typeof this.files == "string") {
 			console.log("processing input...");
@@ -76,7 +76,7 @@ function Parser (files, onDone) {
 		var lines = content.split(/[\r\n]+/g); // tolerate both Windows and Unix linebreaks
 		if (lines[0].length==0)
 			lines.shift(); // remove empty first line
-		try {
+		//try {
 			if (lines.length==0)
 				throw "file is empty";
 			if (filename.match(/prot\.xls$/i))
@@ -92,13 +92,16 @@ function Parser (files, onDone) {
 					parser.parseMascot(lines);
 				else
 					parser.parseSkyline(lines);
-			} else
+			} else if (filename.match(/\.prot\.?xml$/i)) {
+				parser.parseProtXml(lines);
+			} else {
 				throw "unknown file type";
-		} catch(err) {
-			alert("Cannot parse file '"+filename+"': "+err);
-		}
+			}
+		//} catch(err) {
+		//	alert("Cannot parse file '"+filename+"': "+err);
+		//}
 		lines=null;	
-	}
+	};
 	
 	/*
 	 * specific parse functions	
@@ -269,7 +272,7 @@ function Parser (files, onDone) {
 				k++;
 			}
 		}
-	}
+	};
 	
 	this.parseSkyline = function (lines) {
 		var header = lines[0].split(/,/g);
@@ -301,7 +304,7 @@ function Parser (files, onDone) {
 				k++;
 			}
 		}
-	}
+	};
 	
 	this.parseIdList = function (lines) {
 		for(var j = 0, line; line = lines[j]; j++) {
@@ -344,10 +347,97 @@ function Parser (files, onDone) {
 			}
 		}
 	};
+
+	this.parseProtXml = function (lines) {
+		var strProtein;
+		var strPeptide;
+		var strPeptideMod;
+		var collectMods = null;
+		var inIndistinguishablePeptide = false;
+		for(var j = 1, line; line = lines[j]; j++) {
+			if (line) {
+				line = line.trim();
+				if (line.indexOf("<protein ") == 0) {
+					strProtein = this.getXMLattribute(line, "protein_name");
+					strPeptide = null;
+				} else if (line.indexOf("<peptide ") == 0) {
+					strPeptide = this.getXMLattribute(line, "peptide_sequence");
+					strPeptideMod = strPeptide;
+				} else if (line.indexOf("<indistinguishable_peptide ") == 0 && line.indexOf(" />") == -1) {
+					inIndistinguishablePeptide = true;
+				} else if (inIndistinguishablePeptide) { // block until out of indistinguishable_peptide node
+					if (line.indexOf("</indistinguishable_peptide>") == 0)
+						inIndistinguishablePeptide = false;
+				} else if (line.indexOf("<modification_info ") == 0 && line.indexOf("<modification_info />") != 0) {
+					// Comet style
+					strPeptideMod = this.getXMLattribute(line, "modified_peptide");
+				} else if (line.indexOf("<modification_info>") == 0) {
+					// ProteomeDiscoverer style
+					collectMods = {};
+				} else if (collectMods && line.indexOf("<mod_aminoacid_mass ") == 0) {
+					var mass = this.getXMLattribute(line, "mass");
+					var pos = this.getXMLattribute(line, "position");
+					collectMods[pos] = mass;
+				} else if (collectMods && line.indexOf("</modification_info>") == 0) {
+					strPeptideMod = "";
+					for (var k = 1; k < strPeptide.length; k++) {
+						strPeptideMod += strPeptide.charAt(k + 1);
+						if (collectMods.hasOwnProperty(k)) {
+							strPeptideMod += "[" + collectMods[k] + "]";
+						}
+					}
+					collectMods = null;
+				} else if (line.indexOf("</peptide>") == 0) {
+					parser.addPeptide(strProtein, strPeptide, strPeptideMod.replace(/\[/g, "<span class='mod'>").replace(/\]/g, "</span>"));
+
+					var k = 0;
+					if (strPeptideMod.indexOf("n[") == 0 || strPeptideMod.indexOf("_[") == 0)
+						strPeptideMod = strPeptideMod.substring(1);
+					// store all modified peptide sequences, per modification [cannot get the positions]
+					while ((k = strPeptideMod.indexOf('[', k)) >= 0) {
+						var l = strPeptideMod.indexOf(']', k);
+						var mod = (k == 0 ? "n" : "") + strPeptideMod.substring(k - 1, l + 1);
+						var modPep = strPeptideMod.substring(0, k - 1) + "(" + strPeptideMod.substring(k - 1, k) + ")" + strPeptideMod.substring(l + 1);
+						if (k == 0)
+							modPep = "(" + strPeptideMod.substring(l + 1, l + 2) + ")" + strPeptideMod.substring(l + 2); // n-terminal mods will be attributed to first AA
+						//TODO: support cterminal mods
+						modPep = modPep.replace(/\[.+?\]/g, ""); // remove all other mods
+						parser.addMod(strProtein, mod, modPep);
+						k++;
+					}
+
+					strPeptide = null;
+					strPeptideMod = null;
+				}
+			}
+		}
+	};
 	
 	/*
 	 * END - specific parse functions
 	 */
+
+	this.getXMLattribute = function (string, attribute) {
+		var begin;
+		if ((begin = string.indexOf(attribute+"=\"")) !== -1)
+			return string.substring(begin+attribute.length+2, string.indexOf("\"",begin+attribute.length+2));
+		else if ((begin = string.indexOf(attribute+"='")) !== -1)
+			return string.substring(begin+attribute.length+2, string.indexOf("'",begin+attribute.length+2));
+		else if ((begin = string.indexOf(attribute+" = \"")) !== -1)
+			return string.substring(begin+attribute.length+4, string.indexOf("\"",begin+attribute.length+4));
+		else if ((begin = string.indexOf(attribute+" = '")) !== -1)
+			return string.substring(begin+attribute.length+4, string.indexOf("'",begin+attribute.length+4));
+		else if ((begin = string.indexOf(attribute+" =\"")) !== -1)
+			return string.substring(begin+attribute.length+3, string.indexOf("\"",begin+attribute.length+3));
+		else if ((begin = string.indexOf(attribute+" ='")) !== -1)
+			return string.substring(begin+attribute.length+3, string.indexOf("'",begin+attribute.length+3));
+		else if ((begin = string.indexOf(attribute+"= \"")) !== -1)
+			return string.substring(begin+attribute.length+3, string.indexOf("\"",begin+attribute.length+3));
+		else if ((begin = string.indexOf(attribute+"= '")) !== -1)
+			return string.substring(begin+attribute.length+3, string.indexOf("'",begin+attribute.length+3));
+		else
+			return null;
+	};
 	
 	// start reading first file
 	this.readFile(0);

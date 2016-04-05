@@ -2751,12 +2751,12 @@ Number.prototype.pxToEm = String.prototype.pxToEm = function(settings){
 
 function Parser (files, onDone) {
 	var parser = this;
-	
+
 	this.files = files;
 	this.onDone = onDone;
 	this.proteins = {};  // protein "object"
 	this.modsGlobal = {}; // global collection of occuring mods
-	
+
 	this.ensureProt = function (strProtein) {
 		if (parser.proteins[strProtein] == undefined) {
 			parser.proteins[strProtein] = {};
@@ -2764,22 +2764,22 @@ function Parser (files, onDone) {
 			parser.proteins[strProtein].peptides = {}; // peptide object
 			parser.proteins[strProtein].mods = {}; // mod object
 		}
-	}
-	
+	};
+
 	this.addPeptide = function (strProtein, strPeptide, strPeptideMod) {
 		parser.ensureProt(strProtein);
 		parser.proteins[strProtein].peptides[strPeptide] = true;
 		parser.proteins[strProtein].modPeptides[strPeptideMod] = strPeptide;
-	}
-	
+	};
+
 	this.addMod = function (strProtein, mod, modPep) {
 		parser.ensureProt(strProtein);
 		if (parser.proteins[strProtein].mods[mod] == undefined)
 			parser.proteins[strProtein].mods[mod] = {}; // mod object
 		parser.proteins[strProtein].mods[mod][modPep] = true;
 		parser.modsGlobal[mod] = true;
-	}
-	
+	};
+
 	this.readFile = function (fileIndex) {
 		if (typeof this.files == "string") {
 			console.log("processing input...");
@@ -2818,43 +2818,46 @@ function Parser (files, onDone) {
 			}
 		}
 	};
-	
+
 	/*
-	 * generic parse function	
+	 * generic parse function
 	 */
-	
+
 	this.parse = function (filename, content) {
 		var lines = content.split(/[\r\n]+/g); // tolerate both Windows and Unix linebreaks
 		if (lines[0].length==0)
 			lines.shift(); // remove empty first line
-		try {
-			if (lines.length==0)
-				throw "file is empty";
-			if (filename.match(/prot\.xls$/i))
-				parser.parseTPPprot(lines);
-			else if (filename.match(/pep\.xls$/i))
-				parser.parseTPPpep(lines);
-			else if (filename.match(/\.txt$/i))
-				parser.parseMaxQuant(lines);
-			else if (filename.match(/\.tsv$/i))
-				parser.parseIdList(lines);
-			else if (filename.match(/\.csv$/i)) {
-				if (lines[0].indexOf("\"--------------------------------------------------------\"") > 0)
-					parser.parseMascot(lines);
-				else
-					parser.parseSkyline(lines);
-			} else
-				throw "unknown file type";
-		} catch(err) {
-			alert("Cannot parse file '"+filename+"': "+err);
+		//try {
+		if (lines.length==0)
+			throw "file is empty";
+		if (filename.match(/prot\.xls$/i))
+			parser.parseTPPprot(lines);
+		else if (filename.match(/pep\.xls$/i))
+			parser.parseTPPpep(lines);
+		else if (filename.match(/\.txt$/i))
+			parser.parseMaxQuant(lines);
+		else if (filename.match(/\.tsv$/i))
+			parser.parseIdList(lines);
+		else if (filename.match(/\.csv$/i)) {
+			if (lines[0].indexOf("\"--------------------------------------------------------\"") > 0)
+				parser.parseMascot(lines);
+			else
+				parser.parseSkyline(lines);
+		} else if (filename.match(/\.prot\.?xml$/i)) {
+			parser.parseProtXml(lines);
+		} else {
+			throw "unknown file type";
 		}
-		lines=null;	
-	}
-	
+		//} catch(err) {
+		//	alert("Cannot parse file '"+filename+"': "+err);
+		//}
+		lines=null;
+	};
+
 	/*
-	 * specific parse functions	
+	 * specific parse functions
 	 */
-	
+
 	this.parseTPPpep = function (lines) {
 		var header = lines[0].split(/\t/g);
 		var i_peptide = header.indexOf("peptide");
@@ -2864,16 +2867,16 @@ function Parser (files, onDone) {
 		}
 		for(var j = 1, line; line = lines[j]; j++) {
 			var elems = line.split(/\t/g);
-			var strPeptideMod = elems[i_peptide]; // K.LLDEN[115.03]M[147.04]AR.I | K.n[58.03]N[115.03]GVN[115.03]GTGEN[115.03]GR.K 
+			var strPeptideMod = elems[i_peptide]; // K.LLDEN[115.03]M[147.04]AR.I | K.n[58.03]N[115.03]GVN[115.03]GTGEN[115.03]GR.K
 			strPeptideMod = strPeptideMod.substring(2, strPeptideMod.length-2); // LLDEN[115.03]M[147.04]AR
 			var strProtein = elems[i_protein].split(',')[0]; // first of protein groups
 			var strPeptide = strPeptideMod.replace(/\[.+?\]/g,""); // remove all mods
 			if (strPeptideMod.indexOf("n[")==0 || strPeptideMod.indexOf("_[")==0)
 				strPeptide = strPeptide.substring(1);
 			parser.addPeptide(strProtein, strPeptide, strPeptideMod.replace(/\[/g, "<span class='mod'>").replace(/\]/g, "</span>"));
-			
+
 			var k = 0;
-			if (strPeptideMod.indexOf("n[")==0 || strPeptideMod.indexOf("_[")==0) 
+			if (strPeptideMod.indexOf("n[")==0 || strPeptideMod.indexOf("_[")==0)
 				strPeptideMod = strPeptideMod.substring(1);
 			// store all modified peptide sequences, per modification [cannot get the positions]
 			while((k = strPeptideMod.indexOf('[', k)) >= 0) {
@@ -2889,7 +2892,7 @@ function Parser (files, onDone) {
 			}
 		}
 	};
-	
+
 	this.parseTPPprot = function (lines) {
 		var header = lines[0].split(/\t/g);
 		var i_peptide = header.indexOf("peptide sequence");
@@ -2905,9 +2908,9 @@ function Parser (files, onDone) {
 			if (strPeptideMod.indexOf("n[")==0 || strPeptideMod.indexOf("_[")==0)
 				strPeptide = strPeptide.substring(1);
 			parser.addPeptide(strProtein, strPeptide, strPeptideMod.replace(/\[/g, "<span class='mod'>").replace(/\]/g, "</span>"));
-			
+
 			var k = 0;
-			if (strPeptideMod.indexOf("n[")==0 || strPeptideMod.indexOf("_[")==0) 
+			if (strPeptideMod.indexOf("n[")==0 || strPeptideMod.indexOf("_[")==0)
 				strPeptideMod = strPeptideMod.substring(1);
 			// store all modified peptide sequences, per modification [cannot get the positions]
 			while((k = strPeptideMod.indexOf('[', k)) >= 0) {
@@ -2923,7 +2926,7 @@ function Parser (files, onDone) {
 			}
 		}
 	};
-	
+
 	this.parseMascot = function (lines) {
 		var section = "";
 		var modsByID = {};
@@ -2953,21 +2956,21 @@ function Parser (files, onDone) {
 				// parse csv encoded line
 				var elems = [];
 				for (var startPos=0, endPos=0; endPos<line.length; startPos=endPos+1) {
-					if (line.charAt(startPos)=='"') { 
-						endPos = line.indexOf(',', line.indexOf('"', startPos+1)); 
+					if (line.charAt(startPos)=='"') {
+						endPos = line.indexOf(',', line.indexOf('"', startPos+1));
 					} else {
 						endPos = line.indexOf(',', startPos);
 					}
 					if (endPos==-1) { endPos = line.length; }
 					elems.push(line.substring(startPos, endPos));
 				}
-				
+
 				if (elems[i_protFamilyMember].length==0)
 					continue; // subsumable protein entry; otherwise 1,2,3...
 				var strProtein = elems[i_protein].replace(/\"/g, "");
 				var strPeptide = elems[i_peptide];
 				var strMod = elems[i_modString]; // 0.000002010000.0
-				
+
 				// store all modified peptide sequences per modification
 				if (strMod.length>0) {
 					var strPeptideMod = "";
@@ -2983,13 +2986,13 @@ function Parser (files, onDone) {
 						}
 					}
 					parser.addPeptide(strProtein, strPeptide, strPeptideMod);
-				} else { 
+				} else {
 					parser.addPeptide(strProtein, strPeptide, strPeptide);
 				}
 			}
 		}
 	};
-	
+
 	this.parseMaxQuant = function (lines) {
 		var header = lines[0].toLowerCase().split(/\t/g);
 		var i_peptide = header.indexOf("sequence");
@@ -3005,8 +3008,8 @@ function Parser (files, onDone) {
 			strPeptideMod = strPeptideMod.substring(1, strPeptideMod.length-1);
 			var strProtein = elems[i_protein].split(';')[0]; // first of protein groups
 			parser.addPeptide(strProtein, strPeptide, strPeptideMod.replace(/\(/g, "<span class='mod'>").replace(/\)/g, "</span>"));
-			
-			var k = 0;			
+
+			var k = 0;
 			// store all modified peptide sequences, per modification
 			while((k = strPeptideMod.indexOf('(', k)) >= 0) {
 				var l = strPeptideMod.indexOf(')', k);
@@ -3020,8 +3023,8 @@ function Parser (files, onDone) {
 				k++;
 			}
 		}
-	}
-	
+	};
+
 	this.parseSkyline = function (lines) {
 		var header = lines[0].split(/,/g);
 		var i_peptide = (header.indexOf("PeptideSequence")+1 | header.indexOf("Peptide Sequence")+1) - 1;
@@ -3039,8 +3042,8 @@ function Parser (files, onDone) {
 			var strProteinSeq = elems[i_proteinSeq];
 			parser.addPeptide(strProtein, strPeptide, strPeptideMod.replace(/\[/g, "<span class='mod'>").replace(/\]/g, "</span>"));
 			// protein sequence ??
-			
-			var k = 0;			
+
+			var k = 0;
 			// store all modified peptide sequences, per modification
 			while((k = strPeptideMod.indexOf('[', k)) >= 0) {
 				var l = strPeptideMod.indexOf(']', k);
@@ -3052,8 +3055,8 @@ function Parser (files, onDone) {
 				k++;
 			}
 		}
-	}
-	
+	};
+
 	this.parseIdList = function (lines) {
 		for(var j = 0, line; line = lines[j]; j++) {
 			var elems = line.split(/\s+/g);
@@ -3067,7 +3070,7 @@ function Parser (files, onDone) {
 			} else if (elems.length>=2) {
 				var arrPeps = elems[1].split(/[,;]/g);
 				for(var i = 0, strPeptideMod; strPeptideMod = arrPeps[i]; i++) {
-					if (strPeptideMod.charAt(1)=='.') { // K.LLDEN[115.03]M[147.04]AR.I | K.n[58.03]N[115.03]GVN[115.03]GTGEN[115.03]GR.K 
+					if (strPeptideMod.charAt(1)=='.') { // K.LLDEN[115.03]M[147.04]AR.I | K.n[58.03]N[115.03]GVN[115.03]GTGEN[115.03]GR.K
 						strPeptideMod = strPeptideMod.substring(2, strPeptideMod.length-2); // LLDEN[115.03]M[147.04]AR
 					}
 					strPeptideMod = strPeptideMod.replace(/\(/g,"[").replace(/\)/g,"]"); // make round brackets to square brackets
@@ -3075,9 +3078,9 @@ function Parser (files, onDone) {
 					if (strPeptideMod.indexOf("n[")==0 || strPeptideMod.indexOf("_[")==0)
 						strPeptide = strPeptide.substring(1);
 					parser.addPeptide(strProtein, strPeptide, strPeptideMod.replace(/\[/g, "<span class='mod'>").replace(/\]/g, "</span>"));
-					
+
 					var k = 0;
-					if (strPeptideMod.indexOf("n[")==0 || strPeptideMod.indexOf("_[")==0) 
+					if (strPeptideMod.indexOf("n[")==0 || strPeptideMod.indexOf("_[")==0)
 						strPeptideMod = strPeptideMod.substring(1);
 					// store all modified peptide sequences, per modification [cannot get the positions]
 					while((k = strPeptideMod.indexOf('[', k)) >= 0) {
@@ -3095,11 +3098,98 @@ function Parser (files, onDone) {
 			}
 		}
 	};
-	
+
+	this.parseProtXml = function (lines) {
+		var strProtein;
+		var strPeptide;
+		var strPeptideMod;
+		var collectMods = null;
+		var inIndistinguishablePeptide = false;
+		for(var j = 1, line; line = lines[j]; j++) {
+			if (line) {
+				line = line.trim();
+				if (line.indexOf("<protein ") == 0) {
+					strProtein = this.getXMLattribute(line, "protein_name");
+					strPeptide = null;
+				} else if (line.indexOf("<peptide ") == 0) {
+					strPeptide = this.getXMLattribute(line, "peptide_sequence");
+					strPeptideMod = strPeptide;
+				} else if (line.indexOf("<indistinguishable_peptide ") == 0 && line.indexOf(" />") == -1) {
+					inIndistinguishablePeptide = true;
+				} else if (inIndistinguishablePeptide) { // block until out of indistinguishable_peptide node
+					if (line.indexOf("</indistinguishable_peptide>") == 0)
+						inIndistinguishablePeptide = false;
+				} else if (line.indexOf("<modification_info ") == 0 && line.indexOf("<modification_info />") != 0) {
+					// Comet style
+					strPeptideMod = this.getXMLattribute(line, "modified_peptide");
+				} else if (line.indexOf("<modification_info>") == 0) {
+					// ProteomeDiscoverer style
+					collectMods = {};
+				} else if (collectMods && line.indexOf("<mod_aminoacid_mass ") == 0) {
+					var mass = this.getXMLattribute(line, "mass");
+					var pos = this.getXMLattribute(line, "position");
+					collectMods[pos] = mass;
+				} else if (collectMods && line.indexOf("</modification_info>") == 0) {
+					strPeptideMod = "";
+					for (var k = 1; k < strPeptide.length; k++) {
+						strPeptideMod += strPeptide.charAt(k + 1);
+						if (collectMods.hasOwnProperty(k)) {
+							strPeptideMod += "[" + collectMods[k] + "]";
+						}
+					}
+					collectMods = null;
+				} else if (line.indexOf("</peptide>") == 0) {
+					parser.addPeptide(strProtein, strPeptide, strPeptideMod.replace(/\[/g, "<span class='mod'>").replace(/\]/g, "</span>"));
+
+					var k = 0;
+					if (strPeptideMod.indexOf("n[") == 0 || strPeptideMod.indexOf("_[") == 0)
+						strPeptideMod = strPeptideMod.substring(1);
+					// store all modified peptide sequences, per modification [cannot get the positions]
+					while ((k = strPeptideMod.indexOf('[', k)) >= 0) {
+						var l = strPeptideMod.indexOf(']', k);
+						var mod = (k == 0 ? "n" : "") + strPeptideMod.substring(k - 1, l + 1);
+						var modPep = strPeptideMod.substring(0, k - 1) + "(" + strPeptideMod.substring(k - 1, k) + ")" + strPeptideMod.substring(l + 1);
+						if (k == 0)
+							modPep = "(" + strPeptideMod.substring(l + 1, l + 2) + ")" + strPeptideMod.substring(l + 2); // n-terminal mods will be attributed to first AA
+						//TODO: support cterminal mods
+						modPep = modPep.replace(/\[.+?\]/g, ""); // remove all other mods
+						parser.addMod(strProtein, mod, modPep);
+						k++;
+					}
+
+					strPeptide = null;
+					strPeptideMod = null;
+				}
+			}
+		}
+	};
+
 	/*
 	 * END - specific parse functions
 	 */
-	
+
+	this.getXMLattribute = function (string, attribute) {
+		var begin;
+		if ((begin = string.indexOf(attribute+"=\"")) !== -1)
+			return string.substring(begin+attribute.length+2, string.indexOf("\"",begin+attribute.length+2));
+		else if ((begin = string.indexOf(attribute+"='")) !== -1)
+			return string.substring(begin+attribute.length+2, string.indexOf("'",begin+attribute.length+2));
+		else if ((begin = string.indexOf(attribute+" = \"")) !== -1)
+			return string.substring(begin+attribute.length+4, string.indexOf("\"",begin+attribute.length+4));
+		else if ((begin = string.indexOf(attribute+" = '")) !== -1)
+			return string.substring(begin+attribute.length+4, string.indexOf("'",begin+attribute.length+4));
+		else if ((begin = string.indexOf(attribute+" =\"")) !== -1)
+			return string.substring(begin+attribute.length+3, string.indexOf("\"",begin+attribute.length+3));
+		else if ((begin = string.indexOf(attribute+" ='")) !== -1)
+			return string.substring(begin+attribute.length+3, string.indexOf("'",begin+attribute.length+3));
+		else if ((begin = string.indexOf(attribute+"= \"")) !== -1)
+			return string.substring(begin+attribute.length+3, string.indexOf("\"",begin+attribute.length+3));
+		else if ((begin = string.indexOf(attribute+"= '")) !== -1)
+			return string.substring(begin+attribute.length+3, string.indexOf("'",begin+attribute.length+3));
+		else
+			return null;
+	};
+
 	// start reading first file
 	this.readFile(0);
 };
