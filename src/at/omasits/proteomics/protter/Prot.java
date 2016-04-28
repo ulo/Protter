@@ -112,7 +112,7 @@ public class Prot {
 		if (seqValue==null || seqValue.length()==0) {
 			Log.errorThrow("no sequence specified! use the seq parameter for specifying a sequence.");
 		} else {
-			this.seq = seqValue;			
+			this.seq = seqValue.toUpperCase();			
 		}
 		
 		// check auto-topology
