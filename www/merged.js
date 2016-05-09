@@ -3062,6 +3062,9 @@ function Parser (files, onDone) {
 			var elems = line.split(/\s+/g);
 			if (elems.length==0)
 				continue;
+			if (elems.length==1 && line.indexOf(':')>0) {
+				elems = line.split(':');
+			}
 			var strProtein = elems[0].split(/[,;]/g)[0]; // first of protein groups
 			if (elems.length==1) {
 				parser.ensureProt(strProtein);
@@ -3201,11 +3204,11 @@ function Parser (files, onDone) {
 var svg; // stores the jquery svg object
 var svgDOM; // stores the svg dom element
 var svgContainer; // stores the svg container jquery object
-var lblStatus; 
+var lblStatus;
 var tblProteins;
 
 var zoom = 5; // zoom change per interval in percent
-var zoomInterval; // javascript-interval for zooming animation 
+var zoomInterval; // javascript-interval for zooming animation
 
 var aaSelectionStart = -1;
 var aaSelectionEnd = -1;
@@ -3269,14 +3272,14 @@ var proteases = {
 };
 
 $(document).ready(function(){
-		// check for parameters
-		//var params = decodeURIComponent(location.search.substring(1));
-		//var get = string2associativeArray(params, "&", "=");
+	// check for parameters
+	//var params = decodeURIComponent(location.search.substring(1));
+	//var get = string2associativeArray(params, "&", "=");
 	if (location.href.indexOf("#")==-1) {
 		window.location.replace("start/");
 		return;
 	}
-	
+
 	// run a couple of compatibility tests
 	if (!Modernizr.svg || !Modernizr.inlinesvg || !Modernizr.svgfilters) {
 		$("#body").html("redirecting to 'www.mozilla.com'");
@@ -3286,29 +3289,29 @@ $(document).ready(function(){
 	useSvgAnimation = Modernizr.smil;
 	useFileReader = Modernizr.filereader;
 	useFormAttr = Modernizr.formattribute;
-	
+
 	/*
 	 * setting styles and initializing jquery ui elements
 	 */
 	$("#divContainer").tabs({ disabled: [ 1, 2, 3 ] });
-	
+
 	$("#divMain").splitter({type: "v", sizeLeft: true});
 	$(".vsplitbar").append("<span class='ui-icon ui-icon-carat-1-e' style='margin-top:-5px;margin-left:-7px;display:inline-block;position:absolute;top:50%;'></span>");
 	$(".vsplitbar").append("<span class='ui-icon ui-icon-carat-1-w' style='margin-top:5px;margin-left:-7px;display:inline-block;position:absolute;top:50%;'></span>");
-	
+
 	$("#divContent").splitter({type: "h", sizeTop: true});
 	$(".hsplitbar").append("<span class='ui-icon ui-icon-carat-1-n' style='margin-top:-4px;margin-right:-3px;display:inline-block'></span>");
 	$(".hsplitbar").append("<span class='ui-icon ui-icon-carat-1-s' style='margin-top:-4px;margin-left:-3px;display:inline-block'></span>");
-	
+
 	$("#logo").click( function() {
 		return confirm('You will loose all the settings made so far. Do you really want to return to the start page?');
 	} );
-	
+
 	/*
 	 * Sequence Tab
 	 */
 	$("#divSequenceInput").tabs();
-	
+
 	$("#frmID").submit(function(e, data) {
 		e.preventDefault();
 		if ($("#txtID").val().length == 0) {
@@ -3338,7 +3341,7 @@ $(document).ready(function(){
 		$("#frmID").submit();
 		return false;
 	});
-	
+
 	$("#frmSequence").submit( loadProteinsFromSequences );
 	$("#btnSubmitSequence").button({ icons: { primary: "ui-icon-check" } });
 	$("#btnExampleSequence").button({ icons: { primary: "ui-icon-lightbulb" } }).click(function(){
@@ -3346,7 +3349,7 @@ $(document).ready(function(){
 		$("#frmSequence").submit();
 		return false;
 	});
-	
+
 	$("#btnLoadFasta").button({ icons: { primary: "ui-icon-folder-open" } }).click(function() {
 		$("#inpFasta").click();
 		return false;
@@ -3363,7 +3366,7 @@ $(document).ready(function(){
 		};
 		reader.readAsText(file);
 	});
-	
+
 	$("#btnProteinIDs").button({ icons: { primary: "ui-icon-document" } }).click(function(){
 		$("#dlgProteinIDs").dialog("open");
 	});
@@ -3377,7 +3380,7 @@ $(document).ready(function(){
 			{text: 'load example', click: function() {
 				$("#txtProteinIDs").val("P10747\r\nFFAR2_MOUSE\r\nQ9H6X2 DFNETQLAR,INDSVTLNEK\r\nCXCR5_MOUSE SDLSR\r\nBST2_HUMAN ASTSYDYCR,NVTHLLQQELTEAQK,VEELEGEITTLNHK\r\nITA4_HUMAN TRPVVIVDASLSHPESVNR,IGFLKPHENK,MNLTFHVINTGN\r\nS29A1_HUMAN LDMSQNVSLVTAELSK\r\nSIRPG_HUMAN GTANLSEAIR");
 			}},
-			{text: 'submit', type: 'submit', form: 'dlgProteinIDs', click: function() { 
+			{text: 'submit', type: 'submit', form: 'dlgProteinIDs', click: function() {
 				if (!useFormAttr) $(this).submit(); }
 			},
 			{text: 'cancel', click: function() {
@@ -3386,7 +3389,7 @@ $(document).ready(function(){
 		]
 	});
 	$("#dlgProteinIDs").submit( loadProteinsFromIdList );
-	
+
 	$("#btnProteomics").button({ icons: { primary: "ui-icon-folder-open" } }).click(function() {
 		if (useFileReader) {
 			$("#dlgProteomics").dialog("open");
@@ -3401,7 +3404,7 @@ $(document).ready(function(){
 		width:450,
 		height:450,
 		buttons: [
-			{text: 'submit', type: 'submit', form: 'dlgProteomics', click: function() { 
+			{text: 'submit', type: 'submit', form: 'dlgProteomics', click: function() {
 				if (!useFormAttr) $(this).submit(); }
 			},
 			{text: 'cancel', click: function() {
@@ -3413,20 +3416,20 @@ $(document).ready(function(){
 	$("#inpProteomics").change( function(event) {
 		$("#dlgProteomics").submit();
 	});
-	
+
 	// load rangeMenu contents once
-	/*$.ajax({ url: "rangeMenu.html", 
-			 success: function(result) { rangeMenu = $(result); },
-			 async: false
-	});*/
+	/*$.ajax({ url: "rangeMenu.html",
+	 success: function(result) { rangeMenu = $(result); },
+	 async: false
+	 });*/
 	rangeMenu = $('#rangeMenu');
-	
+
 	/*
 	 * sidebar - protein table
 	 */
 	tblProteins = $("#tblProteins");
 	tblProteins.treetable({ expandable: true, clickableNodeNames: true });
-	
+
 	$("#proteinFilter").keyup( function() { $("#proteinFilter").change() } );
 	$("#proteinFilter").change( function() {
 		if ($("#proteinFilter").val() != proteinFilter) {
@@ -3448,9 +3451,9 @@ $(document).ready(function(){
 			});
 		}
 	});
-	
+
 	$("#btnReset").button({ icons: { primary: "ui-icon-close" } }).click( reset );
-	
+
 	$("#btnExportAll").button({ icons: { primary: "ui-icon-disk" } }).click( function() {
 		$("#dlgExportAll").dialog('open');
 		return false;
@@ -3462,7 +3465,7 @@ $(document).ready(function(){
 		width: 500,
 		height: 300,
 		buttons: [
-			{text: 'submit', type: 'submit', form: 'dlgExportAll', click: function() { 
+			{text: 'submit', type: 'submit', form: 'dlgExportAll', click: function() {
 				if (!useFormAttr) $(this).submit(); }
 			},
 			{text: 'cancel', click: function() {
@@ -3483,20 +3486,20 @@ $(document).ready(function(){
 			async: true,
 			data: queryString+"&email="+escape($("#email").val())+"&proteins="+escape(tblProteins.data("batch")),
 			type: "POST"
-		}).done(function(msg) { 
+		}).done(function(msg) {
 			if (msg.indexOf("Error:")==0)
 				showMessageAlert("Error", msg.substring(6), 5);
 			else
-				showMessageInfo("Success", msg, 5); 
+				showMessageInfo("Success", msg, 5);
 		}).fail(function(response) {
-			showMessageAlert("Error", response.responseText, 5); 
+			showMessageAlert("Error", response.responseText, 5);
 		});
 		updateQueryString("svg");
 		$("#dlgExportAll").dialog('close');
-		
+
 		return false;
 	});
-	
+
 	$("#btnUniprot").button({ icons: { primary: "ui-icon-newwin" } }).click(function() {
 		if (isUniprot) {
 			if (query.up.toLowerCase().indexOf("sp|") == 0 || query.up.toLowerCase().indexOf("tr|") == 0)
@@ -3507,8 +3510,8 @@ $(document).ready(function(){
 			window.open("http://www.uniprot.org/blast/?query="+query.seq);
 		}
 	});
-	
-	
+
+
 	$("#btnZoomOut").button({ icons:{primary:"ui-icon-zoomout"}, text: false }).mousedown(function() {
 		zoomOut();
 		zoomInterval = window.setInterval(zoomOut, 50);
@@ -3520,7 +3523,7 @@ $(document).ready(function(){
 	$("#btnFitToScreen").button({ icons: { primary: "ui-icon-arrow-4-diag"}, text: false }).click(function() {
 		svgFitToScreen();
 	});
-	
+
 	$("#btnSave").button({ icons: { primary: "ui-icon-disk" } }).click(function(){
 		updateQueryString();
 		$("#saveAsMenu a").each(function() {
@@ -3529,16 +3532,16 @@ $(document).ready(function(){
 		});
 		//updateQueryString("svg");
 	});
-	$("#btnSave").menu({ content: 
-		"<ul id='saveAsMenu'>" +
-			"<li><a href='#' title='png' target='_blank'>Raster Graphic (png)</a></li>" +
-			"<li><a href='#' title='svg' target='_blank'>Vector Graphic (svg)</a></li>" +
-			"<li><a href='#' title='pdf' target='_blank'>Vector Graphic (pdf)</a></li>" +
-			"<li><a href='#' title='pptx' target='_blank'>PowerPoint (pptx)</a></li>" +
-			"<li><a href='#' title='tex' target='_blank'>LaTeX (tex) <small style='color:#aaa; font-style:italic'>beta</small></a></li>" +
-		"</ul>"
+	$("#btnSave").menu({ content:
+	"<ul id='saveAsMenu'>" +
+	"<li><a href='#' title='png' target='_blank'>Raster Graphic (png)</a></li>" +
+	"<li><a href='#' title='svg' target='_blank'>Vector Graphic (svg)</a></li>" +
+	"<li><a href='#' title='pdf' target='_blank'>Vector Graphic (pdf)</a></li>" +
+	"<li><a href='#' title='pptx' target='_blank'>PowerPoint (pptx)</a></li>" +
+	"<li><a href='#' title='tex' target='_blank'>LaTeX (tex) <small style='color:#aaa; font-style:italic'>beta</small></a></li>" +
+	"</ul>"
 		, flyOut: true });
-		
+
 	$("#btnReload").button({ icons: { primary: "ui-icon-refresh" } }).click(function() {
 		refresh();
 	});
@@ -3547,7 +3550,7 @@ $(document).ready(function(){
 		var body = "Hello,\nI want to share with you a Protter protein plot:\n"+location+"\n\n";
 		location.href="mailto:?subject=Protter&body="+encodeURIComponent(body);
 	});
-	
+
 	$("#btnNewStyle").button({ icons:{primary:"ui-icon-plus"}, text: false }).click(function() {
 		defaultStyles=false;
 		addStyle("bc:blue","");
@@ -3558,22 +3561,22 @@ $(document).ready(function(){
 			refresh();
 		}
 	});
-	
+
 	$("#divShapeWrapper").buttonset();
 	$("div.color_picker").hover(
-		function(){ $(this).addClass("ui-state-hover"); }, 
+		function(){ $(this).addClass("ui-state-hover"); },
 		function(){ $(this).removeClass("ui-state-hover"); }
 	);
-	
+
 	$("#tblStylesBody").tableDnD({
 		dragHandle: "dragHandle",
 		onDrop: refresh
 	});
-	
+
 	$("#txtTransmembrane").uoRangeInput("<li><a href='#' class='rangeMenuItemSelectedRange' title='' style='display:none'>selected range</a></li><li><a href='#' title='UP.TRANSMEM'>UniProt trans-membrane regions</a></li><li><a href='#' title='Phobius.TM'>Phobius trans-membrane regions</a></li>");
 	$("#txtIntramembrane").uoRangeInput("<li><a href='#' class='rangeMenuItemSelectedRange' title='' style='display:none'>selected range</a></li><li><a href='#' title='UP.INTRAMEM'>UniProt intra-membrane regions</a></li>");
 	$("#txtAnchors").uoRangeInput("<li><a href='#' class='rangeMenuItemSelectedRange' title='' style='display:none'>selected range</a></li><li><a href='#' title='UP.LIPID'>UniProt Lipidation</a></li>");
-	
+
 	// making textboxes tab aware
 	$('textarea.tabEnabled').keydown(function(e) {
 		if(e.keyCode == 9) {
@@ -3583,12 +3586,12 @@ $(document).ready(function(){
 			return false;
 		}
 	});
-	
+
 	/*
 	 * the status span
 	 */
 	lblStatus = $("#status");
-	
+
 	/*
 	 * adding the controls
 	 */
@@ -3598,7 +3601,7 @@ $(document).ready(function(){
 	$("body").mouseover(function() {
 		lblStatus.text("");
 	});
-	
+
 	/*
 	 * initialize the svg
 	 */
@@ -3609,18 +3612,18 @@ $(document).ready(function(){
 		alert("Your browser does not support SVG! Please use Mozilla Firefox or a similar modern web browser.");
 		window.location = "http://www.mozilla.com";
 	}
-	
+
 	// manually re-layout on resize
 	$("#divContent").resize(function() {
 		resizeStyleTable();
 		$("#tabMain").css("padding-left",$("#divContent").position().left+30);
 	});
-	
-	// initializations after loading settings	
+
+	// initializations after loading settings
 	$(".colorPicker").colorPicker();
-	
+
 	$("#divTMlabelWrapper").buttonset();
-	
+
 	$("#divNtermWrapper").buttonset().change(function() {
 		$("#divNtermWrapper label").removeClass("ui-corner-left ui-corner-right");
 		$("#divNtermWrapper label").first().addClass("ui-corner-top");
@@ -3637,8 +3640,8 @@ $(document).ready(function(){
 		$("#txtAnchors").val("UP.LIPID");
 	});
 	$("#divNtermWrapper").buttonset().change();
-	
-	
+
+
 	$("#divTopoWrapper").buttonset().change(function() {
 		if ($("#divTopoWrapper input:checked").val() == "none" || $("#divTopoWrapper input:checked").val() == "auto") {
 			$("#divNtermWrapper").buttonset("disable");
@@ -3662,27 +3665,27 @@ $(document).ready(function(){
 		}
 	});
 	$("#divTopoWrapper").buttonset().change();
-	
+
 	loadProteases();
-	
+
 	$("#bolNumbers").button();
 	$("#bolLegend").button();
-	
+
 	// add change-listeners to auto-update UI
 	$("#divTopoWrapper input").change(refresh);
 	$("#divNtermWrapper input").change(refresh);
 	$("#txtTransmembrane").change(refresh);
 	$("#txtIntramembrane").change(refresh);
 	$("#txtAnchors").change(refresh);
-	
+
 	$("#colMembrane").change(refresh);
 	$("#colTMlabel").change(refresh);
 	$("#divTMlabelWrapper input").change(refresh);
 	$("#lstProtease").change(refresh);
 	$("#bolNumbers").change(refresh);
 	$("#bolLegend").change(refresh);
-	$("#txtTextopo").change(refresh);	
-	
+	$("#txtTextopo").change(refresh);
+
 	$("#divUniprotDialog").dialog({
 		resizable: true,
 		autoOpen:false,
@@ -3726,14 +3729,16 @@ $(document).ready(function(){
 	$("#divNtermWrapper input").click(function(){
 		$("#selNtermUniprot").val("up.nterm");
 	});
-	
+
 	// load settings or apply defaults
 	loadFromQueryString();
-	
+
 	var params = decodeURIComponent(location.hash.substring(1));
 	var queryElements = string2associativeArray(params, "&", "=");
 	if (queryElements["file"]) {
 		loadProteinsFromProteomics([queryElements["file"]]); // as array -> loading file from server
+	} else if (queryElements["tpp"]) {
+		loadProteinsFromProteomics(queryElements["tpp"]); // as string -> loading as local idlist
 	} else {
 		if (location.hash!="" && location.hash!="#")
 			refresh();
@@ -3743,7 +3748,7 @@ $(document).ready(function(){
 	$("#divContainer").css("visibility", "visible");
 	$("#body").removeClass("loading");
 	$("#body").addClass("ui-widget-header");
-	
+
 	$("#message").click( function() { $("#message").hide(); } );
 	//showMessageAlert("Problems with UniProt", "The current version of UniProt comes with a broken interface and therefore Protter currently cannot query UniProt resources. The UniProtJAPI team is working on a solution.");
 });
@@ -3761,7 +3766,7 @@ function refresh() {
 	}
 	svgAAunselect();
 	resetRangeMenues();
-	
+
 	if (updateQueryString("svg")) {
 		//location.hash = basePath + "?" + queryString;
 		$("#divContainer").tabs("option", "disabled", []);
@@ -3775,7 +3780,7 @@ function refresh() {
 function updateQueryString(format){
 	console.log("update query string");
 	var queryElements = new Array();
-	
+
 	if (format==undefined || format.indexOf("batch")!=0) { // for batch queryString, no up,seq,peptides,mods
 		if (isUniprot) {
 			//query.up = $("#txtID").val();
@@ -3804,7 +3809,7 @@ function updateQueryString(format){
 			}
 		}
 	}
-	
+
 	var topo = $("#divTopoWrapper input:checked").val();
 	if (topo=="auto") {
 		query.tm = "auto";
@@ -3836,7 +3841,7 @@ function updateQueryString(format){
 	} else if (topo=="none") {
 		// no membrane, no parameters
 	}
-	
+
 	var membraneColor = $("#colMembrane").val();
 	query.mc = membraneColor;
 	queryElements.push("mc="+membraneColor);
@@ -3852,18 +3857,18 @@ function updateQueryString(format){
 	query.legend = $("#bolLegend").prop('checked');
 	if (query.legend)
 		queryElements.push("legend");
-	
+
 	var protease = $("#lstProtease").val();
 	if (protease.length>0) {
 		query.protease = protease;
 		queryElements.push("cutAt=" + protease);
 	}
-	
+
 	var textopo = $("#txtTextopo").val().replace(/\s+/g,";");
 	if (textopo.length > 0) {
 		queryElements.push("tex="+textopo);
 	}
-	
+
 	//if (defaultStyles==true && getStyles().length==0) {
 	if (defaultStyles==true) {
 		clearStyles();
@@ -3885,7 +3890,7 @@ function updateQueryString(format){
 		}
 		//defaultStyles=false;
 	}
-	
+
 	$("#tblStylesBody tr").each(function() {
 		var styleElements = new Array();
 		var active = $("div.btnActive", this).hasClass("ui-state-active");
@@ -3910,14 +3915,14 @@ function updateQueryString(format){
 		if (styleElements.length > 0)
 			queryElements.push(styleElements.join(",") + "=" + range);
 	});
-	
+
 	if (format) {
 		query.format = format;
 		queryElements.push("format="+format);
 	}
-	
+
 	queryString = queryElements.join("&");
-	
+
 	return true;
 }
 /*
@@ -3925,17 +3930,17 @@ function updateQueryString(format){
  */
 function loadFromQueryString(){
 	console.log("loading from query string");
-	
+
 	var params = decodeURIComponent(location.hash.substring(1));
 	var queryElements = string2associativeArray(params, "&", "=");
-	
+
 	isMulti = false;
 	$("#divSequenceSelection").hide();
 	$("div.vsplitbar").hide();
 	$("#divContent").data("previousLeft",$("#divContent").css("left"));
 	$("#divContent").css("left","");
 	$("#divContent").resize();
-	
+
 	if (queryElements["seq"]) {
 		$("#txtSequence").val(queryElements["seq"]);
 		$("#txtID").val("");
@@ -3955,7 +3960,7 @@ function loadFromQueryString(){
 		//query.up = "";
 		isUniprot = true;
 	}
-	
+
 	var nterm = queryElements["nterm"] ? queryElements["nterm"] : "";
 	var tmRegions = queryElements["tm"] ? queryElements["tm"] : "";
 	var imRegions = queryElements["im"] ? queryElements["im"] : "";
@@ -3975,31 +3980,31 @@ function loadFromQueryString(){
 			$("#divTopoWrapper").buttonset().change();
 		}
 	}
-	
+
 	var anchors = queryElements["anchor"] ? queryElements["anchor"] : "";
 	$("#txtAnchors").val(anchors.replace(/,/g,"\n"));
-	
+
 	var membraneColor = queryElements["mc"] ? queryElements["mc"] : "lightsalmon";
 	$("#colMembrane").val(membraneColor);
 	$("#colMembrane").trigger("refresh");
-	
+
 	var tmLabelColor = queryElements["lc"] ? queryElements["lc"] : "blue";
 	$("#colTMlabel").val(tmLabelColor);
 	$("#colTMlabel").trigger("refresh");
-	
+
 	var tmLabel = queryElements["tml"] ? queryElements["tml"] : "numcount";
 	$("#divTMlabelWrapper input[value='"+tmLabel+"']").prop("checked", true).button("refresh");
-	
+
 	var protease = queryElements["cutAt"] ? queryElements["cutAt"] : "";
 	$("#lstProtease").val(protease);
-	
+
 	$("#bolNumbers").prop('checked', ("numbers" in queryElements)).button("refresh");
-	
+
 	$("#bolLegend").prop('checked', ("legend" in queryElements)).button("refresh");
-	
+
 	var textopo = queryElements["tex"] ? queryElements["tex"] : "";
 	$("#txtTextopo").val(textopo.replace(/;/g,"\n"));
-	
+
 	query = {peps:[], mods:{}};
 	clearStyles();
 	for (var key in queryElements) {
@@ -4014,7 +4019,7 @@ function loadFromQueryString(){
 			});
 		}
 	}
-	
+
 	if (queryElements["peptides"]) {
 		query.peps = queryElements["peptides"].split(",");
 		$(".rangeMenuItemProteomics").show();
@@ -4031,7 +4036,7 @@ $.fn.uoButton = function(icon) {
 	$(this).append("<span class='button ui-icon ui-icon-"+icon+"'></span>");
 	$(this).addClass("button ui-state-default ui-corner-all");
 	$(this).hover(
-		function(){ $(this).addClass("ui-state-hover"); }, 
+		function(){ $(this).addClass("ui-state-hover"); },
 		function(){ $(this).removeClass("ui-state-hover"); }
 	);
 	$(this).mousedown(function(){ $(this).addClass("ui-state-active"); });
@@ -4042,21 +4047,21 @@ $.fn.uoHoverButton = function(icon) {
 	$(this).append("<span class='button ui-icon ui-icon-"+icon+"'></span>");
 	$(this).addClass("button ui-corner-all");
 	$(this).hover(
-		function(){ $(this).addClass("ui-state-hover"); }, 
+		function(){ $(this).addClass("ui-state-hover"); },
 		function(){ $(this).removeClass("ui-state-hover"); }
 	);
 	$(this).mousedown(function(){ $(this).addClass("ui-state-active"); });
 	$(this).mouseup(function(){	$(this).removeClass("ui-state-active"); });
-	return $(this); 
+	return $(this);
 }
 $.fn.uoToggleButton = function(iconInactive, iconActive, startActive) {
 	$(this).append("<span class='button ui-icon ui-icon-"+iconInactive+"'></span>");
 	$(this).addClass("button ui-state-default ui-corner-all")
 	$(this).hover(
-		function(){ $(this).addClass("ui-state-hover"); }, 
+		function(){ $(this).addClass("ui-state-hover"); },
 		function(){ $(this).removeClass("ui-state-hover"); }
 	);
-	
+
 	$(this).click(function() {
 		if ($(this).hasClass("ui-state-active")) {
 			$(this).removeClass("ui-state-active");
@@ -4068,11 +4073,11 @@ $.fn.uoToggleButton = function(iconInactive, iconActive, startActive) {
 			$("span",this).addClass("ui-icon-"+iconActive);
 		}
 	});
-	
+
 	if (startActive)
 		$(this).click();
-	
-	return $(this); 
+
+	return $(this);
 }
 
 /*
@@ -4111,21 +4116,21 @@ var rowID = 0;
 function addStyle(style, ranges) {
 	var tblStyles = $("#tblStyles");
 	var tblStylesBody = $("#tblStylesBody");
-	
+
 	var strTableRow = "<tr>";
 	strTableRow += "<td class='dragHandle columnDrag'><span title='drag-and-drop to reorder styles (later ones have higher priority)'></span></td>"; // Order
 	strTableRow += "<td class='columnName'><input name='name' class='ui-widget-content ui-corner-all' title='a name for this annotation' /></td>"; // Name
 	strTableRow += "<td class='columnShape'>"; // Shape
 	strTableRow += "<div id='divShapeWrapper"+rowID+"'>";
-		strTableRow += "<input type='radio' class='selShape' value='' name='selShape"+rowID+"' id='selShapeNone"+rowID+"' />";
-		strTableRow += "<label for='selShapeNone"+rowID+"' class='lblShapeNone' title='do not change shape'></label>";
-		strTableRow += "<input type='radio' class='selShape' value='circ' name='selShape"+rowID+"' id='selShapeCircle"+rowID+"' />"
-		strTableRow += "<label for='selShapeCircle"+rowID+"' class='lblShapeCircle' title='use circular shaped residues'></label>";
-		strTableRow += "<input type='radio' class='selShape' value='box' name='selShape"+rowID+"' id='selShapeBox"+rowID+"' />";
-		strTableRow += "<label for='selShapeBox"+rowID+"' class='lblShapeBox' title='use box shaped residues'></label>";
-		strTableRow += "<input type='radio' class='selShape' value='diamond' name='selShape"+rowID+"' id='selShapeDiamond"+rowID+"' />";
-		strTableRow += "<label for='selShapeDiamond"+rowID+"' class='lblShapeDiamond' title='use diamond shaped residues'></label>";
-		strTableRow += "</div></td>";
+	strTableRow += "<input type='radio' class='selShape' value='' name='selShape"+rowID+"' id='selShapeNone"+rowID+"' />";
+	strTableRow += "<label for='selShapeNone"+rowID+"' class='lblShapeNone' title='do not change shape'></label>";
+	strTableRow += "<input type='radio' class='selShape' value='circ' name='selShape"+rowID+"' id='selShapeCircle"+rowID+"' />"
+	strTableRow += "<label for='selShapeCircle"+rowID+"' class='lblShapeCircle' title='use circular shaped residues'></label>";
+	strTableRow += "<input type='radio' class='selShape' value='box' name='selShape"+rowID+"' id='selShapeBox"+rowID+"' />";
+	strTableRow += "<label for='selShapeBox"+rowID+"' class='lblShapeBox' title='use box shaped residues'></label>";
+	strTableRow += "<input type='radio' class='selShape' value='diamond' name='selShape"+rowID+"' id='selShapeDiamond"+rowID+"' />";
+	strTableRow += "<label for='selShapeDiamond"+rowID+"' class='lblShapeDiamond' title='use diamond shaped residues'></label>";
+	strTableRow += "</div></td>";
 	strTableRow += "<td class='columnCC'><input class='txtStyleColorText styleColorPicker' type='text' /></td>"; // Char Color
 	strTableRow += "<td class='columnFC'><input class='txtStyleColorFrame styleColorPicker' type='text' /></td>"; // Frame Color
 	strTableRow += "<td class='columnBC'><input class='txtStyleColorBackground styleColorPicker' type='text' /></td>"; // Background Color
@@ -4133,7 +4138,7 @@ function addStyle(style, ranges) {
 	strTableRow += "<td class='columnActive'><div class='btnActive' title='activate / deactivate this style'></div></td>"; // Active
 	strTableRow += "<td class='columnDelete'><div class='btnDelete' title='delete this style'></div></td>"; // Delete
 	strTableRow += "</tr>";
-	
+
 	var newTableRow = $(strTableRow);
 	newTableRow.hover(function() {
 		newTableRow.addClass("ui-state-highlight");
@@ -4141,57 +4146,57 @@ function addStyle(style, ranges) {
 	}, function() {
 		newTableRow.removeClass("ui-state-highlight");
 		$("span", this.cells[0]).removeClass("ui-icon ui-icon-triangle-2-n-s");
-    });
-	
+	});
+
 	$(".btnDelete", newTableRow).uoButton("trash").click(function() {
 		defaultStyles=false;
 		newTableRow.remove();
 		resizeStyleTable();
 	});
 	$(".txtStyleRange", newTableRow).uoRangeInput(rangeMenu.html());
-	
+
 	/*
 	 * set the loaded style or default values
 	 */
 	var styleElements = string2associativeArray(style, "," , ":");
-	
+
 	var name = styleElements["n"] ? styleElements["n"] : "";
 	$("input[name='name']", newTableRow).val(name);
-	
+
 	if (styleElements["inactive"])
 		$(".btnActive", newTableRow).uoToggleButton("radio-off","bullet",false);
 	else
 		$(".btnActive", newTableRow).uoToggleButton("radio-off","bullet",true);
 	var shape = styleElements["s"] ? styleElements["s"] : "";
 	$("input.selShape[value='"+shape+"']", newTableRow).prop("checked", true);
-	
+
 	var charColor = styleElements["cc"] ? styleElements["cc"] : "";
 	$("input.txtStyleColorText", newTableRow).val(charColor);
-	
+
 	var frameColor = styleElements["fc"] ? styleElements["fc"] : "";
 	$("input.txtStyleColorFrame", newTableRow).val(frameColor);
-	
+
 	var backgroundColor = styleElements["bc"] ? styleElements["bc"] : "";
 	$("input.txtStyleColorBackground", newTableRow).val(backgroundColor);
-	
+
 	if (ranges != undefined && typeof(ranges)!="boolean")
 		$("textarea.txtStyleRange", newTableRow).val(ranges.replace(/,/g,"\n"));
-	
+
 	/*
 	 * do final stuff
 	 */
-	
+
 	$("#divShapeWrapper"+rowID, newTableRow).buttonset();
 	$(".lblShapeNone", newTableRow).addClass("ui-corner-all");
 	$(".lblShapeCircle", newTableRow).addClass("ui-corner-left");
 	$(".lblShapeNone span", newTableRow).addClass("ui-icon ui-icon-cancel");
-	
+
 	$(".styleColorPicker", newTableRow).colorPicker(true); // true...allowNoChange option
 	$("div.color_picker", newTableRow).hover(
-		function(){ $(this).addClass("ui-state-hover"); }, 
+		function(){ $(this).addClass("ui-state-hover"); },
 		function(){ $(this).removeClass("ui-state-hover"); }
 	);
-	
+
 	$("input, textarea", newTableRow).change( function() {
 		defaultStyles=false;
 		refresh();
@@ -4204,7 +4209,7 @@ function addStyle(style, ranges) {
 	tblStylesBody.append(newTableRow);
 	rowID++;
 	tblStylesBody.tableDnDUpdate();
-	
+
 	resizeStyleTable();
 	//resizeProteinTable();
 }
@@ -4266,9 +4271,9 @@ function loadProteases() {
 	//	async: false,
 	//	error: function() { alert("could not load proteases"); },
 	//	success: function(data) {
-			$.each(proteases, function(key, val) {
-				$("#lstProtease").append("<option value='" + key + "'>" + val + "</option>");
-			});
+	$.each(proteases, function(key, val) {
+		$("#lstProtease").append("<option value='" + key + "'>" + val + "</option>");
+	});
 	//	}
 	//});
 }
@@ -4299,7 +4304,7 @@ function loadSVG() {
 		svg.load(createPath+"?"+queryString, {onLoad: svgLoaded}); // initialize the container div as svg container
 	}
 }
-function svgLoaded(svg, error) { // Callback after loading external svg	
+function svgLoaded(svg, error) { // Callback after loading external svg
 	if(error) {
 		$.get(createPath+"?"+queryString).error(function(e) {
 			if (e.responseText.indexOf("Error: java.lang.Exception: Found multiple UniProt entries")==0) {
@@ -4334,48 +4339,48 @@ function svgLoaded(svg, error) { // Callback after loading external svg
 	} else {
 		svgContainer.removeClass("loading");
 	}
-	
+
 	svgDOM = svg.root();
-	
+
 	svgFitToScreen();
-	
+
 	// read metadata from svg...
 	query.up = $("svg #uniprotID").text();
 	query.seq = $("svg #sequence").text();
-	
+
 	svgContainer.mouseover(function() {
-  		lblStatus.text("");
+		lblStatus.text("");
 		return false; // prevent bubbling
 	});
 	svgContainer.click(function() {
-  		svgAAunselect();
+		svgAAunselect();
 		//return false; // prevent bubbling
 	});
-	
+
 	// add the selection filter
 	var filterSelected = svg.filter($("defs"), 'selected', -5, -5, 10, 10, {filterUnits: 'objectBoundingBox'});
 	svg.filters.morphology(filterSelected, 'dilated', 'SourceGraphic', 'dilate', 0.3);
 	svg.filters.colorMatrix(filterSelected, 'colored', 'dilated', 'matrix', [
-										   // input: r  g  b  a      output:  
-													[0, 0, 0, 1, 0], // red
-													[0, 0, 0, 0, 0], // green
-													[0, 0, 0, 0, 0], // blue
-													[0, 0, 0, 1, 0]]); // alpha
+		// input: r  g  b  a      output:
+		[0, 0, 0, 1, 0], // red
+		[0, 0, 0, 0, 0], // green
+		[0, 0, 0, 0, 0], // blue
+		[0, 0, 0, 1, 0]]); // alpha
 	svg.filters.gaussianBlur(filterSelected, 'blured', 'colored', 0.4);
 	svg.filters.merge(filterSelected, '', ['blured', 'SourceGraphic']);
-	
+
 	// add the highlight filter
 	var filterHighlighted = svg.filter($("defs"), 'highlighted', -5, -5, 10, 10, {filterUnits: 'objectBoundingBox'});
 	svg.filters.morphology(filterHighlighted, 'dilated', 'SourceGraphic', 'dilate', 0.3);
 	svg.filters.colorMatrix(filterHighlighted, 'colored', 'dilated', 'matrix', [
-										   // input: r  g  b  a      output:  
-													[0, 0, 0, 1, 0], // red
-													[0, 0, 0, 0.5, 0], // green
-													[0, 0, 0, 0.5, 0], // blue
-													[0, 0, 0, 1, 0]]); // alpha
+		// input: r  g  b  a      output:
+		[0, 0, 0, 1, 0], // red
+		[0, 0, 0, 0.5, 0], // green
+		[0, 0, 0, 0.5, 0], // blue
+		[0, 0, 0, 1, 0]]); // alpha
 	svg.filters.gaussianBlur(filterHighlighted, 'blured', 'colored', 0.4);
 	svg.filters.merge(filterHighlighted, '', ['blured', 'SourceGraphic']);
-	
+
 	// add interactivity to aminoacids
 	var aaCount = 0;
 	$("#page1 > circle, #page1 > rect").each( function() {
@@ -4390,11 +4395,11 @@ function svgLoaded(svg, error) { // Callback after loading external svg
 			var letter = symbol.next();
 			var aaIndex = parseInt(id.substring(2, id.indexOf("_")));
 			var title = symbol.children().text();
-			
+
 			highlightAA = function(){
-				if (!symbol.attr("filter") || symbol.attr("filter") == "") 
+				if (!symbol.attr("filter") || symbol.attr("filter") == "")
 					symbol.attr("filter", "url(#highlighted)");
-				
+
 				if (aaSelectionStart > -1 && aaSelectionEnd==-1) {
 					var from = (aaSelectionStart < aaIndex) ? aaSelectionStart : aaIndex;
 					var to = (aaSelectionStart < aaIndex) ? aaIndex : aaSelectionStart;
@@ -4413,22 +4418,22 @@ function svgLoaded(svg, error) { // Callback after loading external svg
 				return false; // prevent bubbling
 			}
 			unhighlightAA = function(){
-				if (symbol.attr("filter") == "url(#highlighted)") 
+				if (symbol.attr("filter") == "url(#highlighted)")
 					symbol.attr("filter", "");
-					
+
 				//status.text("leave");
 				for (var i=0; i<aaCount; i++) {
 					if ($("#page1 > #aa"+i+"_symbol").attr("filter") == "url(#highlighted)")
 						$("#page1 > #aa"+i+"_symbol").attr("filter", "");
 				}
-				
+
 				return false; // prevent bubbling
 			}
-			
-			
+
+
 			symbol.hover(highlightAA, unhighlightAA);
 			letter.hover(highlightAA, unhighlightAA);
-			
+
 			symbol.click(function(){return svgAAselect(aaIndex);});
 			letter.click(function(){return svgAAselect(aaIndex);});
 		}
@@ -4439,9 +4444,9 @@ function svgLoaded(svg, error) { // Callback after loading external svg
 	//					on same AA, unselect
 	//					on anywhere, reset beginSelectionAA
 	// remember to reset beginSelectionAA on reload of svg
-	// 
+	//
 	// synchronize with selection in sequence textbox!
-	
+
 	$(document).trigger('svgLoaded');
 }
 
@@ -4459,7 +4464,7 @@ function svgAAselect(aaIndex) {
 		$(".rangeMenuItemSelectedRange", rangeMenu).show();
 	} else {
 		svgAAunselect();
-		
+
 		//symbol.attr("filter", "url(#selected)");
 		$("#page1 > #aa"+aaIndex+"_symbol").attr("filter", "url(#selected)");
 		aaSelectionStart = aaIndex;
@@ -4476,19 +4481,19 @@ function svgAAunselect(){
 	aaSelectionEnd = -1;
 	$(".rangeMenuItemSelectedRange").hide();
 	$(".rangeMenuItemSelectedRange", rangeMenu).hide();
-	
+
 	$("#tblProteins tr.peptideRow").removeClass("selected");
 }
 
 function svgFitToScreen() {
 	// calculate & set correct svg width & height
-	if (svgDOM.getAttribute("viewBox") != null) { 
+	if (svgDOM.getAttribute("viewBox") != null) {
 		var viewBox = svgDOM.getAttribute("viewBox").split(" ");
 		var vAspectRatio = viewBox[2]/viewBox[3]; // viewbox's width/height
 		var containerWidth = svgContainer.width();
 		var containerHeight = svgContainer.height();
-		var containerAspectRatio = containerWidth/containerHeight;	
-		
+		var containerAspectRatio = containerWidth/containerHeight;
+
 		var svgWidth;
 		var svgHeight;
 		if (vAspectRatio > containerAspectRatio) { // svg breiter als container
@@ -4548,7 +4553,7 @@ function string2associativeArray(str, sepArr, sepKeyVal) {
 				vars[key] = val;
 			else
 				vars[key] = true;
-		} 
+		}
 	}
 	return vars;
 }
@@ -4595,49 +4600,50 @@ function showProteins() {
 		$("#divContent").resize();
 	}
 	$("#tblProteins tr").first().click();
+	$("#tblProteins").treetable("expandNode", 0);
 }
 
 function addProtein(name, seq, peps, mods, displayPeptideCount) {
 	var index = tblProteins.data("count");
-	
+
 	var proteinIsUniprot = (seq===null);
-	
+
 	var proteinRow = $("<tr data-tt-id='"+index+"'></tr>");
 	proteinRow.append($("<td>"+name+"</td>"));
-	
+
 	// store all info for batch visualization purposes
 	var batchString;
-	
+
 	if (proteinIsUniprot) {
 		if (displayPeptideCount)
 			proteinRow.append($("<td>"+Object.keys(peps).length+(Object.keys(peps).length==1 ? " peptide" : " peptides")+"</td>"));
-		else 
+		else
 			proteinRow.append($("<td></td>"))
 		batchString = "title="+name+"&up="+name;
 	} else {
 		proteinRow.append($("<td>"+seq.length+"aa</td>"));
 		batchString = "title="+name+"&seq="+seq;
 	}
-	
+
 	tblProteins.append(proteinRow);
 	tblProteins.data("count", index+1);
 	$("#lblCountProteins").text(index+1);
-	
+
 	var pepSequences = {};
-	
+
 	if (proteinIsUniprot) {
 		for(var i = 0; i < Object.keys(peps).length; i++){
 			var pepDisplay;
 			var pepSequence;
 			if (Array.isArray(peps)) { // array of peptides (manual input)
-			 	pepSequence = peps[i];
-			 	pepDisplay = pepSequence;
+				pepSequence = peps[i];
+				pepDisplay = pepSequence;
 			} else { // parsed proteomics file object
-			 	pepDisplay = Object.keys(peps)[i];
+				pepDisplay = Object.keys(peps)[i];
 				pepSequence = peps[pepDisplay];
 			}
 			pepSequences[pepSequence] = true;
-			
+
 			var peptideRow = $("<tr data-tt-id='"+index+"."+i+"' data-tt-parent-id='"+index+"' class='peptideRow'></tr>");
 			peptideRow.append($("<td>"+pepDisplay+"</td><td></td>"));
 			peptideRow.data("seq",pepSequence);
@@ -4667,7 +4673,7 @@ function addProtein(name, seq, peps, mods, displayPeptideCount) {
 			});
 			tblProteins.append(peptideRow);
 		}
-		
+
 		// save batch string for batch visualization
 		if (Object.keys(pepSequences).length > 0) {
 			batchString += "&peptides=" + Object.keys(pepSequences).join(",");
@@ -4681,15 +4687,15 @@ function addProtein(name, seq, peps, mods, displayPeptideCount) {
 			}
 		}
 	}
-	
+
 	tblProteins.data("batch", tblProteins.data("batch") + batchString + "\n");
-	
+
 	// highlight selected row
 	proteinRow.click( function() {
 		$("#tblProteins tr.selected").not(this).removeClass("selected");
 		if (! $(this).hasClass("selected")) {
 			$(this).addClass("selected");
-			
+
 			if (proteinIsUniprot) {
 				$("#txtID").val(name);
 				$("#frmID").trigger("submit", {peps:Object.keys(pepSequences), mods:mods});
@@ -4710,7 +4716,7 @@ function loadProteinsFromSequences(e) {
 		unselectProteins();
 	$(".rangeMenuItemProteomics").hide();
 	$(".rangeMenuItemProteomics", rangeMenu).hide();
-	
+
 	var arrEntries = $("#txtSequence").val().split(">");
 	if (arrEntries.length > 2) {
 		clearProteins();
@@ -4722,7 +4728,7 @@ function loadProteinsFromSequences(e) {
 			var seq = entry.trim().replace(/^>.*/g,"").replace(/\s/g,"");
 			addProtein(name, seq, null, null, false);
 		}
-		showProteins();		
+		showProteins();
 	} else { // only one sequence given -> display
 		refresh();
 	}
@@ -4735,12 +4741,12 @@ function loadProteinsFromIdList(e) {
 		alert("Please enter at least one protein identifier!");
 		return false;
 	}
-	
+
 	e.preventDefault();
 	$("#dlgProteinIDs").dialog('close');
-	
+
 	loadProteinsFromProteomics($("#txtProteinIDs").val());
-	
+
 	return false;
 }
 
@@ -4762,21 +4768,26 @@ function loadProteinsFromProteomics(e) {
 	}
 	isUniprot = true;
 	clearProteins();
-	
+
 	var parser = new Parser(files, function() {
+		var j = 0;
 		for(var i = 0, protein; protein = Object.keys(this.proteins)[i]; i++) {
 			addProtein(protein, null, this.proteins[protein].modPeptides, this.proteins[protein].mods, true);
+			j+= Object.keys(this.proteins[protein].modPeptides).length;
 		}
-		
+
 		updateRangeMenuMods(Object.keys(this.modsGlobal));
-		
+
 		svgContainer.removeClass("loading");
-		showProteins();
+		if (i>1 || j>1)
+			showProteins();
+		else
+			$("#tblProteins tr").first().click();
 	});
-	
+
 	svg.clear(true);
 	svgContainer.addClass("loading");
-	
+
 	return false;
 }
 

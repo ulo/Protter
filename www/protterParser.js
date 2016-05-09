@@ -116,7 +116,7 @@ function Parser (files, onDone) {
 		}
 		for(var j = 1, line; line = lines[j]; j++) {
 			var elems = line.split(/\t/g);
-			var strPeptideMod = elems[i_peptide]; // K.LLDEN[115.03]M[147.04]AR.I | K.n[58.03]N[115.03]GVN[115.03]GTGEN[115.03]GR.K 
+			var strPeptideMod = elems[i_peptide]; // K.LLDEN[115.03]M[147.04]AR.I | K.n[58.03]N[115.03]GVN[115.03]GTGEN[115.03]GR.K
 			strPeptideMod = strPeptideMod.substring(2, strPeptideMod.length-2); // LLDEN[115.03]M[147.04]AR
 			var strProtein = elems[i_protein].split(',')[0]; // first of protein groups
 			var strPeptide = strPeptideMod.replace(/\[.+?\]/g,""); // remove all mods
@@ -311,6 +311,9 @@ function Parser (files, onDone) {
 			var elems = line.split(/\s+/g);
 			if (elems.length==0)
 				continue;
+			if (elems.length==1 && line.indexOf(':')>0) {
+				elems = line.split(':');
+			}
 			var strProtein = elems[0].split(/[,;]/g)[0]; // first of protein groups
 			if (elems.length==1) {
 				parser.ensureProt(strProtein);

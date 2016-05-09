@@ -538,6 +538,8 @@ $(document).ready(function(){
 	var queryElements = string2associativeArray(params, "&", "=");
 	if (queryElements["file"]) {
 		loadProteinsFromProteomics([queryElements["file"]]); // as array -> loading file from server
+	} else if (queryElements["tpp"]) {
+		loadProteinsFromProteomics(queryElements["tpp"]); // as string -> loading as local idlist
 	} else {
 		if (location.hash!="" && location.hash!="#")
 			refresh();
@@ -1399,6 +1401,7 @@ function showProteins() {
 		$("#divContent").resize();
 	}
 	$("#tblProteins tr").first().click();
+	$("#tblProteins").treetable("expandNode", 0);
 }
 
 function addProtein(name, seq, peps, mods, displayPeptideCount) {
@@ -1568,14 +1571,19 @@ function loadProteinsFromProteomics(e) {
 	clearProteins();
 	
 	var parser = new Parser(files, function() {
+		var j = 0;
 		for(var i = 0, protein; protein = Object.keys(this.proteins)[i]; i++) {
 			addProtein(protein, null, this.proteins[protein].modPeptides, this.proteins[protein].mods, true);
+			j+= Object.keys(this.proteins[protein].modPeptides).length;
 		}
-		
+
 		updateRangeMenuMods(Object.keys(this.modsGlobal));
 		
 		svgContainer.removeClass("loading");
-		showProteins();
+		if (i>1 || j>1)
+			showProteins();
+		else
+			$("#tblProteins tr").first().click();
 	});
 	
 	svg.clear(true);
