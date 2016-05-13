@@ -3,6 +3,7 @@ package at.omasits.proteomics.protter.phobius;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -28,13 +29,19 @@ public class PhobiusProvider {
 	public static Map<String, List<Range>> getPhobius(String sequence) throws Exception {
 		if (!phobiusPredictions.containsKey(sequence.toUpperCase())) {
 			Map<String, List<Range>> features = new HashMap<String, List<Range>>();
-			URL url = new URL(phobiusServer+"?format=short&protseq="+sequence.toUpperCase());
+			URL url = new URL(phobiusServer);
+			String urlParameters = "format=short&protseq="+sequence.toUpperCase();
 			try {
 				Log.debug("PhobiusProvider: loading "+url);
 //				BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 				URLConnection con = url.openConnection();
+				con.setDoOutput(true);
 				con.setConnectTimeout(10000);
 				con.setReadTimeout(10000); //10 seconds
+				OutputStreamWriter post = new OutputStreamWriter(con.getOutputStream());
+				post.write(urlParameters);
+				post.flush();
+
 				BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 				Pattern p = Pattern.compile("UNNAMED\\s+(.+?)\\s+(.+?)\\s+(.+)");
 				String line;
@@ -97,6 +104,7 @@ public class PhobiusProvider {
 				}
 				phobiusPredictions.put(sequence, features);
 				in.close();
+				post.close();
 			} catch (IOException e) {
 				Log.warn("Current Phobius server '"+phobiusServer+"' is offline.");
 				// try all mirrors before giving up!

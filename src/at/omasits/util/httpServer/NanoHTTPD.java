@@ -88,6 +88,7 @@ public abstract class NanoHTTPD {
     public static final String MIME_PLAINTEXT = "text/plain";
     public static final String MIME_HTML = "text/html";
     public static final String MIME_DEFAULT_BINARY = "application/octet-stream";
+    public static final int BUFSIZE = 65536;
     private final String hostname;
     private final int myPort;
     private ServerSocket myServerSocket;
@@ -430,7 +431,6 @@ public abstract class NanoHTTPD {
      * Handles one session, i.e. parses the HTTP request and returns the response.
      */
     protected class HTTPSession implements Runnable {
-        public static final int BUFSIZE = 8192;
         
         private final TempFileManager tempFileManager;
         private InputStream inputStream;
