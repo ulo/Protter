@@ -383,8 +383,8 @@ function Parser (files, onDone) {
 					collectMods[pos] = mass;
 				} else if (collectMods && line.indexOf("</modification_info>") == 0) {
 					strPeptideMod = "";
-					for (var k = 1; k < strPeptide.length; k++) {
-						strPeptideMod += strPeptide.charAt(k + 1);
+					for (var k = 1; k < strPeptide.length+1; k++) {
+						strPeptideMod += strPeptide.charAt(k - 1);
 						if (collectMods.hasOwnProperty(k)) {
 							strPeptideMod += "[" + collectMods[k] + "]";
 						}
