@@ -20,6 +20,7 @@ var shareLink;
 
 var basePath = "";
 var createPath = "create";
+var linkPath = "link";
 
 var useSvgAnimation = false;
 var useFileReader = false;
@@ -304,7 +305,7 @@ $(document).ready(function(){
 
 	$("#btnMail").button({ icons: { primary: "ui-icon-mail-closed" } }).click(function(){
 		updateQueryString("svg");
-		$.ajax({ url: "/link",
+		$.ajax({ url: linkPath,
 			data: {url: location.href},
 			method: "GET",
 			dataType: "text",
