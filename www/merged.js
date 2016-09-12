@@ -3208,13 +3208,14 @@ var lblStatus;
 var tblProteins;
 
 var zoom = 5; // zoom change per interval in percent
-var zoomInterval; // javascript-interval for zooming animation
+var zoomInterval; // javascript-interval for zooming animation 
 
 var aaSelectionStart = -1;
 var aaSelectionEnd = -1;
 
 var queryString; // stores the protter query url
 var query = {peps:[], mods:{}};
+var shareLink;
 
 var basePath = "";
 var createPath = "create";
@@ -3418,7 +3419,7 @@ $(document).ready(function(){
 	});
 
 	// load rangeMenu contents once
-	/*$.ajax({ url: "rangeMenu.html",
+	/*$.ajax({ url: "rangeMenu.html", 
 	 success: function(result) { rangeMenu = $(result); },
 	 async: false
 	 });*/
@@ -3500,6 +3501,32 @@ $(document).ready(function(){
 		return false;
 	});
 
+	$("#btnMail").button({ icons: { primary: "ui-icon-mail-closed" } }).click(function(){
+		updateQueryString("svg");
+		$.ajax({ url: "/link",
+			data: {url: location.href},
+			method: "GET",
+			dataType: "text",
+			async: false,
+			success: function(result) { shareLink = result; },
+			error: function(result) { shareLink = location.href; }
+		});
+	});
+	$("#btnMail").menu({ content: "<ul>" +
+	"<li><a id='aShareLink' href='#' title='share as link'>link</a></li>" +
+	"<li><a id='aShareMail' href='#' title='share in email'>email</a></li>" +
+	"</ul>"
+		, flyOut: true });
+	$(".fg-menu").on("click", "#aShareLink", function() {
+		prompt("Here is the link to this Protter visualization:", shareLink);
+		return false;
+	});
+	$(".fg-menu").on("click", "#aShareMail", function() {
+		var body = "Hello,\nI want to share with you a Protter protein plot:\n"+shareLink+"\n\n";
+		location.href="mailto:?subject=Protter&body="+encodeURIComponent(body);
+		return false;
+	});
+
 	$("#btnUniprot").button({ icons: { primary: "ui-icon-newwin" } }).click(function() {
 		if (isUniprot) {
 			if (query.up.toLowerCase().indexOf("sp|") == 0 || query.up.toLowerCase().indexOf("tr|") == 0)
@@ -3544,11 +3571,6 @@ $(document).ready(function(){
 
 	$("#btnReload").button({ icons: { primary: "ui-icon-refresh" } }).click(function() {
 		refresh();
-	});
-	$("#btnMail").button({ icons: { primary: "ui-icon-mail-closed" } }).click(function() {
-		updateQueryString("svg");
-		var body = "Hello,\nI want to share with you a Protter protein plot:\n"+location+"\n\n";
-		location.href="mailto:?subject=Protter&body="+encodeURIComponent(body);
 	});
 
 	$("#btnNewStyle").button({ icons:{primary:"ui-icon-plus"}, text: false }).click(function() {
@@ -3619,7 +3641,7 @@ $(document).ready(function(){
 		$("#tabMain").css("padding-left",$("#divContent").position().left+30);
 	});
 
-	// initializations after loading settings
+	// initializations after loading settings	
 	$(".colorPicker").colorPicker();
 
 	$("#divTMlabelWrapper").buttonset();
@@ -4304,7 +4326,7 @@ function loadSVG() {
 		svg.load(createPath+"?"+queryString, {onLoad: svgLoaded}); // initialize the container div as svg container
 	}
 }
-function svgLoaded(svg, error) { // Callback after loading external svg
+function svgLoaded(svg, error) { // Callback after loading external svg	
 	if(error) {
 		$.get(createPath+"?"+queryString).error(function(e) {
 			if (e.responseText.indexOf("Error: java.lang.Exception: Found multiple UniProt entries")==0) {
@@ -4361,7 +4383,7 @@ function svgLoaded(svg, error) { // Callback after loading external svg
 	var filterSelected = svg.filter($("defs"), 'selected', -5, -5, 10, 10, {filterUnits: 'objectBoundingBox'});
 	svg.filters.morphology(filterSelected, 'dilated', 'SourceGraphic', 'dilate', 0.3);
 	svg.filters.colorMatrix(filterSelected, 'colored', 'dilated', 'matrix', [
-		// input: r  g  b  a      output:
+		// input: r  g  b  a      output:  
 		[0, 0, 0, 1, 0], // red
 		[0, 0, 0, 0, 0], // green
 		[0, 0, 0, 0, 0], // blue
@@ -4373,7 +4395,7 @@ function svgLoaded(svg, error) { // Callback after loading external svg
 	var filterHighlighted = svg.filter($("defs"), 'highlighted', -5, -5, 10, 10, {filterUnits: 'objectBoundingBox'});
 	svg.filters.morphology(filterHighlighted, 'dilated', 'SourceGraphic', 'dilate', 0.3);
 	svg.filters.colorMatrix(filterHighlighted, 'colored', 'dilated', 'matrix', [
-		// input: r  g  b  a      output:
+		// input: r  g  b  a      output:  
 		[0, 0, 0, 1, 0], // red
 		[0, 0, 0, 0.5, 0], // green
 		[0, 0, 0, 0.5, 0], // blue
@@ -4444,7 +4466,7 @@ function svgLoaded(svg, error) { // Callback after loading external svg
 	//					on same AA, unselect
 	//					on anywhere, reset beginSelectionAA
 	// remember to reset beginSelectionAA on reload of svg
-	//
+	// 
 	// synchronize with selection in sequence textbox!
 
 	$(document).trigger('svgLoaded');

@@ -16,6 +16,7 @@ var aaSelectionEnd = -1;
 
 var queryString; // stores the protter query url
 var query = {peps:[], mods:{}};
+var shareLink;
 
 var basePath = "";
 var createPath = "create";
@@ -300,6 +301,32 @@ $(document).ready(function(){
 		
 		return false;
 	});
+
+	$("#btnMail").button({ icons: { primary: "ui-icon-mail-closed" } }).click(function(){
+		updateQueryString("svg");
+		$.ajax({ url: "/link",
+			data: {url: location.href},
+			method: "GET",
+			dataType: "text",
+			async: false,
+			success: function(result) { shareLink = result; },
+			error: function(result) { shareLink = location.href; }
+		});
+	});
+	$("#btnMail").menu({ content: "<ul>" +
+		"<li><a id='aShareLink' href='#' title='share as link'>link</a></li>" +
+		"<li><a id='aShareMail' href='#' title='share in email'>email</a></li>" +
+		"</ul>"
+		, flyOut: true });
+	$(".fg-menu").on("click", "#aShareLink", function() {
+		prompt("Here is the link to this Protter visualization:", shareLink);
+		return false;
+	});
+	$(".fg-menu").on("click", "#aShareMail", function() {
+		var body = "Hello,\nI want to share with you a Protter protein plot:\n"+shareLink+"\n\n";
+		location.href="mailto:?subject=Protter&body="+encodeURIComponent(body);
+		return false;
+	});
 	
 	$("#btnUniprot").button({ icons: { primary: "ui-icon-newwin" } }).click(function() {
 		if (isUniprot) {
@@ -345,11 +372,6 @@ $(document).ready(function(){
 		
 	$("#btnReload").button({ icons: { primary: "ui-icon-refresh" } }).click(function() {
 		refresh();
-	});
-	$("#btnMail").button({ icons: { primary: "ui-icon-mail-closed" } }).click(function() {
-		updateQueryString("svg");
-		var body = "Hello,\nI want to share with you a Protter protein plot:\n"+location+"\n\n";
-		location.href="mailto:?subject=Protter&body="+encodeURIComponent(body);
 	});
 	
 	$("#btnNewStyle").button({ icons:{primary:"ui-icon-plus"}, text: false }).click(function() {
