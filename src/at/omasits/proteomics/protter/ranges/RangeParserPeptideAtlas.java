@@ -10,10 +10,8 @@ import java.util.Map;
 import java.util.Set;
 
 import at.omasits.util.Log;
+import at.omasits.util.UOUniProtEntry;
 import at.omasits.util.Util;
-
-
-import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
 
 public class RangeParserPeptideAtlas implements IRangeParser {
 	protected static Map<String,Set<String>> paHex = new HashMap<String,Set<String>>();
@@ -25,7 +23,7 @@ public class RangeParserPeptideAtlas implements IRangeParser {
 	}
 
 	@Override
-	public List<? extends Range> parse(String rangeString, String sequence, UniProtEntry up, Map<String,String> parms) throws Exception {
+	public List<? extends Range> parse(String rangeString, String sequence, List<UOUniProtEntry> up, Map<String,String> parms) throws Exception {
 		String build = rangeString.substring(3);
 		if (! build.equals(currentBuild)) {
 			paHex = new HashMap<String,Set<String>>();

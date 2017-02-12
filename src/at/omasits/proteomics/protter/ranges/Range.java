@@ -1,14 +1,14 @@
 package at.omasits.proteomics.protter.ranges;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import at.omasits.util.Log;
-
-
-import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
+import at.omasits.util.UOUniProtEntry;
 
 public class Range implements Comparable<Range> {
 	public int from;
@@ -40,7 +40,7 @@ public class Range implements Comparable<Range> {
 	}
 	
 	
-	public static List<? extends Range> parseMultiRangeString(String multiRangeString, String sequence, UniProtEntry up, String tag, Map<String,String> parms) throws Exception {
+	public static List<? extends Range> parseMultiRangeString(String multiRangeString, String sequence, List<UOUniProtEntry> up, String tag, Map<String,String> parms) throws Exception {
 		List<Range> ranges = new ArrayList<Range>();
 		multiRangeString = multiRangeString.replaceAll("(\\{\\d+),", "$1;"); // replace {N,} {N,M} with {N;} {N;M} 
 		String[] arr = multiRangeString.split(",");
@@ -93,12 +93,17 @@ public class Range implements Comparable<Range> {
 		}
 		return rangeList;
 	}
+	
+	public boolean contains(int position) {
+		return (position >= from && position <= to);
+	}
 
-	public static boolean contains(List<? extends Range> rangeList, int position) throws Exception {
-		for (Range range : rangeList) {
-			if (position >= range.from && position <= range.to)
-				return true;
+	public static int contains(Collection<? extends Range> rangeList, int position) throws Exception {
+		int i=0;
+		for (Iterator<? extends Range> it = rangeList.iterator(); it.hasNext(); i++) {
+			if (it.next().contains(position))
+				return i;
 		}
-		return false;
+		return -1;
 	}
 }

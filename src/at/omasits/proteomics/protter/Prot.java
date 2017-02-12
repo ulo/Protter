@@ -11,8 +11,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
 import at.omasits.proteomics.protter.Style.Color;
 import at.omasits.proteomics.protter.Style.Shape;
 import at.omasits.proteomics.protter.phobius.PhobiusProvider;
@@ -21,9 +22,11 @@ import at.omasits.proteomics.protter.uniprot.UniProtProvider;
 import at.omasits.proteomics.protter.uniprot.UniProtProvider.UniprotException;
 import at.omasits.util.Config;
 import at.omasits.util.Log;
+import at.omasits.util.UOUniProtEntry;
 import at.omasits.util.Util;
 import at.omasits.util.Vec;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
@@ -64,7 +67,9 @@ public class Prot {
 	}
 	
 	public String seq;
-	public String uniprotID;
+	public List<String> uniprotIDs = new ArrayList<String>();
+	public List<Range> seqRanges = new ArrayList<Range>();
+	public List<Integer> upOffsets = new ArrayList<Integer>();
 	public List<? extends Range> tmRegions = new ArrayList<Range>();
 	public List<? extends Range> imRegions = new ArrayList<Range>();
 	public List<? extends Range> anchorRegions = new ArrayList<Range>();
@@ -91,7 +96,7 @@ public class Prot {
 	public List<String> arrTextopo = new ArrayList<String>();
 	
 	public Prot(Map<String,String> parms) throws Exception {
-		UniProtEntry up = null;
+		List<UOUniProtEntry> up = new ArrayList<UOUniProtEntry>();
 		
 		// parse the parameters and validate
 		String seqValue = parms.get("seq");	
@@ -104,26 +109,51 @@ public class Prot {
 		cutAtLegend = cutAtValue;
 		
 		if (upValue != null) {
-			up = UniProtProvider.get(upValue);
-			if (seqValue==null || seqValue.length()==0)
-				seqValue = up.getSequence().getValue();
-			uniprotID = up.getUniProtId().getValue();
+			String[] upValues = upValue.split(",");
+			for (String upName : upValues) {
+				Matcher m = Pattern.compile("(.+)\\[(\\d+)-(\\d*)\\]").matcher(upName);
+				Integer offsetFrom = 1;
+				Integer offsetTo = null;
+				if (m.matches()) {
+					upName = m.group(1);
+					offsetFrom = Integer.valueOf(m.group(2));
+					offsetTo = (m.group(3).length()==0) ? (null) : (Integer.valueOf(m.group(3)));
+				}
+				UOUniProtEntry upEntry = new UOUniProtEntry(UniProtProvider.get(upName), offsetFrom, offsetTo);
+				if (this.seq==null)
+					this.seq="";
+				int start = this.seq.length();
+				this.seq += upEntry.getSequenceString().toUpperCase();
+				this.seqRanges.add(new Range(start, this.seq.length()-1));
+				this.upOffsets.add(offsetFrom-1);
+				up.add(upEntry);
+				this.uniprotIDs.add(upEntry.getUniProtId().getValue());
+			}
 		}
-		if (seqValue==null || seqValue.length()==0) {
-			Log.errorThrow("no sequence specified! use the seq parameter for specifying a sequence.");
-		} else {
-			this.seq = seqValue.toUpperCase();			
+		if (this.seq == null) {
+			if (seqValue==null || seqValue.length()==0) {
+				Log.errorThrow("no sequence specified! use the seq parameter for specifying a sequence.");
+			} else {
+				this.seq = seqValue.toUpperCase();			
+			}
 		}
 		
 		// check auto-topology
 		if (tmValue!=null && tmValue.equalsIgnoreCase("auto")) {
-			if (up!=null) {
+			if (up.size()>0) {
 				tmValue="UP.TRANSMEM";
 				imValue="UP.INTRAMEM";
 				if (anchorValue==null) anchorValue="UP.LIPID";
+				if (up.get(0).getPrimaryUniProtAccession().toString().indexOf('-') != -1) {
+					// uniprot isoform (e.g. Q13740-2)
+					tmValue="PHOBIUS.TM";
+					imValue=null;
+					ntermValue="PHOBIUS.NTERM";
+					anchorValue=null;
+				}
 				if (ntermValue==null) {
 					try {
-						UniProtProvider.inferNterm(up);
+						UniProtProvider.inferNterm(up.get(0));
 						ntermValue="UP.NTERM";
 					} catch (UniprotException e) {
 						ntermValue="PHOBIUS.NTERM";
@@ -146,16 +176,16 @@ public class Prot {
 			Log.errorThrow("no n-terminus position specified! use the nterm parameter for specifying the n-terminus position.");
 		} else {
 			if (ntermValue.equalsIgnoreCase("up.nterm")) {
-				if (up != null) {
-					this.nterm = UniProtProvider.inferNterm(up);
+				if (up.size()>0) {
+					this.nterm = UniProtProvider.inferNterm(up.get(0));
 					ntermLegend = "UniProt";
 				} else {
 					Log.errorThrow("Cannot load nterm information from UniProt as no UniProt accession was specified! Use the up parameter for specifying a UniProt accession or name.");
 				}
 			} else if (ntermValue.toLowerCase().startsWith("up.nterm.")) {
-				if (up != null) {
+				if (up.size()>0) {
 					String conformation = ntermValue.toLowerCase().substring("up.nterm.".length()); // e.g: UP.NTERM.EXTERNAL					
-					this.nterm = UniProtProvider.inferNterm(up, conformation);
+					this.nterm = UniProtProvider.inferNterm(up.get(0), conformation);
 					ntermLegend = "UniProt ("+conformation+")";
 				} else {
 					Log.errorThrow("Cannot load nterm information from UniProt as no UniProt accession was specified! Use the up parameter for specifying a UniProt accession or name.");
@@ -167,32 +197,27 @@ public class Prot {
 				this.nterm = Nterm.fromString(ntermValue); // try to interpret string
 				ntermLegend = "manual";
 			}
-			if (tmValue!=null) {
-				this.tmRegions = Range.parseMultiRangeString(tmValue, seq, up, "tm", parms);
-				if (imValue != null) {
-					this.imRegions = Range.parseMultiRangeString(imValue, seq, up, "im", parms);
-					if (tmValue.equalsIgnoreCase("up.transmem") && imValue.equalsIgnoreCase("up.intramem")) {
+			if (tmValue!=null || imValue!=null) {
+				if (tmValue != null) {
+					this.tmRegions = Range.parseMultiRangeString(tmValue, seq, up, "tm", parms);
+					if (tmValue.equalsIgnoreCase("up.transmem")) {
 						tmLegend = "UniProt";
-					} else if (tmValue.toLowerCase().startsWith("up.transmem.") && imValue.toLowerCase().startsWith("up.intramem.")) {
+					} else if (tmValue.toLowerCase().startsWith("up.transmem.")) {
 						String conformation = tmValue.toLowerCase().substring("up.transmem.".length()); // e.g: UP.TRANSMEM.EXTERNAL
 						tmLegend = "UniProt ("+conformation+")";
-					}
+					} else if (tmValue.equalsIgnoreCase("phobius.tm"))
+						tmLegend = "Phobius";
+					else
+						tmLegend = "manual";
 				}
-				else if (tmValue.equalsIgnoreCase("phobius.tm"))
-					tmLegend = "Phobius";
-				else
-					tmLegend = "manual";
+				if (imValue != null) {
+					this.imRegions = Range.parseMultiRangeString(imValue, seq, up, "im", parms);
+				}
 				
 				this.nonTMprotein = true;
 				for (Range tmRegion : tmRegions) {
 					if (tmRegion.length() >= 14) {
 						this.nonTMprotein = false; // has to have at least one TM region >=14 aa
-						break;
-					}
-				}
-				for (Range imRegion : imRegions) {
-					if (imRegion.length() >= 1) {
-						this.nonTMprotein = false;
 						break;
 					}
 				}
@@ -239,14 +264,14 @@ public class Prot {
 			if (parms.containsKey("lblin")) {
 				this.lblIntra = parms.get("lblin");
 			} else {
-				if (up!=null && ntermValue.equalsIgnoreCase("up.nterm") && UniProtProvider.getTopoStrings(up)!=null) {
+				if (up.size()>0 && ntermValue.equalsIgnoreCase("up.nterm") && UniProtProvider.getTopoStrings(up.get(0))!=null) {
 					if (this.nterm==Nterm.intra)
-						this.lblIntra = UniProtProvider.getTopoStrings(up).get(0);
+						this.lblIntra = UniProtProvider.getTopoStrings(up.get(0)).get(0);
 					else
-						this.lblIntra = UniProtProvider.getTopoStrings(up).get(1);
-				} else if (up!=null && ntermValue.toLowerCase().startsWith("up.nterm.")) {
+						this.lblIntra = UniProtProvider.getTopoStrings(up.get(0)).get(1);
+				} else if (up.size()>0 && ntermValue.toLowerCase().startsWith("up.nterm.")) {
 					String conformation = ntermValue.toLowerCase().substring("up.nterm.".length()); // e.g: UP.NTERM.EXTERNAL
-					List<String> topos = UniProtProvider.getTopoStrings(up, conformation);
+					List<String> topos = UniProtProvider.getTopoStrings(up.get(0), conformation);
 					if (topos != null) {
 						if (this.nterm==Nterm.intra)
 							this.lblIntra = topos.get(0);
@@ -260,14 +285,14 @@ public class Prot {
 			if (parms.containsKey("lblout")) {
 				this.lblExtra = parms.get("lblout");
 			} else {
-				if (up!=null && ntermValue.equalsIgnoreCase("up.nterm") && UniProtProvider.getTopoStrings(up)!=null) {
+				if (up.size()>0 && ntermValue.equalsIgnoreCase("up.nterm") && UniProtProvider.getTopoStrings(up.get(0))!=null) {
 					if (this.nterm==Nterm.extra)
-						this.lblExtra = UniProtProvider.getTopoStrings(up).get(0);
+						this.lblExtra = UniProtProvider.getTopoStrings(up.get(0)).get(0);
 					else
-						this.lblExtra = UniProtProvider.getTopoStrings(up).get(1);
-				} else if (up!=null && ntermValue.toLowerCase().startsWith("up.nterm.")) {
+						this.lblExtra = UniProtProvider.getTopoStrings(up.get(0)).get(1);
+				} else if (up.size()>0 && ntermValue.toLowerCase().startsWith("up.nterm.")) {
 					String conformation = ntermValue.toLowerCase().substring("up.nterm.".length()); // e.g: UP.NTERM.EXTERNAL
-					List<String> topos = UniProtProvider.getTopoStrings(up, conformation);
+					List<String> topos = UniProtProvider.getTopoStrings(up.get(0), conformation);
 					if (topos != null) {
 						if (this.nterm==Nterm.extra)
 							this.lblExtra = topos.get(0);
@@ -313,14 +338,11 @@ public class Prot {
 				tex.write("\n 	\\labelTMs{\\"+tmLabel.toString()+"}");
 			if (seq.length() > 1000) { // make loops extent more for larger proteins!
 				//tex.write("\n	\\loopextent{"+(30+Math.round((seq.length()-1000)*0.02))+"}");
-				// removed so that vbox does not get too high...
 				// TODO: check for scale changes in generated svg file
+				// UPDATE: removed so that vbox does not get too high...
 			}
-			//tex.write("\n	\\loopextent{20[4]}"); // used for BST2_HUMAN  |  CD97_HUMAN
 			String loopextent = Config.get("textopo_loopextent", "30");
 			String loopdistance = Config.get("textopo_loopdistance", "5");
-			//loopextent = "14";
-			//loopdistance = "0";
 			tex.write("\n	\\loopextent{"+loopextent+"["+loopdistance+"]}");
 			
 			// print the sequence
@@ -471,7 +493,14 @@ public class Prot {
 						out.write("<use x='"+(Double.parseDouble(Util.substringBetweenStrings(nh2[3], "x='", "'"))-dx)+"' xlink:href='"+Util.substringBetweenStrings(nh2[3], "xlink:href='", "'")+"' y='"+(Double.parseDouble(Util.substringBetweenStrings(nh2[3], "y='", "'"))-dy)+"'/>"+"\n");
 					}
 					
-					String title = AminoAcids.fromChar(seq.charAt(aa)).threeLetterCode+(aa+1) + (styles[aa].name != null ? ": "+styles[aa].name : "");
+					// aa titles
+					String title;
+					if (seqRanges.size()>1 || (upOffsets.size()==1 && upOffsets.get(0)>0)) {
+						int i = Range.contains(seqRanges, aa);
+						title = aa+1 + " = " + (uniprotIDs.size()>1 ? uniprotIDs.get(i)+":" : "") + AminoAcids.fromChar(seq.charAt(aa)).threeLetterCode + (aa+1-seqRanges.get(i).from+upOffsets.get(i)) + (styles[aa].name != null ? ": "+styles[aa].name : "");
+					} else {
+						title = AminoAcids.fromChar(seq.charAt(aa)).threeLetterCode+(aa+1) + (styles[aa].name != null ? ": "+styles[aa].name : "");						
+					}
 					title = "<title>"+title+"</title>";
 					
 					// output the shape
@@ -506,12 +535,23 @@ public class Prot {
 					}
 					
 					// indicate proteolytic cleavage sites
-					if (Range.contains(cutAtRegions, aa) &&  prevAaPos != null) {
+					if (Range.contains(cutAtRegions, aa)>=0 &&  prevAaPos != null) {
 						Vec mid = Vec.midpoint(new Vec(x,y), prevAaPos);
 						Vec nv = Vec.diff(new Vec(x,y), prevAaPos).orthogonalized().normalized();
 						Vec v1 = mid.added(nv.scaled(3.0f));
 						Vec v2 = mid.added(nv.scaled(-3.0f));
 						out.write("<line x1='"+v1.x+"' y1='"+v1.y+"' x2='"+v2.x+"' y2='"+v2.y+"' stroke='#000000' stroke-width='0.3' stroke-dasharray='0.3 0.5' stroke-linecap='round' />");	
+					}
+					
+					// indicate fusion sites
+					if (seqRanges.size()>1) {
+						if (seqRanges.get(Range.contains(seqRanges, aa)).from==aa && prevAaPos != null) {
+							Vec mid = Vec.midpoint(new Vec(x,y), prevAaPos);
+							Vec nv = Vec.diff(new Vec(x,y), prevAaPos).orthogonalized().normalized();
+							Vec v1 = mid.added(nv.scaled(4.0f));
+							Vec v2 = mid.added(nv.scaled(-4.0f));
+							out.write("<line x1='"+v1.x+"' y1='"+v1.y+"' x2='"+v2.x+"' y2='"+v2.y+"' stroke='#ff0000' stroke-width='0.5' stroke-linecap='round' />");
+						}
 					}
 					
 					prevAaPos = new Vec(x, y);
@@ -676,7 +716,7 @@ public class Prot {
 					}
 					
 					// add info to webapp client
-					out.write("<text id='uniprotID' display='none'>"+(uniprotID != null ? uniprotID : "")+"</text>\n");
+					out.write("<text id='uniprotID' display='none'>"+(uniprotIDs.size()>0 ? Joiner.on('+').join(uniprotIDs) : "")+"</text>\n");
 					out.write("<text id='sequence' display='none'>"+seq+"</text>\n");
 					
 					out.write("</g>\n");

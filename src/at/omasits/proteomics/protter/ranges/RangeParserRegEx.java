@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
+import at.omasits.util.UOUniProtEntry;
 
 
 public class RangeParserRegEx implements IRangeParser {
@@ -18,7 +18,7 @@ public class RangeParserRegEx implements IRangeParser {
 	}
 
 	@Override
-	public List<Range> parse(String rangeString, String sequence, UniProtEntry up, Map<String,String> parms) {
+	public List<Range> parse(String rangeString, String sequence, List<UOUniProtEntry> up, Map<String,String> parms) {
 		// try to interpret as regex; range whole match or - if capturing groups are specified - only the groups
 		List<Range> ranges = new ArrayList<Range>();
 		Matcher m = Pattern.compile(rangeString).matcher(sequence);

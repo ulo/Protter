@@ -4,8 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
-
+import at.omasits.util.UOUniProtEntry;
 
 public class RangeParserRange implements IRangeParser {
 
@@ -15,7 +14,7 @@ public class RangeParserRange implements IRangeParser {
 	}
 
 	@Override
-	public List<Range> parse(String rangeString, String sequence, UniProtEntry up, Map<String,String> parms) {
+	public List<Range> parse(String rangeString, String sequence, List<UOUniProtEntry> up, Map<String,String> parms) {
 		int begin = Integer.valueOf(rangeString.substring(0, rangeString.indexOf('-')));
 		int end = sequence.length();
 		if ( ! rangeString.endsWith("-"))

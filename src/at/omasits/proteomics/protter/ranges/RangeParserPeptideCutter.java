@@ -11,9 +11,8 @@ import java.util.Map;
 
 import at.omasits.util.Config;
 import at.omasits.util.Log;
+import at.omasits.util.UOUniProtEntry;
 import at.omasits.util.Util;
-
-import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
 
 public class RangeParserPeptideCutter implements IRangeParser {
 	private static HashMap<List<String>,List<Range>> buffer = new HashMap<List<String>, List<Range>>();
@@ -24,7 +23,7 @@ public class RangeParserPeptideCutter implements IRangeParser {
 	}
 
 	@Override
-	public List<? extends Range> parse(String rangeString, String sequence, UniProtEntry up, Map<String,String> parms) throws Exception {
+	public List<? extends Range> parse(String rangeString, String sequence, List<UOUniProtEntry> up, Map<String,String> parms) throws Exception {
 		List<Range> cutPositions = new ArrayList<Range>();
 		String enzyme = rangeString.substring(14);
 		

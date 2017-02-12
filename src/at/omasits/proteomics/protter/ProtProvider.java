@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.google.common.base.Joiner;
+
 import at.omasits.util.Log;
 import at.omasits.util.PowerpointExporter;
 import at.omasits.util.Util;
@@ -26,8 +28,8 @@ public class ProtProvider {
 		String title = "custom sequence";
 		if (prot.lblTitle != null)
 			title = prot.lblTitle;
-		else if (prot.uniprotID != null)
-			title = prot.uniprotID;
+		else if (prot.uniprotIDs.size()>0)
+			title = Joiner.on('+').join(prot.uniprotIDs);
 		String fileName = "protter "+title;
 		
 		String key = generateKey(prot).toString();

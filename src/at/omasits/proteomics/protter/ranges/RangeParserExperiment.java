@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
+import at.omasits.util.UOUniProtEntry;
 
 public class RangeParserExperiment implements IRangeParser {
 
@@ -16,7 +16,7 @@ public class RangeParserExperiment implements IRangeParser {
 	}
 
 	@Override
-	public List<? extends Range> parse(String rangeString, String sequence, UniProtEntry up, Map<String,String> parms) throws Exception {
+	public List<? extends Range> parse(String rangeString, String sequence, List<UOUniProtEntry> up, Map<String,String> parms) throws Exception {
 		String target = rangeString.substring(3);
 		Map<String,String> parmsLC = new HashMap<String, String>();
 		for(Entry<String,String> e : parms.entrySet())

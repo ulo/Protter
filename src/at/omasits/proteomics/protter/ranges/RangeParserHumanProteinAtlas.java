@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
 import at.omasits.util.Log;
+import at.omasits.util.UOUniProtEntry;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -25,20 +25,22 @@ public class RangeParserHumanProteinAtlas implements IRangeParser {
 	}
 
 	@Override
-	public List<? extends Range> parse(String rangeString, String sequence, UniProtEntry up, Map<String,String> parms) throws Exception {
-		if (up == null)
+	public List<? extends Range> parse(String rangeString, String sequence, List<UOUniProtEntry> up, Map<String,String> parms) throws Exception {
+		if (up.isEmpty())
 			return new ArrayList<Range>(); // no error, just ignore
 		
 		String feature = rangeString.toUpperCase().substring(4);
-		String upID = up.getPrimaryUniProtAccession().getValue();
 		
 		if (feature.equals("ANTIGEN")) {
 			List<Range> ranges = new ArrayList<Range>();
-			List<String> antigens = antigenEntries.get(upID);
-			for (String antigen : antigens) {
-				int start = sequence.toUpperCase().indexOf(antigen) + 1;
-				Range range = new Range(start, start+antigen.length()-1);
-				ranges.add(range);
+			for (UOUniProtEntry upEntry : up) {
+				String upID = upEntry.getPrimaryUniProtAccession().getValue();
+				List<String> antigens = antigenEntries.get(upID);
+				for (String antigen : antigens) {
+					int start = sequence.toUpperCase().indexOf(antigen) + 1;
+					Range range = new Range(start, start+antigen.length()-1);
+					ranges.add(range);
+				}
 			}
 			return ranges;
 		} else {

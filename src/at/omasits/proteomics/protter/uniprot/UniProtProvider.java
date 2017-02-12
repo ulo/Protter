@@ -1,7 +1,7 @@
 package at.omasits.proteomics.protter.uniprot;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -16,10 +16,12 @@ import uk.ac.ebi.kraken.interfaces.uniprot.features.FeatureType;
 import uk.ac.ebi.kraken.interfaces.uniprot.features.TopoDomFeature;
 import uk.ac.ebi.uniprot.dataservice.client.Client;
 import uk.ac.ebi.uniprot.dataservice.client.QueryResult;
+import uk.ac.ebi.uniprot.dataservice.client.uniprot.QuerySpec;
 import uk.ac.ebi.uniprot.dataservice.client.uniprot.UniProtQueryBuilder;
 import uk.ac.ebi.uniprot.dataservice.client.uniprot.UniProtService;
 import at.omasits.proteomics.protter.Prot.Nterm;
 import at.omasits.util.Log;
+import at.omasits.util.UOUniProtEntry;
 import at.omasits.util.Util;
 
 import com.google.common.cache.Cache;
@@ -88,7 +90,7 @@ public class UniProtProvider {
 			"Forespore intermembrane space"
 	);
 
-	public static Nterm inferNterm(UniProtEntry up, String conformation) throws Exception {
+	public static Nterm inferNterm(UOUniProtEntry up, String conformation) throws Exception {
 		List<String> topoStrings = getTopoStrings(up, conformation);
 		if (topoStrings==null) {
 			Log.error("UniProt has no info on N-terminus location.");
@@ -118,7 +120,7 @@ public class UniProtProvider {
 		Log.error("unkown UniProt topology: "+firstTopo+" "+secondTopo);
 		throw new UniprotException("unkown UniProt topology: "+firstTopo+" "+secondTopo);
 	}
-	public static Nterm inferNterm(UniProtEntry up) throws Exception {
+	public static Nterm inferNterm(UOUniProtEntry up) throws Exception {
 		return inferNterm(up, null);
 	}
 	public static class UniprotException extends Exception {
@@ -128,43 +130,54 @@ public class UniProtProvider {
 		}
 	}
 	
-	public static List<String> getTopoStrings(UniProtEntry up) throws Exception {
+	public static List<String> getTopoStrings(UOUniProtEntry up) throws Exception {
 		return getTopoStrings(up, null);
 	}
-	public static List<String> getTopoStrings(UniProtEntry up, String conformation) throws Exception {
-		LinkedHashSet<String> res = new LinkedHashSet<String>();
+	public static List<String> getTopoStrings(UOUniProtEntry up, String conformation) throws Exception {
+		List<String> res = new ArrayList<String>();
 		SortedSet<String> conformations = new TreeSet<String>();
+		String prevConf = "";
+		Integer firstTopoDomStart = null;
+		Integer firstTmStart = null;
 		for (Feature ft : up.getFeatures(FeatureType.TOPO_DOM)) {
 			String fDesc = ((TopoDomFeature) ft).getFeatureDescription().getValue();
-			if (fDesc.indexOf(';') >= 0) {
-				Matcher m = Pattern.compile("\\s+IN\\s(.+)\\sCONFORMATION").matcher(fDesc.substring(fDesc.indexOf(';')+1).toUpperCase().replace("NOTE=", ""));
-				if (m.matches()) {
-					String fConf = m.group(1);
-					conformations.add(fConf);
-					if (conformation != null && ! fConf.equalsIgnoreCase(conformation))
-						continue; // if there is a conformation which does NOT match, then skip this domain 
+			if (ft.getFeatureLocation().getEnd() < up.offsetFrom || ft.getFeatureLocation().getStart() > up.offsetTo) {
+				prevConf = fDesc.split(";")[0]; // not within selected range
+			} else {
+				if (fDesc.indexOf(';') >= 0) {
+					Matcher m = Pattern.compile("\\s+IN\\s(.+)\\sCONFORMATION").matcher(fDesc.substring(fDesc.indexOf(';')+1).toUpperCase().replace("NOTE=", ""));
+					if (m.matches()) {
+						String fConf = m.group(1);
+						conformations.add(fConf);
+						if (conformation != null && ! fConf.equalsIgnoreCase(conformation))
+							continue; // if there is a conformation which does NOT match, then skip this domain 
+					}
 				}
+				if (firstTopoDomStart==null) 
+					firstTopoDomStart = ft.getFeatureLocation().getStart();
+				res.add(fDesc.split(";")[0]);
 			}
-			res.add(fDesc.split(";")[0]);
 		}
 		if (conformation==null && conformations.size()>0) {
 			Log.warn("UniProt provides multiple topological conformations for '"+up.getUniProtId().getValue()+"'.");
 			throw new Exception("UniProt provides multiple topological conformations for '"+up.getUniProtId().getValue()+"':\n"+Util.join(conformations, "\n"));
 		}
 		
-		List<String> lst = Lists.newArrayList(res);
-		if (lst.size()==0)
+		if (res.size()==0)
 			return null;
-		else if (lst.size()==1)
-			lst.add("");
+		else if (res.size()==1)
+			res.add(prevConf);
 		// if the first TOPO_DOM comes after a FeatureType.TRANSMEM then this TOPO_DOM is actually second topo
-		if (up.getFeatures(FeatureType.TRANSMEM).size()>0) {
-			int firstTmStart = up.getFeatures(FeatureType.TRANSMEM).iterator().next().getFeatureLocation().getStart();
-			int firstTopoDomStart = up.getFeatures(FeatureType.TOPO_DOM).iterator().next().getFeatureLocation().getStart();
-			if (firstTmStart < firstTopoDomStart)
-				return Lists.newArrayList(lst.get(1), lst.get(0));
+		for (Feature ft : up.getFeatures(FeatureType.TRANSMEM)) {
+			if (ft.getFeatureLocation().getStart() <= up.offsetTo && ft.getFeatureLocation().getEnd() >= up.offsetFrom) {
+				firstTmStart = ft.getFeatureLocation().getStart();
+				if (firstTmStart < firstTopoDomStart)
+					return Lists.newArrayList(res.get(1), res.get(0));
+				else
+					break;
+			}
 		}
-		return Lists.newArrayList(lst.get(0), lst.get(1));
+		return Lists.newArrayList(res.get(0), res.get(1));
 	}
 	
 	protected static class UniProtCacheLoader extends CacheLoader<String,UniProtEntry> {
@@ -173,17 +186,24 @@ public class UniProtProvider {
 			if (identifier.contains("|")) // e.g: sp|P68716|VG07_VACCW
 				identifier = identifier.split("\\|")[1];
 			List<String> foundIds = new ArrayList<String>();
+			QueryResult<UniProtEntry> results;
 			UniProtEntry up = null;
 			
 			ups.start();
 			//Query query = UniProtQueryBuilder.buildExactMatchIdentifierQuery(identifier.toUpperCase());
 			//EntryIterator<UniProtEntry> results = upqs.getEntryIterator(query);
-			QueryResult<UniProtEntry> results = ups.getEntries(UniProtQueryBuilder.anyAccession(identifier.toUpperCase()));
-			if (!results.hasNext())
-				results = ups.getEntries(UniProtQueryBuilder.id(identifier.toUpperCase()));
-			while (results.hasNext()) {
-				up = results.next();
+			
+			up = ups.getEntry(identifier.toUpperCase());
+			if (up != null) {
 				foundIds.add(up.getPrimaryUniProtAccession().getValue());
+			} else {
+				results = ups.getEntries(UniProtQueryBuilder.anyAccession(identifier.toUpperCase()), EnumSet.of(QuerySpec.WithIsoform));
+				if (!results.hasNext())
+					results = ups.getEntries(UniProtQueryBuilder.id(identifier.toUpperCase()), EnumSet.of(QuerySpec.WithIsoform));
+				while (results.hasNext()) {
+					up = results.next();
+					foundIds.add(up.getPrimaryUniProtAccession().getValue());
+				}
 			}
 			
 			if (foundIds.size()==0) {
@@ -203,6 +223,9 @@ public class UniProtProvider {
 						break;
 				}
 			}
+			
+			if (foundIds.size()==1 && foundIds.get(0).endsWith("-1")) // instead of Q13740-1 we want Q13740
+				up = ups.getEntry(foundIds.get(0).substring(0, foundIds.get(0).length()-2));
 						
 			ups.stop();
 			
@@ -212,6 +235,7 @@ public class UniProtProvider {
 				Log.warn("Found multiple UniProt entries for '"+identifier+"'.");
 				throw new Exception("Found multiple UniProt entries for '"+identifier+"':\n"+Util.join(foundIds, "\n"));
 			}
+			
 			return up;
 		}
 	}

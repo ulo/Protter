@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
+import at.omasits.util.UOUniProtEntry;
 
 public class RangeParserPosition implements IRangeParser {
 
@@ -14,7 +14,7 @@ public class RangeParserPosition implements IRangeParser {
 	}
 
 	@Override
-	public List<Range> parse(String rangeString, String sequence, UniProtEntry up, Map<String,String> parms) {
+	public List<Range> parse(String rangeString, String sequence, List<UOUniProtEntry> up, Map<String,String> parms) {
 		int pos = Integer.valueOf(rangeString);
 		return Arrays.asList(new Range(pos, pos));
 	}

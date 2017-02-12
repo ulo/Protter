@@ -4,8 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import at.omasits.proteomics.protter.phobius.PhobiusProvider;
-
-import uk.ac.ebi.kraken.interfaces.uniprot.UniProtEntry;
+import at.omasits.util.UOUniProtEntry;
 
 public class RangeParserPhobius implements IRangeParser {
 
@@ -15,7 +14,7 @@ public class RangeParserPhobius implements IRangeParser {
 	}
 
 	@Override
-	public List<Range> parse(String rangeString, String sequence, UniProtEntry up, Map<String,String> parms) throws Exception {
+	public List<Range> parse(String rangeString, String sequence, List<UOUniProtEntry> up, Map<String,String> parms) throws Exception {
 		String feature = rangeString.toUpperCase().substring(8);
 		
 		Map<String, List<Range>> features = PhobiusProvider.getPhobius(sequence);

@@ -9,10 +9,14 @@ import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.BindException;
 import java.net.Socket;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Map;
 
 import javax.swing.UIManager;
@@ -33,6 +37,8 @@ public class ProtterServer extends FileServer {
 	public static final String proxyPrefix = Config.get("proxyPrefix","");
 	public static final int proxyPort = Config.get("proxyPort","").length()>0 ? Integer.valueOf(Config.get("proxyPort")) : port;
 	public static final String baseUrl = "http://"+server + ((proxyPort!=80) ? ":"+proxyPort : "") + proxyPrefix;
+	public static final String bitlyLogin = Config.get("bitly_login");
+	public static final String bitlyApiKey = Config.get("bitly_apikey","");
 	public static File wwwRoot;
 	public static File uploadPath;
 	public static String latexPath;
@@ -215,6 +221,22 @@ public class ProtterServer extends FileServer {
 					//ll.add(Arrays.asList("Presto","Opera 9.5","Win 88+ / OSX.3+","-","A"));
 					// Util.toDataTableJSON(ll)
 					res = new Response(Status.OK, MIME_PLAINTEXT, "");
+				} else if (uri.equals("/link")) {
+					String url = parms.get("url");
+					if (bitlyLogin==null || bitlyApiKey==null) {
+						res = new Response(Status.INTERNAL_ERROR, MIME_PLAINTEXT, "Link shortening not configured!");
+					} else if (url==null || url.length()==0) {
+						res = new Response(Status.BAD_REQUEST, MIME_PLAINTEXT, "No url specified!");
+					} else {
+						Log.info(socket.getInetAddress().getHostAddress()+" "+socket.getInetAddress().getCanonicalHostName() + " linking url: "+url);
+						try {
+							BufferedReader br = new BufferedReader(new InputStreamReader(new URL("https://api-ssl.bitly.com/v3/shorten?format=txt&login="+bitlyLogin+"&apiKey="+bitlyApiKey+"&longUrl="+URLEncoder.encode(url,"UTF-8")).openStream()));
+							res = new Response(Status.OK, MIME_PLAINTEXT, br.readLine());
+							br.close();
+						} catch (IOException e) {
+							res = new Response(Status.INTERNAL_ERROR, MIME_PLAINTEXT, "Link shortening failed!");
+						}
+					}
 				} else {
 					if (wwwRoot != null)
 						res = serveFile(uri, header, wwwRoot); // serve file from www root directory
