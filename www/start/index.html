@@ -303,12 +303,25 @@
 					
 				</div>
 				<div style="float:right; width:45%;">
+					<h3>links</h3>
+						Protter is linked from a number of tools and databases:
+						<ul>
+							<li><a href="https://skyline.ms/skyts/home/software/Skyline/tools/details.view?name=Protter">Skyline</a></li>
+							<li><a href="http://www.peptideatlas.org/">ISB PeptideAtlas</a></li>
+							<li><a href="http://tools.proteomecenter.org/wiki/index.php?title=Software:TPP">ISB TPP 5.0</a></li>
+							<li><a href="http://www.proxeon.com/productrange/data_interpretation/introduction/index.html">Thermo ProteinCenter</a> (next release)</li>
+							<li><a href="https://www.thermofisher.com/order/catalog/product/IQLAAEGABSFAKJMAUH">Thermo Proteome Discoverer</a> (next release)</li>
+							<li><a href="http://repository.topdownproteomics.org/">Proteoform Repository</a> (next release)</li>
+							<li><a href="http://topdownviewer.northwestern.edu/">TDViewer</a> (next release)</li>
+						</ul>
+						
+
 					<h3>tips &amp; tricks</h3>
 						<dl>
-							<dt>Run Protter on your own computer!</dt>
-								<dd>You can run Protter on your own server or even on your laptop. Just follow the installation instructions on the <a href="http://ulo.github.io/Protter/">Protter download page</a>.</dd>
-							<dt>Embed Protter images in your own web pages or reports.</dt>
-								<dd>Use Protter to create your protein visualization, export it to 'png' format, copy and paste the URL of the png file to your web page or report. Also, have a look at all the parameters encoded in the URL which allows you to generate custom Protter images automatically!</dd>
+							<dt>Run Protter on your own computer:</dt>
+								<dd>You can run Protter on your own server or even on your laptop! Just follow the installation instructions on the <a href="http://ulo.github.io/Protter/">Protter download page</a>.</dd>
+							<dt>Embed or link Protter images in your own web pages or reports:</dt>
+								<dd>Use Protter to create your protein visualization, export it to 'png' format, copy and paste the URL of the png file to your web page or report. Also, have a look at all the parameters encoded in the URL which allows you to generate custom Protter images automatically! More info: <a href="#linking">linking to Protter</a>.</dd>
 						</dl>
 
 					<h3>examples</h3>
@@ -504,7 +517,26 @@
 				</div>
 				-->
 				<br style="clear:both"/>
-				<h3>frequently asked questions</h3>
+				<h3 id="linking">linking to Protter</h3>
+					<p>
+						If you want to link to the <strong>Protter webinterface</strong>, you generate the link using the <code>#</code> sign (here the <code>format</code> parameter is irrelevant as you will end up with the Protter UI in all cases),
+						e.g: <code><a href="http://wlab.ethz.ch/protter/#up=BST2_HUMAN">http://wlab.ethz.ch/protter/#up=BST2_HUMAN</a></code>
+						<br/>
+						Here you can specify the identifier alone without the additional parameters (they will be set to default values depending on the type of protein).
+					</p>
+					<p>
+						If you want to directly link to the <strong>Protter visualization</strong>, you take the same link but replace <code>#</code> with <code>create?</code>,
+						e.g: <code><a href="http://wlab.ethz.ch/protter/create?up=BST2_HUMAN&tm=auto&format=png">http://wlab.ethz.ch/protter/create?up=BST2_HUMAN&tm=auto&format=png</a></code>
+						<br/>
+						Here you have to specify the visualization style using the parameters (here <code>tm=auto</code>) as there are no defaults. And you can specify the file format (here <code>format=png</code>)!
+					</p>
+					<p>
+						A tip to create the URLs: load a protein in the Protter webinterface and style the topology and visualization settings as needed. Then click the "export" button, select the format and have a look at the URL of the downloaded file. This is a good base to start for automating links to Protter visualizations by customizing the URL.
+					</p>
+					<p>
+						Check the <a href="../help/">help page</a> for more details.
+					</p>
+				<h3 style="clear:both">frequently asked questions</h3>
 					<dl>
 						<dt>How to highlight a peptide in my protein?</dt>
 							<dd>Select the peptide by clicking at it's first and then on it's last amino acid. Then switch to the "styles" tab and add a new style by clicking at the plus-icon at the bottom of the table. Apply the new style to the selected peptide by clicking at the plus-icon in the region-textbox and selecting the very first entry ("selected range").</dd>
