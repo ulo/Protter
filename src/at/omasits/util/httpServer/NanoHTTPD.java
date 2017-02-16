@@ -202,9 +202,10 @@ public abstract class NanoHTTPD {
             for (int i = 0; i < str.length(); i++) {
                 char c = str.charAt(i);
                 switch (c) {
-                    case '+':
-                        sb.append(' ');
-                        break;
+                //UO: we want to use the + sign for fusion proteins!
+//                    case '+':
+//                        sb.append(' ');
+//                        break;
                     case '%':
                         sb.append((char) Integer.parseInt(str.substring(i + 1, i + 3), 16));
                         i += 2;

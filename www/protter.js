@@ -715,7 +715,7 @@ function updateQueryString(format){
 		//defaultStyles=false;
 	}
 	
-	$("#tblStylesBody tr").each(function() {
+	$($("#tblStylesBody tr").get().reverse()).each(function() {
 		var styleElements = new Array();
 		var active = $("div.btnActive", this).hasClass("ui-state-active");
 		if ( ! active)
@@ -1030,7 +1030,7 @@ function addStyle(style, ranges) {
 		refresh();
 	});
 
-	tblStylesBody.append(newTableRow);
+	tblStylesBody.prepend(newTableRow);
 	rowID++;
 	tblStylesBody.tableDnDUpdate();
 	
@@ -1056,7 +1056,7 @@ function clearStyles() {
 
 function getStyles() {
 	var availableStyles = new Array();
-	$("#tblStylesBody tr").each(function() {
+	$($("#tblStylesBody tr").get().reverse()).each(function() {
 		var styleElements = new Array();
 		var active = $("div.btnActive", this).hasClass("ui-state-active");
 		if (active) {

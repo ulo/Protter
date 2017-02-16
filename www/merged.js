@@ -3197,6 +3197,8 @@ function Parser (files, onDone) {
 	this.readFile(0);
 };
 
+
+
 // The Main JS Document
 // Author: Ulrich Omasits
 // Date: 2011.01.30
@@ -3208,7 +3210,7 @@ var lblStatus;
 var tblProteins;
 
 var zoom = 5; // zoom change per interval in percent
-var zoomInterval; // javascript-interval for zooming animation 
+var zoomInterval; // javascript-interval for zooming animation
 
 var aaSelectionStart = -1;
 var aaSelectionEnd = -1;
@@ -3420,7 +3422,7 @@ $(document).ready(function(){
 	});
 
 	// load rangeMenu contents once
-	/*$.ajax({ url: "rangeMenu.html", 
+	/*$.ajax({ url: "rangeMenu.html",
 	 success: function(result) { rangeMenu = $(result); },
 	 async: false
 	 });*/
@@ -3642,7 +3644,7 @@ $(document).ready(function(){
 		$("#tabMain").css("padding-left",$("#divContent").position().left+30);
 	});
 
-	// initializations after loading settings	
+	// initializations after loading settings
 	$(".colorPicker").colorPicker();
 
 	$("#divTMlabelWrapper").buttonset();
@@ -3914,7 +3916,7 @@ function updateQueryString(format){
 		//defaultStyles=false;
 	}
 
-	$("#tblStylesBody tr").each(function() {
+	$($("#tblStylesBody tr").get().reverse()).each(function() {
 		var styleElements = new Array();
 		var active = $("div.btnActive", this).hasClass("ui-state-active");
 		if ( ! active)
@@ -4229,7 +4231,7 @@ function addStyle(style, ranges) {
 		refresh();
 	});
 
-	tblStylesBody.append(newTableRow);
+	tblStylesBody.prepend(newTableRow);
 	rowID++;
 	tblStylesBody.tableDnDUpdate();
 
@@ -4255,7 +4257,7 @@ function clearStyles() {
 
 function getStyles() {
 	var availableStyles = new Array();
-	$("#tblStylesBody tr").each(function() {
+	$($("#tblStylesBody tr").get().reverse()).each(function() {
 		var styleElements = new Array();
 		var active = $("div.btnActive", this).hasClass("ui-state-active");
 		if (active) {
@@ -4327,7 +4329,7 @@ function loadSVG() {
 		svg.load(createPath+"?"+queryString, {onLoad: svgLoaded}); // initialize the container div as svg container
 	}
 }
-function svgLoaded(svg, error) { // Callback after loading external svg	
+function svgLoaded(svg, error) { // Callback after loading external svg
 	if(error) {
 		$.get(createPath+"?"+queryString).error(function(e) {
 			if (e.responseText.indexOf("Error: java.lang.Exception: Found multiple UniProt entries")==0) {
@@ -4384,7 +4386,7 @@ function svgLoaded(svg, error) { // Callback after loading external svg
 	var filterSelected = svg.filter($("defs"), 'selected', -5, -5, 10, 10, {filterUnits: 'objectBoundingBox'});
 	svg.filters.morphology(filterSelected, 'dilated', 'SourceGraphic', 'dilate', 0.3);
 	svg.filters.colorMatrix(filterSelected, 'colored', 'dilated', 'matrix', [
-		// input: r  g  b  a      output:  
+		// input: r  g  b  a      output:
 		[0, 0, 0, 1, 0], // red
 		[0, 0, 0, 0, 0], // green
 		[0, 0, 0, 0, 0], // blue
@@ -4396,7 +4398,7 @@ function svgLoaded(svg, error) { // Callback after loading external svg
 	var filterHighlighted = svg.filter($("defs"), 'highlighted', -5, -5, 10, 10, {filterUnits: 'objectBoundingBox'});
 	svg.filters.morphology(filterHighlighted, 'dilated', 'SourceGraphic', 'dilate', 0.3);
 	svg.filters.colorMatrix(filterHighlighted, 'colored', 'dilated', 'matrix', [
-		// input: r  g  b  a      output:  
+		// input: r  g  b  a      output:
 		[0, 0, 0, 1, 0], // red
 		[0, 0, 0, 0.5, 0], // green
 		[0, 0, 0, 0.5, 0], // blue
@@ -4467,7 +4469,7 @@ function svgLoaded(svg, error) { // Callback after loading external svg
 	//					on same AA, unselect
 	//					on anywhere, reset beginSelectionAA
 	// remember to reset beginSelectionAA on reload of svg
-	// 
+	//
 	// synchronize with selection in sequence textbox!
 
 	$(document).trigger('svgLoaded');

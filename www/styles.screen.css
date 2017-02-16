@@ -333,6 +333,13 @@ div.tab {
 	color: #E17009; 
 }
 
+#frmID {
+	margin-bottom: 0.8em;
+}
+#txtID {
+	width: 25em;
+}
+
 #inpFasta {
 	position:absolute;
 	left:0;

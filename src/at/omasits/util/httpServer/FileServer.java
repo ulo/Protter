@@ -307,8 +307,11 @@ public class FileServer extends NanoHTTPD {
                         res = new Response(Response.Status.OK, mime, dataStream);
                         res.addHeader("Content-Length", "" + fileLen);
                         res.addHeader("ETag", etag);
-                        if (downloadName!=null)
+                        if (downloadName!=null) {
                         	res.addHeader("Content-Disposition", "filename=\""+ downloadName + "\"");
+                        	if (downloadName.toLowerCase().endsWith("svg"))
+                        		res.addHeader("Access-Control-Allow-Origin", "*");
+                        }
                         if (gzipped)
                         	res.addHeader("Content-Encoding", "gzip");
                     }

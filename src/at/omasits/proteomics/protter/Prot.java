@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,7 +110,7 @@ public class Prot {
 		cutAtLegend = cutAtValue;
 		
 		if (upValue != null) {
-			String[] upValues = upValue.split(",");
+			String[] upValues = upValue.split("\\+");
 			for (String upName : upValues) {
 				Matcher m = Pattern.compile("(.+)\\[(\\d+)-(\\d*)\\]").matcher(upName);
 				Integer offsetFrom = 1;
@@ -678,7 +679,9 @@ public class Prot {
 						int i=0;
 						out.write("<g id='legend'>\n");
 						double y = legendY;
-						for (Style style : styleRanges.keySet()) {
+						List<Style> legendStyles = new ArrayList<Style>(styleRanges.keySet());
+						Collections.reverse(legendStyles);
+						for (Style style : legendStyles) {
 							i++;
 							y += 4;
 							out.write("<text x='"+(legendX+3f)+"' y='"+(y+1.0f)+"' font-family='sans-serif' font-size='3' fill='black'>"+style.name+"</text>\n");
@@ -700,8 +703,13 @@ public class Prot {
 						if (cutAtLegend != null) {
 							y += 4;
 							if (cutAtLegend.toLowerCase().startsWith("peptidecutter.")) cutAtLegend = cutAtLegend.substring(14);
-							out.write("<line x1='"+(legendX-1.9f)+"' y1='"+y+"' x2='"+(legendX+1.9f)+"' y2='"+(legendY+4*i+4)+"' stroke='#000000' stroke-width='0.3' stroke-dasharray='0.3 0.5' stroke-linecap='round' />");
+							out.write("<line x1='"+(legendX-1.9f)+"' y1='"+y+"' x2='"+(legendX+1.9f)+"' y2='"+y+"' stroke='#000000' stroke-width='0.3' stroke-dasharray='0.3 0.5' stroke-linecap='round' />");
 							out.write("<text x='"+(legendX+3f)+"' y='"+(y+1)+"' font-family='sans-serif' font-size='3' fill='black'>"+cutAtLegend+"</text>\n");
+						}
+						if (seqRanges.size()>1) {
+							y += 4;
+							out.write("<line x1='"+(legendX-1.9f)+"' y1='"+y+"' x2='"+(legendX+1.9f)+"' y2='"+y+"' stroke='#ff0000' stroke-width='0.5' stroke-linecap='round' />");
+							out.write("<text x='"+(legendX+3f)+"' y='"+(y+1)+"' font-family='sans-serif' font-size='3' fill='black'>fusion site</text>\n");
 						}
 						if (ntermLegend != null) {
 							y += 4;
