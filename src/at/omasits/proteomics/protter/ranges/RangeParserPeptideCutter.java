@@ -31,7 +31,7 @@ public class RangeParserPeptideCutter implements IRangeParser {
 			cutPositions = buffer.get(Arrays.asList(sequence, enzyme));
 		else {
 			try {
-				StringBuilder strUrl = new StringBuilder(Config.get("peptideCutter","http://web.expasy.org/cgi-bin/peptide_cutter/peptidecutter.pl"));
+				StringBuilder strUrl = new StringBuilder(Config.get("peptideCutter","https://web.expasy.org/cgi-bin/peptide_cutter/peptidecutter.pl"));
 				strUrl.append("?alphtable=alphtable&cleave_number=all");
 				strUrl.append("&protein=").append(sequence);
 				strUrl.append("&enzyme=").append(enzyme);
