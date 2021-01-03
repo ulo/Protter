@@ -23,7 +23,7 @@ import at.omasits.util.Log;
 public class PhobiusProvider {
 	// a list of all loaded phobius predictions
 	public static Map<String, Map<String,List<Range>>> phobiusPredictions = new HashMap<String, Map<String,List<Range>>>();
-	public static final String[] phobiusServers = Config.get("phobiusServer", "http://phobius.sbc.su.se/cgi-bin/predict.pl;http://phobius.binf.ku.dk/cgi-bin/predict.pl").split(";");
+	public static final String[] phobiusServers = Config.get("phobiusServer", "https://phobius.sbc.su.se/cgi-bin/predict.pl;https://phobius.binf.ku.dk/cgi-bin/predict.pl").split(";");
 	static String phobiusServer = phobiusServers[0]; //Config.get("phobiusServer", "http://phobius.sbc.su.se/cgi-bin/predict.pl");
 	
 	public static Map<String, List<Range>> getPhobius(String sequence) throws Exception {

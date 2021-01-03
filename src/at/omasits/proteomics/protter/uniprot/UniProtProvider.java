@@ -193,6 +193,12 @@ public class UniProtProvider {
 			//Query query = UniProtQueryBuilder.buildExactMatchIdentifierQuery(identifier.toUpperCase());
 			//EntryIterator<UniProtEntry> results = upqs.getEntryIterator(query);
 			
+			//QueryResult<UniProtEntry> entries = ups.getEntries( UniProtQueryBuilder.id("BST2_HUMAN") );
+			//while (entries.hasNext()) {
+			//	UniProtEntry entry = entries.next();
+			//	System.out.println(entry.getUniProtId().getValue() + "\t" + entry.getPrimaryUniProtAccession().getValue());
+			//}
+			
 			up = ups.getEntry(identifier.toUpperCase());
 			if (up != null) {
 				foundIds.add(up.getPrimaryUniProtAccession().getValue());
