@@ -15,6 +15,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+
 import at.omasits.proteomics.protter.Style.Color;
 import at.omasits.proteomics.protter.Style.Shape;
 import at.omasits.proteomics.protter.phobius.PhobiusProvider;
@@ -26,10 +30,6 @@ import at.omasits.util.Log;
 import at.omasits.util.UOUniProtEntry;
 import at.omasits.util.Util;
 import at.omasits.util.Vec;
-
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 
 public class Prot {
 	public static enum Nterm {
@@ -402,7 +402,8 @@ public class Prot {
 			//exe = Config.get("latex")+" --extra-mem-top=50000000 --extra-mem-bot=20000000 --stack-size=50000 --param-size=50000 "+inputFile;
 			//exe = "latex --extra-mem-top=50000000 --extra-mem-bot=20000000 --stack-size=50000 --param-size=50000 "+inputFile;
 			exe = ProtterServer.latexPath + " " + inputFile;
-			Log.info("calling: "+exe);
+			Log.info("calling: "+ exe);
+			
 			Process pLatex = Runtime.getRuntime().exec(exe, null, directory);
 				input = new BufferedReader(new InputStreamReader(pLatex.getInputStream()));
 				while ((line = input.readLine()) != null) {
@@ -423,8 +424,8 @@ public class Prot {
 			//Log.info("generating svg file...");
 			String inputFilePrefix = inputFile.substring(0,inputFile.lastIndexOf('.'));
 			//exe = "dvisvgm -n -o "+outputFile+" "+inputFilePrefix+".dvi";
-			exe = ProtterServer.dvisvgm + " -n -o "+outputFile+" "+inputFilePrefix+".dvi";
-			Log.info("calling: "+exe);
+			exe = ProtterServer.dvisvgm.toString() + " -n -o " + outputFile + " " + inputFilePrefix + ".dvi";
+			Log.info("calling: " + exe);
 			Process pDvi2Svg = Runtime.getRuntime().exec(exe, null, directory);
 				input = new BufferedReader(new InputStreamReader(pDvi2Svg.getErrorStream()));
 				while ((line = input.readLine()) != null) {
