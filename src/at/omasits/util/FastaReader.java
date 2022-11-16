@@ -37,7 +37,7 @@ public class FastaReader implements LineProcessor<Map<String,String>> {
 			header = headerProcessor.apply(line.substring(1));
 			sequence.setLength(0);
 		} else if ( ! line.startsWith("#")) {
-			sequence.append( CharMatcher.WHITESPACE.removeFrom(line) );
+			sequence.append( CharMatcher.whitespace().removeFrom(line) );
 		}
 		return true;
 	}
@@ -53,7 +53,7 @@ public class FastaReader implements LineProcessor<Map<String,String>> {
 	public static final Function<String,String> headerUpToFirstWhitespace = new Function<String, String>() {
 		@Override
 		public String apply(String header) {
-			return Util.substringUpTo(header, CharMatcher.WHITESPACE);
+			return Util.substringUpTo(header, CharMatcher.whitespace());
 		}
 	};
 	public static final Function<String,String> headerComplete = new Function<String, String>() {

@@ -36,7 +36,17 @@ public class RangeParserUniProt implements IRangeParser {
 				if (f.getFeatureLocation().getStart()==-1 || f.getFeatureLocation().getEnd()==-1)
 					continue;
 				if (upFeature.equals("CARBOHYD") && upSubFeature != null) {
-					String linkTyp = ((CarbohydFeature)f).getCarbohydLinkType().name();
+					String linkTyp = "";
+					String description = ((CarbohydFeature)f).getFeatureDescription().getValue();
+					if (description.toLowerCase().startsWith("n-linked")) {
+						linkTyp = "NITROGEN";
+					} else if (description.toLowerCase().startsWith("o-linked")) {
+						linkTyp = "OXYGEN";
+					} else if (description.toLowerCase().startsWith("s-linked")) {
+						linkTyp = "SULFUR";
+					} else if (description.toLowerCase().startsWith("c-linked")) {
+						linkTyp = "CARBON";
+					}
 					if (upSubFeature.equals(linkTyp))
 						ranges.add(new Range(f.getFeatureLocation().getStart(), f.getFeatureLocation().getEnd()));
 				} else if (upFeature.equals("DISULFID")) {

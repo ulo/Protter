@@ -469,7 +469,7 @@ public class Prot {
 			
 			while((line=in.readLine()) != null) {
 				// process aminoacids
-				if (line.equals("<g fill='#ffffff'>")) {
+				if (line.equals("<g fill='#fff'>") || line.equals("<g fill='#ffffff'>")) {
 					in.readLine(); // skip the filling (e.g: <use x='189.745' xlink:href='#g515' y='130.967'/>)
 					in.readLine(); // skip the </g>
 					
@@ -560,18 +560,20 @@ public class Prot {
 					aa++;
 					
 				// membrane rectangle
-				} else if (line.startsWith("<rect fill='#ffffff'")) {
-					if (!nonMprotein)
-						out.write("<rect id='membraneFill' fill='" + membraneColor.code + "'" + line.substring(20) + "\n");
-					
-				// membrane lines
-				} else if (line.startsWith("<rect height=")) {
+				} else if (line.startsWith("<rect fill='#ffffff'") || (line.startsWith("<rect ") && line.endsWith("fill='#fff'/>"))) {
 					if (!nonMprotein) {
-						out.write("<rect id='membraneLine' " + line.substring(6) + "\n");
+						String x = Util.substringBetweenStrings(line, "x='", "'");
+						String y = Util.substringBetweenStrings(line, "y='", "'");
+						String height = Util.substringBetweenStrings(line, "height='", "'");
+						String width = Util.substringBetweenStrings(line, "width='", "'");
+						out.write("<rect id='membraneFill' fill='" + membraneColor.code + "' x='" + x + "' y='" + y + "' height='" + height + "' width='" + width + "'/>\n");
+						// membrane lines
+						out.write("<rect id='membraneLine' " + in.readLine().substring(6) + "\n");
+						out.write("<rect id='membraneLine' " + in.readLine().substring(6) + "\n");
 					}
-					
+			
 				// tm labels
-				} else if (line.equals("<g fill='#0000ff'>")){
+				} else if (line.equals("<g fill='#00f'>") || line.equals("<g fill='#0000ff'>")){
 					if ((tmLabel != TMlabel.none) && !nonTMprotein) { // TODO: zweistellige TM nummern??
 						out.write("<g fill='"+tmLabelColor.code+"'>\n");
 						out.write(in.readLine()+"\n"); // the use

@@ -199,7 +199,9 @@ public class UniProtProvider {
 			//	System.out.println(entry.getUniProtId().getValue() + "\t" + entry.getPrimaryUniProtAccession().getValue());
 			//}
 			
+			
 			up = ups.getEntry(identifier.toUpperCase());
+			
 			if (up != null) {
 				foundIds.add(up.getPrimaryUniProtAccession().getValue());
 			} else {
