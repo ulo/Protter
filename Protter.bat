@@ -1,1 +1,1 @@
-java -Xmx2048m -jar protterServer.jar
+java --add-opens java.base/java.lang=ALL-UNNAMED -Xmx2048m -jar protterServer.jar
